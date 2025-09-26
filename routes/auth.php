@@ -14,6 +14,10 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
+    // Registration identify step (check duplicates)
+    Route::post('register/identify', [RegisteredUserController::class, 'identify'])
+        ->name('register.identify');
+
     Route::post('register', [RegisteredUserController::class, 'store'])
         ->name('register.store');
 
@@ -71,4 +75,5 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+    Route::post('identify', [AuthenticatedSessionController::class, 'identify']);
 });
