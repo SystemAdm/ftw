@@ -8,7 +8,7 @@ import AuthBase from '@/layouts/AuthLayout.vue';
 import { request as passwordRequest } from '@/routes/password';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, router } from '@inertiajs/vue3';
 import { LoaderCircle, User as UserIcon } from 'lucide-vue-next';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -36,6 +36,15 @@ const props = defineProps<{
     selectedUser?: { id: number; name: string; email?: string; username?: string; avatar?: string; phone?: string };
     needsPassword?: boolean;
 }>();
+const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '';
+
+function onContinueNoPassword() {
+    router.post('/login/confirm', { password: '' }, {
+        headers: { 'X-CSRF-TOKEN': csrfToken },
+        preserveState: true,
+        preserveScroll: true,
+    });
+}
 </script>
 
 <template>
@@ -50,7 +59,8 @@ const props = defineProps<{
         <div v-if="step === 1" class="flex flex-col gap-6">
             <div class="grid gap-2">
                 <Label for="identifier">Phone, email or username</Label>
-                <Form :action="'/login/identify'" method="post" v-slot="{ errors, processing }" class="flex flex-col gap-2">
+                <Form :action="'/login/identify'" method="post" :headers="{ 'X-CSRF-TOKEN': csrfToken }" v-slot="{ errors, processing }" class="flex flex-col gap-2">
+                                    <input type="hidden" name="_token" :value="csrfToken" />
                     <Input
                         id="identifier"
                         name="identifier"
@@ -92,7 +102,8 @@ const props = defineProps<{
                 <div class="space-y-2">
                     <div class="text-sm text-muted-foreground">Select your account</div>
                     <div class="flex flex-col gap-3">
-                        <Form :action="'/login/select'" method="post" class="flex flex-col gap-3">
+                        <Form :action="'/login/select'" method="post" :headers="{ 'X-CSRF-TOKEN': csrfToken }" class="flex flex-col gap-3">
+                                                    <input type="hidden" name="_token" :value="csrfToken" />
                             <template v-for="u in candidates" :key="u.id">
                                 <button
                                     type="submit"
@@ -134,7 +145,8 @@ const props = defineProps<{
                             </template>
                         </Form>
                         <div v-if="canCreate">
-                            <Form :action="'/login/identify'" method="post" class="mt-2">
+                            <Form :action="'/login/identify'" method="post" :headers="{ 'X-CSRF-TOKEN': csrfToken }" class="mt-2">
+                                                            <input type="hidden" name="_token" :value="csrfToken" />
                                 <input type="hidden" name="identifier" :value="identifier || ''" />
                                 <input type="hidden" name="prefer_new" value="1" />
                                 <Button type="submit" variant="outline" class="w-full">Create a new account instead</Button>
@@ -147,7 +159,8 @@ const props = defineProps<{
             <template v-else>
                 <div class="grid gap-2">
                     <div class="text-sm text-muted-foreground">Create a new account</div>
-                    <Form :action="'/login/create'" method="post" v-slot="{ errors, processing }" class="flex flex-col gap-3">
+                    <Form :action="'/login/create'" method="post" :headers="{ 'X-CSRF-TOKEN': csrfToken }" v-slot="{ errors, processing }" class="flex flex-col gap-3">
+                                            <input type="hidden" name="_token" :value="csrfToken" />
                         <div>
                             <Label for="name">Name</Label>
                             <Input id="name" name="name" type="text" required />
@@ -195,7 +208,8 @@ const props = defineProps<{
 
             <div v-if="needsPassword" class="grid gap-2">
                 <Label for="password">Enter your password</Label>
-                <Form :action="'/login/confirm'" method="post" v-slot="{ errors, processing }" class="flex flex-col gap-2">
+                <Form :action="'/login/confirm'" method="post" :headers="{ 'X-CSRF-TOKEN': csrfToken }" v-slot="{ errors, processing }" class="flex flex-col gap-2">
+                                    <input type="hidden" name="_token" :value="csrfToken" />
                     <Input id="password" name="password" type="password" required autofocus />
                     <InputError :message="errors.password" />
                     <div class="flex items-center justify-between">
@@ -213,10 +227,7 @@ const props = defineProps<{
             </div>
 
             <div v-else class="grid gap-2">
-                <Form :action="'/login/confirm'" method="post" v-slot="{ processing }">
-                    <input type="hidden" name="password" value="" />
-                    <Button type="submit" class="mt-2 w-full" :disabled="processing">Continue</Button>
-                </Form>
+                <Button type="button" class="mt-2 w-full" @click="onContinueNoPassword">Continue</Button>
             </div>
         </div>
     </AuthBase>

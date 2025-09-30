@@ -16,10 +16,13 @@ return new class extends Migration {
             $table->string('name');
             $table->string('email')->unique()->nullable();
             $table->string('username')->unique()->nullable();
+            $table->date('birthday')->nullable();
             $table->string('avatar')->nullable();
             $table->boolean('phone_public')->default(false);
-            $table->string('email_normalized')->unique()->nullable();
+            $table->boolean('email_public')->default(false);
+            $table->string('email_normalized')->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->unsignedBigInteger('postal_code')->nullable();
 
             $table->string('google_id')->nullable();
             $table->string('facebook_id')->nullable();

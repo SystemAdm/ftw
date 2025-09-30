@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,7 +16,7 @@ use Qirolab\Laravel\Reactions\Traits\Reacts;
 class User extends Authenticatable implements ReactsInterface
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, HasRoles, Reacts;
+    use HasFactory, Notifiable, SoftDeletes, HasRoles, Reacts ;
 
     /**
      * The attributes that are mass assignable.
@@ -63,6 +64,24 @@ class User extends Authenticatable implements ReactsInterface
     {
         return $this->belongsToMany(PhoneNumber::class)
             ->withPivot(['primary', 'verified_at', 'verified_by'])
+            ->withTimestamps();
+    }
+
+    public function postalCode() : BelongsTo
+    {
+        return $this->belongsTo(PostalCode::class);
+    }
+
+    public function guardians()
+    {
+        return $this->belongsToMany(User::class, 'guardian_user', 'minor_id', 'guardian_id')
+            ->withPivot(['relationship'])
+            ->withTimestamps();
+    }
+
+    public function minors() {
+        return $this->belongsToMany(User::class, 'guardian_user', 'guardian_id', 'minor_id')
+            ->withPivot(['relationship'])
             ->withTimestamps();
     }
 }

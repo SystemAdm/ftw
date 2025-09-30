@@ -65,7 +65,7 @@ class MultiStepLoginController extends Controller
                         'email' => $u->email,
                         'username' => $u->username,
                         'avatar' => $u->avatar,
-                        'hasPassword' => ! empty($u->password),
+                        'has_password' => ! empty($u->password),
                         'google_id' => $u->google_id,
                     ];
                 })->values();
@@ -161,7 +161,7 @@ class MultiStepLoginController extends Controller
                 'email' => $u->email,
                 'username' => $u->username,
                 'avatar' => $u->avatar,
-                'hasPassword' => ! empty($u->password),
+                'has_password' => ! empty($u->password),
                 'google_id' => $u->google_id,
             ];
         })->values();
@@ -179,13 +179,24 @@ class MultiStepLoginController extends Controller
     /**
      * Step 2: select a specific user from candidates
      */
-    public function select(Request $request): Response
+    public function select(Request $request): \Inertia\Response|\Illuminate\Http\RedirectResponse
     {
         $data = $request->validate([
             'user_id' => ['required', 'integer', 'exists:users,id'],
         ]);
 
-        $user = User::select(['id', 'name', 'email', 'username', 'avatar', 'password'])->find($data['user_id']);
+        $user = User::select(['id', 'name', 'email', 'username', 'avatar', 'password', 'google_id'])->find($data['user_id']);
+
+        // If user has neither a password nor a Google ID, log them in immediately
+        if (empty($user->password) && empty($user->google_id)) {
+            Auth::login($user);
+            $request->session()->regenerate();
+            $request->session()->forget('login.user_id');
+
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+
+        // Otherwise, proceed to step 3 (password confirmation if needed)
         $request->session()->put('login.user_id', $user->id);
 
         return Inertia::render('auth/LoginSteps', [
@@ -205,15 +216,27 @@ class MultiStepLoginController extends Controller
     /**
      * Step 3: confirm password if needed and log in
      */
-    public function confirm(Request $request): RedirectResponse
+    public function confirm(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
     {
-        $userId = $request->session()->get('login.user_id');
+        $userId = $request->session()->get('login.user_id') ?: $request->input('user_id');
         if (! $userId) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Login session not initialized.',
+                ], 400);
+            }
             return redirect()->route('login');
         }
 
         $user = User::find($userId);
         if (! $user) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'User not found.',
+                ], 400);
+            }
             return redirect()->route('login');
         }
 
@@ -234,13 +257,21 @@ class MultiStepLoginController extends Controller
         $request->session()->regenerate();
         $request->session()->forget('login.user_id');
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $redirect = route('dashboard', absolute: false);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'redirect' => $redirect,
+            ]);
+        }
+
+        return redirect()->intended($redirect);
     }
 
     /**
      * Create a new user if allowed by config and then continue to login
      */
-    public function createUser(Request $request): Response
+    public function createUser(Request $request): Response|RedirectResponse
     {
         abort_unless((bool) config('custom.allow_new_users', false), 403);
 
@@ -271,7 +302,15 @@ class MultiStepLoginController extends Controller
             // report($e);
         }
 
-        // Proceed to step 3 (confirm password if set, otherwise complete login)
+        // If no password was provided, log in immediately and redirect
+        if (empty($user->password)) {
+            Auth::login($user, true);
+            $request->session()->regenerate();
+            $request->session()->forget('login.user_id');
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+
+        // Otherwise proceed to step 3 (confirm password)
         $request->session()->put('login.user_id', $user->id);
 
         return Inertia::render('auth/LoginSteps', [
