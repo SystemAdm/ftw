@@ -246,9 +246,10 @@ async function onSubmitIdentify() {
     }
     try {
         loading.value = true;
-        const resp = await fetch(`/register/identify?identifier=${encodeURIComponent(identifier.value.trim())}`, {
-            headers: { Accept: 'application/json' },
-            method: 'GET',
+        const resp = await fetch(`/register/identify`, {
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            method: 'POST',
+            body: JSON.stringify({ identifier: identifier.value.trim() }),
         });
         if (!resp.ok) {
             throw new Error('Failed to check identifier');
@@ -295,9 +296,10 @@ async function onSubmitGuardianIdentify() {
     }
     try {
         guardianLoading.value = true;
-        const resp = await fetch(`/register/identify?identifier=${encodeURIComponent(guardianIdentifier.value.trim())}`, {
-            headers: { Accept: 'application/json' },
-            method: 'GET',
+        const resp = await fetch(`/register/identify`, {
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            method: 'POST',
+            body: JSON.stringify({ identifier: guardianIdentifier.value.trim() }),
         });
         if (!resp.ok) throw new Error('Failed to check identifier');
         const data = await resp.json();

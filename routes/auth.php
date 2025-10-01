@@ -14,8 +14,8 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    // Registration identify step (API JSON)
-    Route::get('register/identify', [RegisteredUserController::class, 'identify'])
+    // Registration identify step (API JSON) - support both GET and POST to avoid method issues
+    Route::match(['GET','POST'], 'register/identify', [RegisteredUserController::class, 'identify'])
         ->name('register.identify');
 
     Route::post('register', [RegisteredUserController::class, 'store'])
