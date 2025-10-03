@@ -23,6 +23,26 @@ use App\Mail\GuardianInvitationMail;
 class RegisteredUserController extends Controller
 {
     /**
+     * Normalize an email for deduplication.
+     * Rule: lowercase, and for gmail.com/googlemail.com, if local part contains '+',
+     * take the substring AFTER '+'. Example: a+jovang@gmail.com -> jovang@gmail.com
+     */
+    private function normalizeEmail(?string $email): ?string
+    {
+        if (!is_string($email)) return null;
+        $email = trim(mb_strtolower($email));
+        if ($email === '' || !str_contains($email, '@')) return $email ?: null;
+        [$local, $domain] = explode('@', $email, 2);
+        if (in_array($domain, ['gmail.com', 'googlemail.com'], true)) {
+            $pos = mb_strpos($local, '+');
+            if ($pos !== false) {
+                $local = mb_substr($local, $pos + 1) ?: '';
+            }
+        }
+        return ($local !== '' ? $local : '') . '@' . $domain;
+    }
+
+    /**
      * API: Check existing accounts for the given identifier (email or phone)
      * and return selection/create options as JSON (no navigation).
      */
@@ -81,7 +101,7 @@ class RegisteredUserController extends Controller
         $query = User::query();
         $query->where(function ($q) use ($identifier) {
             $q->orWhere('email', $identifier)
-              ->orWhere('email_normalized', mb_strtolower($identifier));
+              ->orWhere('email_normalized', $this->normalizeEmail($identifier));
             if (Schema::hasColumn('users', 'username')) {
                 $q->orWhere('username', $identifier);
             }
@@ -127,7 +147,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('auth/RegisterSteps');
+        return Inertia::render('auth/RegisterSteps', [
+            'googleSignup' => session('google_signup')
+        ]);
     }
 
     /**
@@ -137,6 +159,19 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $google = $request->session()->get('google_signup');
+        $existingByGoogleEmail = null;
+        if ($google && !empty($google['email'])) {
+            $existingByGoogleEmail = User::where('email', $google['email'])
+                ->orWhere('email_normalized', $this->normalizeEmail($google['email']))
+                ->first();
+        }
+
+        $emailRules = ['required_without:phone','nullable','string','lowercase','email','max:255'];
+        if (! $existingByGoogleEmail) {
+            $emailRules[] = 'unique:'.User::class;
+        }
+
         $validated = $request->validate([
             // Basic identity
             'first_name' => ['required','string','max:255'],
@@ -149,7 +184,7 @@ class RegisteredUserController extends Controller
             'postal_code' => ['required','regex:/^\\d{4,6}$/'],
 
             // Contact: at least one of email or phone required
-            'email' => ['required_without:phone','nullable','string','lowercase','email','max:255','unique:'.User::class],
+            'email' => $emailRules,
             // Laravel-Phone rule, accept any country (auto-detect) and E.164/strict validation
             'phone' => ['required_without:email','nullable','phone'],
 
@@ -180,17 +215,59 @@ class RegisteredUserController extends Controller
             $validated = array_merge($validated, $minorData);
         }
 
-        // Create the minor user
-        $user = User::create([
-            'name' => trim(($validated['first_name'] ?? '')." ".($validated['last_name'] ?? '')),
-            'email' => $validated['email'] ?? null,
-            'password' => (!empty($validated['password']) ? Hash::make($validated['password']) : null),
-        ]);
+        // Create or update the user depending on Google signup status
+        if ($google) {
+            // Ensure the submitted email matches the Google email if provided
+            if (!empty($google['email']) && !empty($validated['email']) && mb_strtolower($validated['email']) !== mb_strtolower($google['email'])) {
+                // Force use of Google email to avoid mismatch
+                $validated['email'] = $google['email'];
+            }
+
+            if ($existingByGoogleEmail) {
+                // Update existing user profile
+                $user = $existingByGoogleEmail;
+                $user->name = trim(($validated['first_name'] ?? '')." ".($validated['last_name'] ?? ''));
+                $user->email = $validated['email'] ?? $user->email;
+                $user->email_normalized = $user->email ? $this->normalizeEmail($user->email) : null;
+                $user->google_id = $google['google_id'] ?? $user->google_id;
+                if (!empty($google['verified']) && $user->email) {
+                    $user->email_verified_at = $user->email_verified_at ?: now();
+                }
+                // Use Google avatar if available and user has no avatar yet
+                if (!empty($google['avatar']) && empty($user->avatar)) {
+                    $user->avatar = $google['avatar'];
+                }
+                if (!empty($validated['password'])) {
+                    $user->password = Hash::make($validated['password']);
+                }
+            } else {
+                // Create new user seeded by Google
+                $user = new User();
+                $user->name = trim(($validated['first_name'] ?? '')." ".($validated['last_name'] ?? ''));
+                $user->email = $validated['email'] ?? null;
+                $user->password = (!empty($validated['password']) ? Hash::make($validated['password']) : null);
+                $user->google_id = $google['google_id'] ?? null;
+                if (!empty($google['verified']) && $user->email) {
+                    $user->email_verified_at = now();
+                }
+                // Use Google avatar if available
+                if (!empty($google['avatar'])) {
+                    $user->avatar = $google['avatar'];
+                }
+            }
+        } else {
+            // Standard flow (no Google)
+            $user = new User();
+            $user->name = trim(($validated['first_name'] ?? '')." ".($validated['last_name'] ?? ''));
+            $user->email = $validated['email'] ?? null;
+            $user->password = (!empty($validated['password']) ? Hash::make($validated['password']) : null);
+        }
+
         // Persist additional fields
         $user->birthday = Carbon::parse($validated['birthday'])->toDateString();
         $user->postal_code = isset($validated['postal_code']) ? (int) $validated['postal_code'] : null;
         if ($user->email) {
-            $user->email_normalized = mb_strtolower($user->email);
+            $user->email_normalized = $this->normalizeEmail($user->email);
         }
         $user->save();
 
@@ -223,7 +300,7 @@ class RegisteredUserController extends Controller
                 // Try to find existing guardian by email (normalized) first
                 $gEmail = $validated['guardian_email'] ?? null;
                 if ($gEmail) {
-                    $guardian = User::where('email_normalized', mb_strtolower($gEmail))
+                    $guardian = User::where('email_normalized', $this->normalizeEmail($gEmail))
                         ->orWhere('email', $gEmail)
                         ->first();
                 }
@@ -233,7 +310,7 @@ class RegisteredUserController extends Controller
                     $guardian->name = trim(($validated['guardian_first_name'] ?? '')." ".($validated['guardian_last_name'] ?? ''));
                     if ($gEmail) {
                         $guardian->email = $gEmail;
-                        $guardian->email_normalized = mb_strtolower($gEmail);
+                        $guardian->email_normalized = $this->normalizeEmail($gEmail);
                     }
                     $guardian->password = Hash::make(Str::random(16));
                     $guardian->save();
@@ -268,6 +345,9 @@ class RegisteredUserController extends Controller
                 ]);
             }
         }
+
+        // Clear Google signup session if any
+        $request->session()->forget('google_signup');
 
         event(new Registered($user));
 

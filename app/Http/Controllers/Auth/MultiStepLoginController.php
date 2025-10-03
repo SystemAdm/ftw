@@ -21,6 +21,24 @@ use Propaganistas\LaravelPhone\Rules\Phone as PhoneRule;
 class MultiStepLoginController extends Controller
 {
     /**
+     * Normalize an email for deduplication.
+     * Lowercase, and for gmail.com/googlemail.com use substring after '+' in local part.
+     */
+    private function normalizeEmail(?string $email): ?string
+    {
+        if (!is_string($email)) return null;
+        $email = trim(mb_strtolower($email));
+        if ($email === '' || !str_contains($email, '@')) return $email ?: null;
+        [$local, $domain] = explode('@', $email, 2);
+        if (in_array($domain, ['gmail.com','googlemail.com'], true)) {
+            $pos = mb_strpos($local, '+');
+            if ($pos !== false) {
+                $local = mb_substr($local, $pos + 1) ?: '';
+            }
+        }
+        return ($local !== '' ? $local : '') . '@' . $domain;
+    }
+    /**
      * Handle Step 1 identifier submission: phone/email/username
      */
     public function identify(Request $request): RedirectResponse|Response
@@ -353,33 +371,56 @@ class MultiStepLoginController extends Controller
         $name = $googleUser->getName() ?: ($googleUser->user['given_name'] ?? '');
         $avatar = $googleUser->getAvatar();
         $nickname = $googleUser->getNickname();
-        $verified = $googleUser->user['email_verified'] ?? false;
+        $verified = (bool) ($googleUser->user['email_verified'] ?? false);
+        $googleId = $googleUser->getId();
 
         $user = null;
         if ($email) {
-            $user = User::where('email', $email)->orWhere('email_normalized', mb_strtolower($email))->first();
+            $user = User::where(function($q) use ($email) {
+                $q->where('email', $email)->orWhere('email_normalized', $this->normalizeEmail($email));
+            })->first();
         }
 
-        if (! $user) {
-            if (! (bool) config('custom.allow_new_users', false)) {
-                return redirect()->route('login')->with('status', __('No account associated with this Google account.'));
+        // If we already have a user with this email AND google_id matches → log in
+        if ($user && $user->google_id && (string) $user->google_id === (string) $googleId) {
+            // Update verification/normalization if needed
+            $changed = false;
+            if ($verified && $user->email && empty($user->email_verified_at)) {
+                $user->email_verified_at = now();
+                $changed = true;
+            }
+            if ($user->email) {
+                $norm = $this->normalizeEmail($user->email);
+                if ($user->email_normalized !== $norm) {
+                    $user->email_normalized = $norm;
+                    $changed = true;
+                }
+            }
+            if ($changed) {
+                try { $user->save(); } catch (\Throwable $e) { /* ignore */ }
             }
 
-            $user = User::create([
-                'name' => $name ?: 'User',
-                'email' => $email,
-                'username' => $nickname ?? null,
-                'avatar' => $avatar,
-                'google_id' => $googleUser->getId(),
-                'email_verified_at' => $verified ? now() : null,
-                'password' => null,
-            ]);
+            Auth::login($user, true);
+            $request->session()->regenerate();
+            return redirect()->intended(route('dashboard', absolute: false));
         }
 
-        Auth::login($user, true);
-        $request->session()->regenerate();
+        // Otherwise, start/continue the registration flow at Step 4 with Google prefill
+        if (! (bool) config('custom.allow_new_users', false) && ! $user) {
+            // If signups are closed and no user exists, bail out to login
+            return redirect()->route('login')->with('status', __('No account associated with this Google account.'));
+        }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $request->session()->put('google_signup', [
+            'email' => $email,
+            'name' => $name,
+            'avatar' => $avatar,
+            'nickname' => $nickname,
+            'verified' => $verified,
+            'google_id' => $googleId,
+        ]);
+
+        return redirect()->route('register');
     }
 
     /**

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { User as UserIcon, Calendar as CalendarIcon } from 'lucide-vue-next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -82,6 +82,33 @@ const summaryConfirm = ref<boolean>(false);
 const submitError = ref<string>('');
 const serverErrors = reactive<Record<string, string>>({});
 
+// Step 5 fields (moved earlier to avoid use-before-declare in googleSignup prefill)
+const firstName = ref<string>('');
+const lastName = ref<string>('');
+
+// If redirected from Google OAuth, prefill and jump to Step 4 (TOS)
+const page = usePage();
+const googleSignup: any = (page?.props as any)?.googleSignup;
+if (googleSignup) {
+    try {
+        // Start at Terms of Service
+        step.value = 4;
+        // Prefill identifier as email from Google
+        if (googleSignup.email) {
+            identifier.value = String(googleSignup.email);
+        }
+        // Split Google display name into first/last name guesses
+        const name = String(googleSignup.name || '').trim();
+        if (name) {
+            const parts = name.split(/\s+/);
+            firstName.value = parts.shift() || '';
+            lastName.value = parts.join(' ');
+        }
+    } catch {
+        // ignore
+    }
+}
+
 // Step 8 (guardian invite) fields
 const guardianFirstName = ref<string>('');
 const guardianLastName = ref<string>('');
@@ -92,8 +119,6 @@ const detectedGuardianEmail = computed(() => (isGuardianEmailIdentifier.value ? 
 const detectedGuardianPhone = computed(() => (!isGuardianEmailIdentifier.value && guardianIdentifier.value.trim() ? guardianIdentifier.value.trim() : ''));
 
 // Step 5 fields
-const firstName = ref<string>('');
-const lastName = ref<string>('');
 const birthday = ref<string>('');
 const postalCode = ref<number | null>(null);
 
@@ -453,8 +478,9 @@ const guardianEmailFinal = computed(() => {
         <Head title="Register" />
 
         <!-- Step 1: Identifier entry (reused component) -->
+        <div  v-if="step === 1" class="grid gap-5">
         <IdentifierStep
-            v-if="step === 1"
+
             v-model="identifier"
             :errorMessage="localError || props.errorsBag?.identifier"
             :loading="loading"
@@ -462,7 +488,20 @@ const guardianEmailFinal = computed(() => {
             placeholder="e.g. +4712345678 or email@example.com"
             @submit="onSubmitIdentify"
         />
-
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <span class="w-full border-t"></span>
+            </div>
+            <div class="relative flex justify-center text-xs uppercase">
+                <span class="bg-background px-2 text-muted-foreground">Or continue with</span>
+            </div>
+        </div>
+        <div>
+            <Button as="a" :href="'/auth/google'" variant="outline" class="w-full">
+                Continue with Google
+            </Button>
+        </div>
+        </div>
         <!-- Step 2: Show existing accounts and/or create option -->
         <div v-else-if="step === 2">
             <CandidateSelectStep
@@ -566,12 +605,12 @@ const guardianEmailFinal = computed(() => {
         <div v-else-if="step === 5" class="flex flex-col gap-4">
             <div>
                 <Label for="first_name">First name</Label>
-                <Input id="first_name" name="first_name" type="text" v-model="firstName" :aria-invalid="!!step5Errors.firstName" autocomplete="given-name" required />
+                <Input id="first_name" name="first_name" type="text" v-model="firstName" :aria-invalid="!!step5Errors.firstName" autocomplete="given-name" required :readonly="!!googleSignup" />
                 <InputError :message="step5Errors.firstName" />
             </div>
             <div>
                 <Label for="last_name">Last name</Label>
-                <Input id="last_name" name="last_name" type="text" v-model="lastName" :aria-invalid="!!step5Errors.lastName" autocomplete="family-name" required />
+                <Input id="last_name" name="last_name" type="text" v-model="lastName" :aria-invalid="!!step5Errors.lastName" autocomplete="family-name" required :readonly="!!googleSignup" />
                 <InputError :message="step5Errors.lastName" />
             </div>
 
@@ -798,6 +837,10 @@ const guardianEmailFinal = computed(() => {
             </div>
 
             <div class="rounded-md border p-3 text-sm">
+                <div class="flex items-center gap-3 pb-3" v-if="googleSignup && googleSignup.avatar">
+                    <img :src="googleSignup.avatar" alt="Profile picture" class="h-12 w-12 rounded-full object-cover" />
+                    <div class="text-xs text-muted-foreground">Using your Google profile picture</div>
+                </div>
                 <div class="grid gap-2">
                     <div><span class="text-muted-foreground">Name:</span> <strong>{{ fullName }}</strong></div>
                     <div v-if="summaryEmail"><span class="text-muted-foreground">Email:</span> <strong>{{ summaryEmail }}</strong></div>
