@@ -48,6 +48,19 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // After successful authentication, prevent banned users from accessing
+        $user = Auth::user();
+        if ($user && method_exists($user, 'isBanned') && $user->isBanned()) {
+            $until = $user->banned_to ? $user->banned_to->toDateTimeString() : null;
+            $reason = $user->ban_reason ?? null;
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => $until
+                    ? ("Your account is banned until {$until}." . ($reason ? " Reason: {$reason}" : ''))
+                    : ("Your account is currently banned." . ($reason ? " Reason: {$reason}" : '')),
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

@@ -1,23 +1,25 @@
 <script setup lang="ts">
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationFirst,
-    PaginationItem,
-    PaginationLast,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
-import { faArrowDownAZ, faArrowDownZA, faPencil, faPlus, faTrash, faRotateLeft, faSkull } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDownAZ, faArrowDownZA, faPencil, faPlus, faRotateLeft, faSkull, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -30,10 +32,17 @@ interface EventItem {
     event_start?: string | null;
     event_end?: string | null;
     signup_needed?: boolean;
+    signup_start?: string | null;
+    signup_end?: string | null;
+    image_path?: string | null;
     deleted_at?: string | null;
 }
 
-type PageProps = { events: { data: EventItem[]; current_page: number; last_page: number }; filters?: any; sort?: any };
+type PageProps = {
+    events: { data: EventItem[]; current_page: number; last_page: number; per_page: number; total: number };
+    filters?: any;
+    sort?: any;
+};
 const page = usePage<PageProps>();
 
 const events = computed(() => page.props.events?.data ?? []);
@@ -52,9 +61,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 function apply(params: Record<string, any>) {
-    const pruned = Object.fromEntries(
-        Object.entries(params).filter(([, v]) => v !== '' && v !== null && v !== undefined),
-    );
+    const pruned = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v !== null && v !== undefined));
     router.get('/admin/events', pruned, { preserveScroll: true, preserveState: false, replace: true });
 }
 
@@ -69,18 +76,45 @@ function goToPage(p: number) {
 }
 
 function destroyItem(id: number) {
-    if (!confirm('Delete this event?')) return;
     router.delete(`/admin/events/${id}`, { preserveScroll: true });
 }
 
 function restoreItem(id: number) {
-    if (!confirm('Restore this event?')) return;
     router.post(`/admin/events/${id}/restore`, {}, { preserveScroll: true });
 }
 
 function forceDestroyItem(id: number) {
-    if (!confirm('Permanently delete this event? This cannot be undone.')) return;
     router.delete(`/admin/events/${id}/force`, { preserveScroll: true });
+}
+function formatDateTime(value?: string | null): string {
+    if (!value) return '—';
+    const d = new Date(value);
+    return d.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    } as Intl.DateTimeFormatOptions);
+}
+
+function isRegistrationOpen(e: EventItem): boolean {
+    if (!e.signup_needed) return false;
+    const now = new Date();
+    const startOk = e.signup_start ? now >= new Date(e.signup_start) : true;
+    const endOk = e.signup_end ? now <= new Date(e.signup_end) : true;
+    return startOk && endOk;
+}
+
+function hasBegun(e: EventItem): boolean {
+    if (!e.event_start) return false;
+    return new Date() >= new Date(e.event_start);
+}
+
+function hasEnded(e: EventItem): boolean {
+    if (!e.event_end) return false;
+    return new Date() > new Date(e.event_end);
 }
 </script>
 
@@ -98,15 +132,24 @@ function forceDestroyItem(id: number) {
                     </div>
 
                     <div class="border-b border-sidebar-border/70 p-4 dark:border-sidebar-border">
-                        <button class="text-sm text-muted-foreground underline" @click="showFilters = !showFilters">{{ showFilters ? 'Hide' : 'Show' }} filters</button>
+                        <button class="text-sm text-muted-foreground underline" @click="showFilters = !showFilters">
+                            {{ showFilters ? 'Hide' : 'Show' }} filters
+                        </button>
                         <div v-if="showFilters" class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-5">
                             <div>
                                 <Label for="search">Search</Label>
-                                <Input id="search" :value="currentFilters.search ?? ''" @input="(e: any) => apply({ ...currentFilters, search: e.target.value })" />
+                                <Input
+                                    id="search"
+                                    :value="currentFilters.search ?? ''"
+                                    @input="(e: any) => apply({ ...currentFilters, search: e.target.value })"
+                                />
                             </div>
                             <div>
                                 <Label>Status</Label>
-                                <Select :model-value="currentFilters.status ?? ''" @update:model-value="(v: any) => apply({ ...currentFilters, status: v })">
+                                <Select
+                                    :model-value="currentFilters.status ?? ''"
+                                    @update:model-value="(v: any) => apply({ ...currentFilters, status: v })"
+                                >
                                     <SelectTrigger><SelectValue placeholder="All" /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="">All</SelectItem>
@@ -117,7 +160,10 @@ function forceDestroyItem(id: number) {
                             </div>
                             <div>
                                 <Label>Signup needed</Label>
-                                <Select :model-value="currentFilters.signup_needed ?? ''" @update:model-value="(v: any) => apply({ ...currentFilters, signup_needed: v })">
+                                <Select
+                                    :model-value="currentFilters.signup_needed ?? ''"
+                                    @update:model-value="(v: any) => apply({ ...currentFilters, signup_needed: v })"
+                                >
                                     <SelectTrigger><SelectValue placeholder="Any" /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="">Any</SelectItem>
@@ -128,7 +174,10 @@ function forceDestroyItem(id: number) {
                             </div>
                             <div>
                                 <Label>Trashed</Label>
-                                <Select :model-value="currentFilters.trashed ?? 'without'" @update:model-value="(v: any) => apply({ ...currentFilters, trashed: v })">
+                                <Select
+                                    :model-value="currentFilters.trashed ?? 'without'"
+                                    @update:model-value="(v: any) => apply({ ...currentFilters, trashed: v })"
+                                >
                                     <SelectTrigger><SelectValue placeholder="without" /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="without">Without</SelectItem>
@@ -137,82 +186,164 @@ function forceDestroyItem(id: number) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div class="flex items-end"><Button variant="secondary" @click="apply({})"><FontAwesomeIcon :icon="faRotateLeft" class="mr-2" />Reset</Button></div>
+                            <div class="flex items-end">
+                                <Button variant="secondary" @click="apply({})"><FontAwesomeIcon :icon="faRotateLeft" class="mr-2" />Reset</Button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="p-4">
-                        <div class="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead class="w-[30%]">
-                                            <button class="flex items-center gap-1" @click="toggleSort('title')">
-                                                Title
-                                                <FontAwesomeIcon :icon="currentSort.dir === 'asc' ? faArrowDownAZ : faArrowDownZA" class="text-xs" />
-                                            </button>
-                                        </TableHead>
-                                        <TableHead>
-                                            <button class="flex items-center gap-1" @click="toggleSort('event_start')">Start</button>
-                                        </TableHead>
-                                        <TableHead>
-                                            <button class="flex items-center gap-1" @click="toggleSort('event_end')">End</button>
-                                        </TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Signup</TableHead>
-                                        <TableHead class="w-[160px] text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <TableRow v-for="e in events" :key="e.id">
-                                        <TableCell class="font-medium">
-                                            <div class="flex items-center gap-2" :class="{ 'opacity-60': !!e.deleted_at }">
-                                                <span>{{ e.title }}</span>
-                                                <span v-if="e.deleted_at" class="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700">deleted</span>
-                                            </div>
-                                            <div class="text-xs text-muted-foreground">/{{ e.slug }}</div>
-                                        </TableCell>
-                                        <TableCell>{{ e.event_start ? new Date(e.event_start).toLocaleString() : '—' }}</TableCell>
-                                        <TableCell>{{ e.event_end ? new Date(e.event_end).toLocaleString() : '—' }}</TableCell>
-                                        <TableCell>
-                                            <span v-if="e.status === 'draft'" class="rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-700">draft</span>
-                                            <span v-else-if="e.status === 'active'" class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">active</span>
-                                            <span v-else class="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700">—</span>
-                                        </TableCell>
-                                        <TableCell>{{ e.signup_needed ? 'yes' : 'no' }}</TableCell>
-                                        <TableCell class="text-right">
-                                            <div class="flex justify-end gap-2">
-                                                <Button as-child size="sm" variant="secondary"><a :href="`/admin/events/${e.id}/edit`"><FontAwesomeIcon :icon="faPencil" /></a></Button>
-                                                <Button v-if="!e.deleted_at" size="sm" variant="destructive" @click="destroyItem(e.id)"><FontAwesomeIcon :icon="faTrash" /></Button>
-                                                <Button v-else size="sm" variant="secondary" @click="restoreItem(e.id)">Restore</Button>
-                                                <Button v-if="e.deleted_at" size="sm" variant="destructive" @click="forceDestroyItem(e.id)"><FontAwesomeIcon :icon="faSkull" /></Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </div>
+                    <div class="overflow-x-auto">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead class="w-[64px]">Image</TableHead>
+                                    <TableHead class="w-[30%]">
+                                        <button class="flex items-center gap-1" @click="toggleSort('title')">
+                                            Title
+                                            <FontAwesomeIcon :icon="currentSort.dir === 'asc' ? faArrowDownAZ : faArrowDownZA" class="text-xs" />
+                                        </button>
+                                    </TableHead>
+                                    <TableHead>
+                                        <button class="flex items-center gap-1" @click="toggleSort('event_start')">Start</button>
+                                    </TableHead>
+                                    <TableHead>
+                                        <button class="flex items-center gap-1" @click="toggleSort('event_end')">End</button>
+                                    </TableHead>
+                                    <TableHead>State</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Signup</TableHead>
+                                    <TableHead class="w-[160px] text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow v-for="e in events" :key="e.id">
+                                    <TableCell>
+                                        <div class="h-12 w-12 overflow-hidden rounded bg-slate-100">
+                                            <img v-if="e.image_path" :src="e.image_path" alt="" class="h-12 w-12 object-cover" />
+                                        </div>
+                                    </TableCell>
+                                    <TableCell class="font-medium">
+                                        <div class="flex items-center gap-2" :class="{ 'opacity-60': !!e.deleted_at }">
+                                            <a :href="`/admin/events/${e.id}`" class="hover:underline">{{ e.title }}</a>
+                                            <span v-if="e.deleted_at" class="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700">deleted</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{{ formatDateTime(e.event_start) }}</TableCell>
+                                    <TableCell>{{ formatDateTime(e.event_end) }}</TableCell>
+                                    <TableCell>
+                                        <div class="flex flex-wrap gap-1">
+                                            <span v-if="isRegistrationOpen(e)" class="rounded bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700">reg open</span>
+                                            <span v-else-if="e.signup_needed" class="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700">reg closed</span>
+                                            <span v-if="hasBegun(e) && !hasEnded(e)" class="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700">began</span>
+                                            <span v-if="hasEnded(e)" class="rounded bg-red-100 px-2 py-0.5 text-xs text-red-700">ended</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <span v-if="e.status === 'draft'" class="rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-700">draft</span>
+                                        <span v-else-if="e.status === 'active'" class="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">active</span>
+                                        <span v-else class="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700">—</span>
+                                    </TableCell>
+                                    <TableCell>{{ e.signup_needed ? 'yes' : 'no' }}</TableCell>
+                                    <TableCell class="text-right">
+                                        <div class="flex justify-end gap-2">
+                                            <Button as-child size="sm" variant="secondary">
+                                                <a :href="`/admin/events/${e.id}/edit`"><FontAwesomeIcon :icon="faPencil" /></a>
+                                            </Button>
 
-                        <div class="mt-4 flex items-center justify-between">
-                            <div class="text-sm text-muted-foreground">Page {{ page.props.events?.current_page ?? 1 }} / {{ page.props.events?.last_page ?? 1 }}</div>
-                            <Pagination>
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationFirst href="#" :disabled="(page.props.events?.current_page ?? 1) <= 1" @click.prevent="goToPage(1)" />
+                                            <template v-if="!e.deleted_at">
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger as-child>
+                                                        <Button size="sm" variant="destructive"><FontAwesomeIcon :icon="faTrash" /></Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Delete this event?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This will soft-delete '{{ e.title }}' (ID {{ e.id }}). You can restore it later.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction as-child>
+                                                                <Button size="sm" variant="destructive" class="text-white" @click="destroyItem(e.id)">Yes, delete</Button>
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </template>
+
+                                            <template v-else>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger as-child>
+                                                        <Button size="sm" variant="secondary">Restore</Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Restore this event?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This will restore '{{ e.title }}' (ID {{ e.id }}).
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction as-child>
+                                                                <Button size="sm" variant="secondary" @click="restoreItem(e.id)">Yes, restore</Button>
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger as-child>
+                                                        <Button size="sm" variant="destructive"><FontAwesomeIcon :icon="faSkull" /></Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Permanently delete this event?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                This action cannot be undone. This will permanently delete '{{ e.title }}' (ID {{ e.id }}).
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction as-child>
+                                                                <Button size="sm" variant="destructive" class="text-white" @click="forceDestroyItem(e.id)">Yes, delete permanently</Button>
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </template>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between">
+                        <Pagination
+                            :items-per-page="page.props.events?.per_page ?? 15"
+                            :total="page.props.events?.total ?? 0"
+                            :page="page.props.events?.current_page ?? 1"
+                            :show-edges="true"
+                            @update:page="(p: number) => goToPage(p)"
+                        >
+                            <PaginationContent v-slot="{ items }">
+                                <template v-for="(item, index) in items" :key="index">
+                                    <PaginationPrevious />
+                                    <PaginationItem
+                                        v-if="item.type === 'page'"
+                                        :is-active="item.value === (page.props.events?.current_page ?? 1)"
+                                        :value="item.value"
+                                        @click="goToPage(item.value)"
+                                    >
+                                        {{ item.value }}
                                     </PaginationItem>
-                                    <PaginationItem>
-                                        <PaginationPrevious href="#" :disabled="(page.props.events?.current_page ?? 1) <= 1" @click.prevent="goToPage((page.props.events?.current_page ?? 1) - 1)" />
-                                    </PaginationItem>
-                                    <PaginationItem>
-                                        <PaginationNext href="#" :disabled="(page.props.events?.current_page ?? 1) >= (page.props.events?.last_page ?? 1)" @click.prevent="goToPage((page.props.events?.current_page ?? 1) + 1)" />
-                                    </PaginationItem>
-                                    <PaginationItem>
-                                        <PaginationLast href="#" :disabled="(page.props.events?.current_page ?? 1) >= (page.props.events?.last_page ?? 1)" @click.prevent="goToPage(page.props.events?.last_page ?? 1)" />
-                                    </PaginationItem>
-                                    <PaginationEllipsis />
-                                </PaginationContent>
-                            </Pagination>
-                        </div>
+                                    <PaginationEllipsis :index="4" />
+                                    <PaginationNext />
+                                </template>
+                            </PaginationContent>
+                        </Pagination>
                     </div>
                 </div>
             </div>

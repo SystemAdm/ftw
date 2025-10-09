@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Event extends Model
 {
@@ -14,7 +15,7 @@ class Event extends Model
 
     protected $fillable = [
         'title',
-        'slug',
+        //'slug',
         'excerpt',
         'description',
         'image_path',
@@ -44,5 +45,29 @@ class Event extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    /** @return BelongsToMany<User> */
+    public function reservations(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'event_reservation')->withTimestamps();
+    }
+
+    /** @return BelongsToMany<User> */
+    public function attendees(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'event_attendee')->withTimestamps();
+    }
+
+    /** @return BelongsToMany<User> */
+    public function inside(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'event_inside')->withTimestamps();
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<EventLog> */
+    public function logs()
+    {
+        return $this->hasMany(EventLog::class);
     }
 }

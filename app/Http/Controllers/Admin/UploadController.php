@@ -33,4 +33,32 @@ class UploadController extends Controller
             'url' => $url,
         ]);
     }
+
+    /**
+     * List previously uploaded images in a given folder.
+     */
+    public function listImages(Request $request): Response
+    {
+        $folder = trim((string) $request->query('folder', 'uploads'), '/');
+        $extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+
+        // Get files within the folder (non-recursive). Adjust to files($folder, true) for recursive if needed
+        $files = collect(Storage::disk('public')->files($folder))
+            ->filter(function ($path) use ($extensions) {
+                $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                return in_array($ext, $extensions);
+            })
+            ->values()
+            ->map(function ($path) {
+                return [
+                    'path' => '/storage/' . ltrim($path, '/'),
+                    'url' => Storage::disk('public')->url($path),
+                    'filename' => basename($path),
+                ];
+            });
+
+        return response()->json([
+            'data' => $files,
+        ]);
+    }
 }

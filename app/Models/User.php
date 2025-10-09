@@ -54,6 +54,8 @@ class User extends Authenticatable implements ReactsInterface
         return [
             'email_verified_at' => 'datetime',
             'verified_at' => 'datetime',
+            'banned_at' => 'datetime',
+            'banned_to' => 'datetime',
             'password' => 'hashed',
             'phone_public' => 'boolean',
         ];
@@ -83,5 +85,24 @@ class User extends Authenticatable implements ReactsInterface
         return $this->belongsToMany(User::class, 'guardian_user', 'guardian_id', 'minor_id')
             ->withPivot(['relationship'])
             ->withTimestamps();
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<EventLog> */
+    public function logs()
+    {
+        return $this->hasMany(EventLog::class);
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<UserBan> */
+    public function bans()
+    {
+        return $this->hasMany(UserBan::class);
+    }
+
+    public function isBanned(): bool
+    {
+        if (!$this->banned_at) return false;
+        if ($this->banned_to === null) return true;
+        return now()->lt($this->banned_to);
     }
 }

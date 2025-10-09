@@ -56,17 +56,68 @@ class EventController extends Controller
         ]);
     }
 
-    // Public detail view by slug
-    public function show(string $slug): Response
+    // Public detail view by ID (avoid using slug in URLs)
+    public function show(Event $event): Response
     {
-        $event = Event::where('slug', $slug)
-            ->where(function ($q) {
-                $q->where('status', 'active')->orWhereNull('status');
-            })
-            ->firstOrFail();
+        // Only allow viewing active or null-status events
+        if (!($event->status === 'active' || $event->status === null)) {
+            abort(404);
+        }
+
+        $user = request()->user();
+        $userReserved = false;
+        if ($user) {
+            $userReserved = $event->reservations()->where('users.id', $user->id)->exists();
+        }
 
         return Inertia::render('Event/Show', [
             'event' => $event,
+            'user_reserved' => $userReserved,
         ]);
+    }
+
+    protected function registrationOpen(Event $event): bool
+    {
+        if (!$event->signup_needed) return false;
+        $now = now();
+        $startOk = $event->signup_start ? $event->signup_start <= $now : true;
+        $endOk = $event->signup_end ? $event->signup_end >= $now : true;
+        return $startOk && $endOk;
+    }
+
+    public function reserve(Event $event)
+    {
+        $user = request()->user();
+        if (!$user) {
+            abort(403);
+        }
+        // Ensure event is visible publicly
+        if (!($event->status === 'active' || $event->status === null)) {
+            abort(404);
+        }
+        // Ensure registration is open
+        if (!$this->registrationOpen($event)) {
+            return back()->with('error', 'Registration is not open.');
+        }
+        // Attach without detaching existing
+        $event->reservations()->syncWithoutDetaching([$user->id]);
+        return back()->with('success', 'Seat reserved.');
+    }
+
+    public function unreserve(Event $event)
+    {
+        $user = request()->user();
+        if (!$user) {
+            abort(403);
+        }
+        // Ensure event is visible publicly
+        if (!($event->status === 'active' || $event->status === null)) {
+            abort(404);
+        }
+        $event->reservations()->detach($user->id);
+        // Also remove from attendees/inside if present to mirror admin behavior
+        $event->attendees()->detach($user->id);
+        $event->inside()->detach($user->id);
+        return back()->with('success', 'Reservation cancelled.');
     }
 }
