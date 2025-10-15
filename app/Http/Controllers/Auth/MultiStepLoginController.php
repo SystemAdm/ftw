@@ -66,7 +66,7 @@ class MultiStepLoginController extends Controller
 
             // If user prefers to create and it's allowed with multiple users per phone, go to create mode
             if ($preferNew && (bool) config('custom.multiple_users_per_phone', false) && (bool) config('custom.allow_new_users', false)) {
-                return Inertia::render('auth/LoginSteps', [
+                return Inertia::render('auth/RegisterSteps', [
                     'step' => 2,
                     'mode' => 'create',
                     'identifier' => $identifier,
@@ -88,7 +88,7 @@ class MultiStepLoginController extends Controller
                     ];
                 })->values();
 
-                return Inertia::render('auth/LoginSteps', [
+                return Inertia::render('auth/RegisterSteps', [
                     'step' => 2,
                     'mode' => 'select',
                     'identifier' => $identifier,
@@ -100,7 +100,7 @@ class MultiStepLoginController extends Controller
 
             // No users linked to this phone
             if (! (bool) config('custom.allow_new_users', false)) {
-                return Inertia::render('auth/LoginSteps', [
+                return Inertia::render('auth/RegisterSteps', [
                     'step' => 1,
                     'errorsBag' => ['identifier' => __('No account found for the given phone number.')],
                     'canResetPassword' => \Illuminate\Support\Facades\Route::has('password.request'),
@@ -108,7 +108,7 @@ class MultiStepLoginController extends Controller
             }
 
             // Allowed to create a new account
-            return Inertia::render('auth/LoginSteps', [
+            return Inertia::render('auth/RegisterSteps', [
                 'step' => 2,
                 'mode' => 'create',
                 'identifier' => $identifier,
@@ -137,7 +137,7 @@ class MultiStepLoginController extends Controller
             $allowNew = (bool) config('custom.allow_new_users', false);
             if (! $allowNew) {
                 // Re-render step 1 with error
-                return Inertia::render('auth/LoginSteps', [
+                return Inertia::render('auth/RegisterSteps', [
                     'step' => 1,
                     'errorsBag' => ['identifier' => __('No account found for the given identifier.')],
                     'canResetPassword' => \Illuminate\Support\Facades\Route::has('password.request'),
@@ -145,7 +145,7 @@ class MultiStepLoginController extends Controller
             }
 
             // If allowed, go to create user step (step 2 create)
-            return Inertia::render('auth/LoginSteps', [
+            return Inertia::render('auth/RegisterSteps', [
                 'step' => 2,
                 'mode' => 'create',
                 'identifier' => $identifier,
@@ -157,7 +157,7 @@ class MultiStepLoginController extends Controller
         if ($users->count() === 1) {
             $user = $users->first();
             $request->session()->put('login.user_id', $user->id);
-            return Inertia::render('auth/LoginSteps', [
+            return Inertia::render('auth/RegisterSteps', [
                 'step' => 3,
                 'selectedUser' => [
                     'id' => $user->id,
@@ -184,7 +184,7 @@ class MultiStepLoginController extends Controller
             ];
         })->values();
 
-        return Inertia::render('auth/LoginSteps', [
+        return Inertia::render('auth/RegisterSteps', [
             'step' => 2,
             'mode' => 'select',
             'identifier' => $identifier,
@@ -217,7 +217,7 @@ class MultiStepLoginController extends Controller
         // Otherwise, proceed to step 3 (password confirmation if needed)
         $request->session()->put('login.user_id', $user->id);
 
-        return Inertia::render('auth/LoginSteps', [
+        return Inertia::render('auth/RegisterSteps', [
             'step' => 3,
             'selectedUser' => [
                 'id' => $user->id,
@@ -331,7 +331,7 @@ class MultiStepLoginController extends Controller
         // Otherwise proceed to step 3 (confirm password)
         $request->session()->put('login.user_id', $user->id);
 
-        return Inertia::render('auth/LoginSteps', [
+        return Inertia::render('auth/RegisterSteps', [
             'step' => 3,
             'selectedUser' => [
                 'id' => $user->id,

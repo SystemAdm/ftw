@@ -31,7 +31,7 @@ Route::middleware('guest')->group(function () {
     // Multi-step login endpoints
     Route::get('login/identify', function () {
         // Show step 1 page; reuse the existing login page view
-        return Inertia\Inertia::render('auth/LoginSteps', [
+        return Inertia\Inertia::render('auth/RegisterSteps', [
             'step' => 1,
             'canResetPassword' => \Illuminate\Support\Facades\Route::has('password.request'),
         ]);
