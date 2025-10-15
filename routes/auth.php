@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [RegisteredUserController::class, 'create'])
-        ->name('register');
+        ->name('login');
 
     // Registration identify step (API JSON) - support both GET and POST to avoid method issues
     Route::match(['GET','POST'], 'register/identify', [RegisteredUserController::class, 'identify'])
