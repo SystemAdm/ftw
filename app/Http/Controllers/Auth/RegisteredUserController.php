@@ -326,7 +326,6 @@ class RegisteredUserController extends Controller
                         }
                     }
                 }
-
             }
 
             if ($guardian) {
