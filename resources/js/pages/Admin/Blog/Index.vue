@@ -23,15 +23,6 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { computed, ref, watch } from 'vue';
 
-// simple debounce helper local to this file
-function debounce<F extends (...args: any[]) => void>(fn: F, wait = 400) {
-    let t: any;
-    return (...args: any[]) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), wait);
-    };
-}
-
 interface Blog {
     id: number;
     title: string;
@@ -70,11 +61,6 @@ const tagQuery = ref<string>(currentFilters.value.tag ?? '');
 watch(currentFilters, (nf) => {
     tagQuery.value = nf?.tag ?? '';
 });
-
-// debounced applier for tag input typing
-const debouncedTag = debounce((val: string) => {
-    apply({ ...currentFilters.value, tag: val });
-}, 400);
 
 function goToPage(p: number) {
     apply({

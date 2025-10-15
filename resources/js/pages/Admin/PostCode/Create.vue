@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { dashboard } from '@/routes/admin';
 import { create, index } from '@/routes/admin/postcodes';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

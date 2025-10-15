@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
 import { type BreadcrumbItem } from '@/types'
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
-import postcodes, { index } from '@/routes/admin/postcodes'
+import { Head, useForm, usePage } from '@inertiajs/vue3'
+import { index } from '@/routes/admin/postcodes'
 import { dashboard } from '@/routes/admin'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
