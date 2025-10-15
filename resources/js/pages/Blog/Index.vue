@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dasboard } from '@/routes';
+import { dashboard } from '@/routes';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@/types';
 import { computed } from 'vue';
@@ -18,7 +18,7 @@ const page = usePage<{ blogs: { data: Blog[] } }>();
 const blogs = computed(() => page.props.blogs?.data ?? []);
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Dashboard', href: dasboard().url },
+  { title: 'Dashboard', href: dashboard().url },
   { title: 'Blog', href: '/blog' },
 ];
 
