@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
+    Route::get('login', [RegisteredUserController::class, 'create'])
         ->name('register');
 
     // Registration identify step (API JSON) - support both GET and POST to avoid method issues
@@ -21,8 +21,8 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store'])
         ->name('register.store');
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    /*Route::get('login', [AuthenticatedSessionController::class, 'create'])
+        ->name('login');*/
 
     // Multi-step login endpoints
     Route::get('login/identify', function () {
