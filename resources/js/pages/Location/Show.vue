@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@/types';
-import { spillexpo } from '@/routes';
+import { dashboard } from '@/routes';
 import { index } from '@/routes/locations';
 
 interface Location {
@@ -50,7 +50,7 @@ function embedUrlFromCoords(lat: string, lng: string) {
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: spillexpo().url },
+    { title: 'Dashboard', href: dashboard().url },
     { title: 'Locations', href: index().url },
     { title: location.name, href: '' },
 ];
