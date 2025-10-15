@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
+import { spillexpo } from '@/routes';
 import { index } from '@/routes/locations';
 import type { BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/vue3';
@@ -48,7 +48,7 @@ function showUrl(id: number) {
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: dashboard().url },
+    { title: 'Dashboard', href: spillexpo().url },
     { title: 'Locations', href: index().url },
 ];
 </script>

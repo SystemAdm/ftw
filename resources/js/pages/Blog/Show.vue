@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
+import { spillexpo } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { faFaceLaugh, faHeart, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon as fontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -43,7 +43,7 @@ const authUser = computed(() => page.props.auth?.user ?? null);
 const reactions = computed(() => page.props.reactions ?? { summary: [], mine: [] });
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: dashboard().url },
+    { title: 'Dashboard', href: spillexpo().url },
     { title: 'Blog', href: '/blog' },
     { title: blog.value?.title ?? 'Post', href: `/blog/${blog.value?.slug}` },
 ];
