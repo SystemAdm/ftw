@@ -2,12 +2,12 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { spillexpo } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import { faFaceLaugh, faHeart, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon as fontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { dashboard } from '@/routes';
 
 interface User {
     id: number;
@@ -43,7 +43,7 @@ const authUser = computed(() => page.props.auth?.user ?? null);
 const reactions = computed(() => page.props.reactions ?? { summary: [], mine: [] });
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: spillexpo().url },
+    { title: 'Dashboard', href: dashboard().url },
     { title: 'Blog', href: '/blog' },
     { title: blog.value?.title ?? 'Post', href: `/blog/${blog.value?.slug}` },
 ];
