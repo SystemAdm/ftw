@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
         <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
             <div class="flex items-center gap-3">
                 <span
-                    class="inline-grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br bg-background shadow-lg shadow-green-500/20"
+                    class="inline-grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br bg-black shadow-lg shadow-green-500/20"
                 >
                     <img src="images/Spillhuset.png" alt="Spillhuset logo">
                 </span>
@@ -93,7 +93,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-500/15 text-fuchsia-300">
                             <img src="images/UFB_logo.png" alt="UFB logo" />
                         </div>
-                        <CardTitle class="text-base font-semibold">Torsdagsåpent!</CardTitle>
+                        <CardTitle class="text-white font-semibold">Torsdagsåpent!</CardTitle>
                     </CardHeader>
                     <CardContent class="p-0">
                         <p class="mt-1 text-sm text-white/70">
@@ -108,7 +108,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white">
                             <img src="images/Spillhuset.png" alt="Spillhuset logo" />
                         </div>
-                        <CardTitle class="text-base font-semibold">Fredagsåpent</CardTitle>
+                        <CardTitle class="text-white font-semibold">Fredagsåpent</CardTitle>
                     </CardHeader>
                     <CardContent class="p-0">
                         <p class="mt-1 text-sm text-white/70">
