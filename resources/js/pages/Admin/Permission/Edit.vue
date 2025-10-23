@@ -1,0 +1,97 @@
+<script setup lang="ts">
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, router, usePage, useForm } from '@inertiajs/vue3';
+import type { BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes/admin';
+
+interface Role { id: number; name: string }
+interface Permission { id: number; name: string; guard_name: string }
+
+type PageProps = {
+  permission: Permission;
+  roles: Role[];
+  permissionRoles: number[];
+};
+const page = usePage<PageProps>();
+
+const form = useForm({
+  name: page.props.permission.name,
+  roles: [...page.props.permissionRoles],
+});
+
+function toggleRole(id: number) {
+  const index = form.roles.indexOf(id);
+  if (index > -1) {
+    form.roles.splice(index, 1);
+  } else {
+    form.roles.push(id);
+  }
+}
+
+function submit() {
+  form.put(`/admin/permissions/${page.props.permission.id}`, {
+    preserveScroll: true,
+  });
+}
+
+const breadcrumbs: BreadcrumbItem[] = [
+  { title: 'Admin', href: dashboard().url },
+  { title: 'Permissions', href: '/admin/permissions' },
+  { title: 'Edit', href: `/admin/permissions/${page.props.permission.id}/edit` },
+];
+</script>
+
+<template>
+  <Head title="Edit Permission" />
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <template #header>
+      <h1 class="text-xl font-semibold">Edit Permission: {{ page.props.permission.name }}</h1>
+    </template>
+
+    <form @submit.prevent="submit" class="space-y-6 max-w-2xl">
+      <div class="space-y-2">
+        <Label for="name">Permission Name</Label>
+        <Input
+          id="name"
+          v-model="form.name"
+          type="text"
+          required
+          placeholder="e.g., edit-posts"
+          :class="{ 'border-red-500': form.errors.name }"
+        />
+        <p v-if="form.errors.name" class="text-sm text-red-500">{{ form.errors.name }}</p>
+      </div>
+
+      <div class="space-y-3">
+        <Label>Assign to Roles</Label>
+        <div class="border rounded-md p-4 space-y-2 max-h-96 overflow-y-auto">
+          <div v-for="role in page.props.roles" :key="role.id" class="flex items-center space-x-2">
+            <Checkbox
+              :id="`role-${role.id}`"
+              :checked="form.roles.includes(role.id)"
+              @update:checked="toggleRole(role.id)"
+            />
+            <label :for="`role-${role.id}`" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+              {{ role.name }}
+            </label>
+          </div>
+          <p v-if="page.props.roles.length === 0" class="text-sm text-muted-foreground">No roles available</p>
+        </div>
+        <p v-if="form.errors.roles" class="text-sm text-red-500">{{ form.errors.roles }}</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <Button type="submit" :disabled="form.processing">
+          {{ form.processing ? 'Saving...' : 'Save Changes' }}
+        </Button>
+        <Button type="button" variant="outline" @click="router.visit('/admin/permissions')">
+          Cancel
+        </Button>
+      </div>
+    </form>
+  </AppLayout>
+</template>
