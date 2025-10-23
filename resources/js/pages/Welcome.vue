@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 </script>
@@ -16,15 +16,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
         <!-- Top nav -->
         <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
             <div class="flex items-center gap-3">
-                <span
-                    class="inline-grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br bg-black shadow-lg shadow-green-500/20"
-                >
-                    <img src="images/Spillhuset.png" alt="Spillhuset logo">
+                <span class="inline-grid h-9 w-9 place-items-center rounded-md bg-black bg-gradient-to-br shadow-lg shadow-green-500/20">
+                    <img src="images/Spillhuset.png" alt="Spillhuset logo" />
                 </span>
-                <span class="text-lg font-semibold tracking-wide">SPILLHUSET</span>
+                <h1 class="text-xl font-bold tracking-wide">SPILLHUSET</h1>
             </div>
             <nav class="flex items-center gap-3 text-sm">
-
+                <Button @click="router.get('/login')">Login/Register</Button>
             </nav>
         </header>
 
@@ -38,8 +36,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                     ></div>
                 </div>
 
-                <div class="flex flex-col items-start gap-8 lg:flex-row lg:items-start lg:justify-between">
-                    <div class="max-w-xl">
+                <div class="flex items-start justify-between gap-8">
+                    <div class="md:w-1/2">
                         <p
                             class="mb-2 inline-flex items-center gap-2 rounded-full border border-fuchsia-400/20 bg-fuchsia-500/10 px-3 py-1 text-xs tracking-wider text-fuchsia-300 uppercase"
                         >
@@ -48,7 +46,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                         </p>
                         <h1 class="text-3xl leading-tight font-black tracking-tight md:text-5xl">
                             Møt oss på
-                            <span class="bg-gradient-to-r from-fuchsia-400 to-rose-400 bg-clip-text text-transparent">Spillexpo Oslo</span>.
+                            <span class="bg-gradient-to-r from-fuchsia-400 to-rose-400 bg-clip-text text-nowrap text-transparent">Spillexpo Oslo</span
+                            >.
                         </h1>
                         <p class="mt-4 text-sm/relaxed text-white md:text-base/relaxed">
                             Vi har egen stand på Spillexpo Oslo i år, kom å hils på oss! <span class="text-nowrap">7. - 9. november 2025</span>
@@ -56,16 +55,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                         <p class="text-muted-foreground">Egne billetter er påkrevd</p>
                         <div class="mt-6 flex flex-wrap items-center gap-3">
                             <Button asChild>
-                            <Link href="https://spillexpo.no/oslo" target="_blank" class="bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-white/90" >
-                                SPILLEXPO OSLO
-                            </Link>
+                                <Link
+                                    href="https://spillexpo.no/oslo"
+                                    target="_blank"
+                                    class="bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
+                                >
+                                    SPILLEXPO OSLO
+                                </Link>
                             </Button>
                         </div>
-
                     </div>
 
                     <!-- Mocked game card / screenshot -->
-                    <div class="max-w-xl">
+                    <div class="md:w-1/2">
                         <p
                             class="mb-2 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-xs tracking-wider text-blue-300 uppercase"
                         >
@@ -80,20 +82,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                             Ingen dato er fastsatt, men vi jobber for fullt med å flytte til ett litt mer sentralt strøk, Sandvika.
                         </p>
                         <p class="text-muted-foreground">Vi er fremdeles veldig tidlig i prosessen.</p>
-
-
                     </div>
                 </div>
             </section>
 
             <!-- Features -->
-            <section id="features" class="mx-auto grid max-w-6xl grid-cols-1 gap-4 py-12 sm:grid-cols-2 lg:grid-cols-2">
-                <Card class="rounded-xl border border-white/10 bg-white/5 p-6">
-                    <CardHeader class="p-0">
+            <section id="features" class="mx-auto grid grid-cols-1 gap-4 py-12 sm:grid-cols-2 lg:grid-cols-2">
+                <Card class="rounded-xl border border-white/10 bg-white/5 p-6 text-center">
+                    <CardHeader class="flex flex-col items-center p-0">
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-500/15 text-fuchsia-300">
                             <img src="images/UFB_logo.png" alt="UFB logo" />
                         </div>
-                        <CardTitle class="text-white font-semibold">Torsdagsåpent!</CardTitle>
+                        <CardTitle class="font-semibold text-white">Torsdagsåpent!</CardTitle>
                     </CardHeader>
                     <CardContent class="p-0">
                         <p class="mt-1 text-sm text-white/70">
@@ -103,12 +103,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                         </p>
                     </CardContent>
                 </Card>
-                <Card class="rounded-xl border border-white/10 bg-white/5 p-6">
-                    <CardHeader class="p-0">
+                <Card class="rounded-xl border border-white/10 bg-white/5 p-6 text-center">
+                    <CardHeader class="flex flex-col items-center p-0">
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white">
                             <img src="images/Spillhuset.png" alt="Spillhuset logo" />
                         </div>
-                        <CardTitle class="text-white font-semibold">Fredagsåpent</CardTitle>
+                        <CardTitle class="font-semibold text-white">Fredagsåpent</CardTitle>
                     </CardHeader>
                     <CardContent class="p-0">
                         <p class="mt-1 text-sm text-white/70">

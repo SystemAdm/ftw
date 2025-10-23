@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                 'qrEncryptedUserId' => $user ? Crypt::encryptString((string) $user->id) : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'status' => fn () => $request->session()->get('status'),
         ];
     }
 }

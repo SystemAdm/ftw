@@ -32,6 +32,8 @@ class User extends Authenticatable implements ReactsInterface
         'phone_public',
         'email_verified_at',
         'google_id',
+        'ban_reason',
+        'banned_by',
     ];
 
     /**
@@ -77,13 +79,13 @@ class User extends Authenticatable implements ReactsInterface
     public function guardians()
     {
         return $this->belongsToMany(User::class, 'guardian_user', 'minor_id', 'guardian_id')
-            ->withPivot(['relationship'])
+            ->withPivot(['relationship', 'confirmed_guardian', 'confirmed_admin'])
             ->withTimestamps();
     }
 
     public function minors() {
         return $this->belongsToMany(User::class, 'guardian_user', 'guardian_id', 'minor_id')
-            ->withPivot(['relationship'])
+            ->withPivot(['relationship', 'confirmed_guardian', 'confirmed_admin'])
             ->withTimestamps();
     }
 

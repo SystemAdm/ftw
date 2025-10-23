@@ -29,6 +29,10 @@ const sidebarNavItems: NavItem[] = [
         href: editPassword(),
     },
     {
+        title: 'Guardian',
+        href: { url: '/settings/guardian', method: 'get' },
+    },
+    {
         title: 'Appearance',
         href: appearance(),
     },

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\GuardianController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\PhoneController;
@@ -24,6 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::put('settings/password', [PasswordController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('password.update');
+
+    // Guardian settings
+    Route::get('settings/guardian', [GuardianController::class, 'edit'])->name('guardian.edit');
+    Route::post('settings/guardian', [GuardianController::class, 'store'])->name('guardian.store');
+    Route::delete('settings/guardian/{user}', [GuardianController::class, 'destroy'])->name('guardian.destroy');
 
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/Appearance');

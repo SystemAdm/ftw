@@ -7,6 +7,9 @@ use App\Http\Controllers\Admin\PostCodeController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\UploadController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
+use Illuminate\Support\Facades\Route;
 
 Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -17,6 +20,13 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(
     Route::post('users/{user}/ban', [UserController::class, 'ban'])->name('users.ban');
     Route::post('users/{user}/unban', [UserController::class, 'unban'])->name('users.unban');
     Route::get('users/{user}/bans', [UserController::class, 'bans'])->name('users.bans');
+
+    // Admin Roles & Permissions
+    Route::resource('roles', RoleController::class);
+    Route::get('roles/{role}/users/search', [RoleController::class, 'searchUsers'])->name('roles.users.search');
+    Route::post('roles/{role}/users', [RoleController::class, 'assignUser'])->name('roles.users.assign');
+    Route::delete('roles/{role}/users/{user}', [RoleController::class, 'removeUser'])->name('roles.users.remove');
+    Route::resource('permissions', PermissionController::class);
 
     Route::resource('postcodes', PostCodeController::class);
     Route::post('postcodes/{id}/restore', [PostCodeController::class, 'restore'])->name('postcodes.restore');

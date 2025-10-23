@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
@@ -271,6 +272,26 @@ class MultiStepLoginController extends Controller
             }
         }
 
+        // Check if user is banned before allowing login
+        if (method_exists($user, 'isBanned') && $user->isBanned()) {
+            $message = 'Your account has been banned.';
+
+            if ($user->banned_to) {
+                $bannedUntil = $user->banned_to->format('F j, Y \a\t g:i A');
+                $message .= ' You are banned until ' . $bannedUntil . '.';
+            } else {
+                $message .= ' This ban is permanent.';
+            }
+
+            if ($user->ban_reason) {
+                $message .= ' Reason: ' . $user->ban_reason;
+            }
+
+            throw ValidationException::withMessages([
+                'password' => $message,
+            ]);
+        }
+
         Auth::login($user, (bool) $request->boolean('remember'));
         $request->session()->regenerate();
         $request->session()->forget('login.user_id');
@@ -358,15 +379,28 @@ class MultiStepLoginController extends Controller
 
     /**
      * Socialite Google callback
+     *
+     * This method handles the OAuth callback from Google after a user authenticates.
+     * It performs the following operations:
+     * 1. Retrieves the authenticated Google user's information
+     * 2. Checks if a user with the Google email already exists in the system
+     * 3. If user exists: links the Google account (if not already linked) and logs them in
+     * 4. If user doesn't exist: initiates the registration flow with Google data pre-filled
      */
     public function googleCallback(Request $request): RedirectResponse
     {
+
+        // Step 1: Attempt to retrieve the authenticated Google user via Socialite
+        // If authentication fails (e.g., user denied access, invalid state), redirect to register with error
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Throwable $e) {
-            return redirect()->route('login')->with('status', __('Unable to authenticate with Google.'));
+            Log::error('Google OAuth error', ['error' => $e->getMessage()]);
+            return redirect()->route('register')->with('status', 'Unable to authenticate with Google.');
         }
 
+        // Step 2: Extract user information from the Google OAuth response
+        // These values will be used for either linking to an existing account or creating a new one
         $email = $googleUser->getEmail();
         $name = $googleUser->getName() ?: ($googleUser->user['given_name'] ?? '');
         $avatar = $googleUser->getAvatar();
@@ -374,21 +408,46 @@ class MultiStepLoginController extends Controller
         $verified = (bool) ($googleUser->user['email_verified'] ?? false);
         $googleId = $googleUser->getId();
 
+        // Step 3: Look up existing user by email address
+        // If the email exists in our system, we'll link the Google account to it
         $user = null;
         if ($email) {
             $user = User::where(function($q) use ($email) {
-                $q->where('email', $email)->orWhere('email_normalized', $this->normalizeEmail($email));
+                $q->where('email', $email);
             })->first();
         }
 
-        // If we already have a user with this email AND google_id matches → log in
-        if ($user && $user->google_id && (string) $user->google_id === (string) $googleId) {
-            // Update verification/normalization if needed
+        // ========== EXISTING USER FLOW ==========
+        // If we found a user with this email, link their Google account and log them in
+        if ($user) {
+            // Track whether we need to save changes to the user model
             $changed = false;
+
+            // Step 4a: Link the Google ID to the user account
+            // Case 1: User has no google_id yet → link it
+            // Case 2: User's google_id matches the incoming one → already linked, no action needed
+            // Case 3: User's google_id is different → conflict, reject the login
+            if (!$user->google_id || (string) $user->google_id === (string) $googleId) {
+                if (!$user->google_id) {
+                    // First time linking this Google account to the user
+                    $user->google_id = $googleId;
+                    $changed = true;
+                }
+            } elseif ((string) $user->google_id !== (string) $googleId) {
+                // This email is already linked to a different Google account
+                // Prevent account takeover by rejecting the login attempt
+                return redirect()->route('register')->with('status', 'This email is already associated with a different Google account.');
+            }
+
+            // Step 4b: If Google confirms the email is verified, mark it as verified in our system
+            // This only happens if the user's email hasn't been verified yet
             if ($verified && $user->email && empty($user->email_verified_at)) {
                 $user->email_verified_at = now();
                 $changed = true;
             }
+
+            // Step 4c: Normalize the email address for consistent storage and lookups
+            // This ensures emails are stored in a standardized format (e.g., lowercase)
             if ($user->email) {
                 $norm = $this->normalizeEmail($user->email);
                 if ($user->email_normalized !== $norm) {
@@ -396,21 +455,49 @@ class MultiStepLoginController extends Controller
                     $changed = true;
                 }
             }
+
+            // Step 4d: Save changes if any were made (wrapped in try-catch to prevent login failures due to DB issues)
             if ($changed) {
                 try { $user->save(); } catch (\Throwable $e) { /* ignore */ }
             }
 
+            // Step 4e: Check if the user is banned before allowing login
+            // Banned users should not be able to log in via Google OAuth
+            if (method_exists($user, 'isBanned') && $user->isBanned()) {
+                $message = 'Your account has been banned.';
+
+                if ($user->banned_to) {
+                    $bannedUntil = $user->banned_to->format('F j, Y \a\t g:i A');
+                    $message .= ' You are banned until ' . $bannedUntil . '.';
+                } else {
+                    $message .= ' This ban is permanent.';
+                }
+
+                if ($user->ban_reason) {
+                    $message .= ' Reason: ' . $user->ban_reason;
+                }
+
+                return redirect()->route('register')->with('status', $message);
+            }
+
+            // Step 5: Log the user in with "remember me" enabled and regenerate session for security
             Auth::login($user, true);
             $request->session()->regenerate();
+            // Redirect to intended destination (or dashboard if no intended route was stored)
             return redirect()->intended(route('dashboard', absolute: false));
         }
 
-        // Otherwise, start/continue the registration flow at Step 4 with Google prefill
+        // ========== NEW USER FLOW ==========
+        // No existing user found with this email, so we need to start the registration process
+
+        // Step 6: Check if new user registrations are allowed
+        // If signups are disabled (custom.allow_new_users = false), reject the registration
         if (! (bool) config('custom.allow_new_users', false) && ! $user) {
-            // If signups are closed and no user exists, bail out to login
-            return redirect()->route('login')->with('status', __('No account associated with this Google account.'));
+            return redirect()->route('register')->with('status', 'No account associated with this Google account.');
         }
 
+        // Step 7: Store Google user data in the session to pre-fill the registration form
+        // This data will be used to populate fields and automatically verify the email if Google has verified it
         $request->session()->put('google_signup', [
             'email' => $email,
             'name' => $name,
@@ -419,8 +506,10 @@ class MultiStepLoginController extends Controller
             'verified' => $verified,
             'google_id' => $googleId,
         ]);
+        $request->session()->save();
 
-        return redirect()->route('register');
+        // Step 8: Redirect to the registration page step 4 (TOS agreement) where the form will be pre-filled with Google data
+        return redirect()->route('register', ['step' => 4]);
     }
 
     /**

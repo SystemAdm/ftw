@@ -145,10 +145,14 @@ class RegisteredUserController extends Controller
     /**
      * Show the registration page.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $googleSignup = session('google_signup');
+        // Allow step to be passed via query string, otherwise default to 4 if Google signup exists
+        $step = $request->query('step') ?: ($googleSignup ? 4 : null);
         return Inertia::render('auth/RegisterSteps', [
-            'googleSignup' => session('google_signup')
+            'step' => $step,
+            'googleSignup' => $googleSignup
         ]);
     }
 
@@ -274,6 +278,11 @@ class RegisteredUserController extends Controller
         // Assign default role to every new user
         try {
             $user->assignRole('guest');
+
+            // Auto-assign 'crew' role for @spillhuset.com email domain
+            if ($user->email && str_ends_with(strtolower($user->email), '@spillhuset.com')) {
+                $user->assignRole('crew');
+            }
         } catch (\Throwable $e) {
             // ignore if roles not seeded yet
         }

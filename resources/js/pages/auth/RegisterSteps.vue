@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { Head, router, usePage } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { User as UserIcon, Calendar as CalendarIcon } from 'lucide-vue-next';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,10 +32,13 @@ import TextLink from '@/components/TextLink.vue';
 import { request as passwordRequest } from '@/routes/password';
 
 const props = defineProps<{
+    step?: number;
+    googleSignup?: any;
     errorsBag?: Record<string, string>;
+    status?: string;
 }>();
 
-const step = ref<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>(1);
+const step = ref<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>((props.step as any) || 1);
 const identifier = ref('');
 const loading = ref(false);
 const localError = ref('');
@@ -86,19 +89,15 @@ const serverErrors = reactive<Record<string, string>>({});
 const firstName = ref<string>('');
 const lastName = ref<string>('');
 
-// If redirected from Google OAuth, prefill and jump to Step 4 (TOS)
-const page = usePage();
-const googleSignup: any = (page?.props as any)?.googleSignup;
-if (googleSignup) {
+// If redirected from Google OAuth, prefill name from Google data
+if (props.googleSignup) {
     try {
-        // Start at Terms of Service
-        step.value = 4;
         // Prefill identifier as email from Google
-        if (googleSignup.email) {
-            identifier.value = String(googleSignup.email);
+        if (props.googleSignup.email) {
+            identifier.value = String(props.googleSignup.email);
         }
         // Split Google display name into first/last name guesses
-        const name = String(googleSignup.name || '').trim();
+        const name = String(props.googleSignup.name || '').trim();
         if (name) {
             const parts = name.split(/\s+/);
             firstName.value = parts.shift() || '';
@@ -477,6 +476,11 @@ const guardianEmailFinal = computed(() => {
     <AuthBase title="Create an account" description="Identify yourself to get started">
         <Head title="Register" />
 
+        <!-- Display status message from backend (e.g., ban messages) -->
+        <div v-if="status" class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
+            {{ status }}
+        </div>
+
         <!-- Step 1: Identifier entry (reused component) -->
         <div  v-if="step === 1" class="grid gap-5">
         <IdentifierStep
@@ -751,15 +755,6 @@ const guardianEmailFinal = computed(() => {
                     Please enter their email address so we can invite them to complete the setup.
                 </p>
             </div>
-            <IdentifierStep
-                v-model="guardianIdentifier"
-                :errorMessage="guardianError"
-                :loading="guardianLoading"
-                label="Guardian email"
-                placeholder="e.g. parent@example.com"
-                @submit="onSubmitGuardianIdentify"
-            />
-
             <div class="grid gap-2 pt-2">
                 <Label for="guardian_relationship">Relationship to you</Label>
                 <Select :modelValue="guardianRelationship" @update:model-value="(v:any) => (guardianRelationship = (v as string) || '')">
@@ -771,6 +766,14 @@ const guardianEmailFinal = computed(() => {
                     </SelectContent>
                 </Select>
             </div>
+            <IdentifierStep
+                v-model="guardianIdentifier"
+                :errorMessage="guardianError"
+                :loading="guardianLoading"
+                label="Guardian email"
+                placeholder="e.g. parent@example.com"
+                @submit="onSubmitGuardianIdentify"
+            />
 
             <div class="flex items-center gap-2 pt-2">
                 <Button type="button" variant="outline" @click="step = 5">Back</Button>
