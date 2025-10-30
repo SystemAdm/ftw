@@ -42,7 +42,7 @@ class PhoneController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'phone' => ['required', 'string', new PhoneRule(['NO'])],
+            'phone' => ['required', 'string', (new PhoneRule())->country(['NO', 'FR', 'SE', 'DE', 'US', 'GB', 'ES', 'DK', 'FI', 'NL', 'BE', 'CH', 'AT', 'IT', 'PT', 'PL', 'IE', 'IS'])],
         ]);
 
         $raw = trim($validated['phone']);

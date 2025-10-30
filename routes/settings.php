@@ -4,6 +4,7 @@ use App\Http\Controllers\Settings\GuardianController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\PhoneController;
+use App\Http\Controllers\Settings\SocialController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -34,4 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/Appearance');
     })->name('appearance');
+
+    // Social account connections
+    Route::get('settings/social/discord', [SocialController::class, 'discordRedirect'])->name('social.discord.redirect');
+    Route::get('settings/social/discord/callback', [SocialController::class, 'discordCallback'])->name('social.discord.callback');
+    Route::delete('settings/social/discord', [SocialController::class, 'discordDisconnect'])->name('social.discord.disconnect');
 });

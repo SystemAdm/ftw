@@ -69,8 +69,8 @@ const breadcrumbs: BreadcrumbItem[] = [
           <div v-for="permission in page.props.permissions" :key="permission.id" class="flex items-center space-x-2">
             <Checkbox
               :id="`perm-${permission.id}`"
-              :checked="form.permissions.includes(permission.id)"
-              @update:checked="togglePermission(permission.id)"
+              :modelValue="form.permissions.includes(permission.id)"
+              @update:modelValue="togglePermission(permission.id)"
             />
             <label :for="`perm-${permission.id}`" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
               {{ permission.name }}

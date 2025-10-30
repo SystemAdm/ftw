@@ -22,7 +22,7 @@ class UserController extends Controller
             'dir' => strtolower($request->string('sort_dir')->toString() ?: 'asc'),
         ];
 
-        $query = User::query()->select('id', 'name', 'email', 'created_at', 'banned_at', 'banned_to');
+        $query = User::query()->with('roles:id,name')->select('id', 'name', 'email', 'avatar', 'created_at', 'banned_at', 'banned_to');
 
         if ($filters['search']) {
             $q = '%' . $filters['search'] . '%';
@@ -50,8 +50,10 @@ class UserController extends Controller
                 'id' => $u->id,
                 'name' => $u->name,
                 'email' => $u->email,
+                'avatar' => $u->avatar,
                 'created_at' => $u->created_at,
                 'is_banned' => method_exists($u, 'isBanned') ? $u->isBanned() : false,
+                'roles' => $u->roles->map(fn($role) => ['id' => $role->id, 'name' => $role->name]),
             ];
         }));
 
@@ -67,6 +69,7 @@ class UserController extends Controller
 
     public function show(User $user): Response
     {
+        $user->load('postalCode');
         $verifier = $user->verified_by ? User::query()->select('id', 'name')->find($user->verified_by) : null;
         $bans = $user->bans()->with('admin:id,name')->orderByDesc('banned_at')->get()->map(function($ban) {
             return [
@@ -83,6 +86,12 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'avatar' => $user->avatar,
+                'birthday' => $user->birthday?->format('Y-m-d'),
+                'postal_code' => $user->postalCode ? [
+                    'code' => $user->postalCode->postal_code,
+                    'city' => $user->postalCode->city,
+                ] : null,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
                 'verified_at' => $user->verified_at,
@@ -102,12 +111,21 @@ class UserController extends Controller
 
     public function edit(User $user): Response
     {
+        $user->load('postalCode');
+        $allRoles = \Spatie\Permission\Models\Role::all(['id', 'name']);
+        $userRoleIds = $user->roles->pluck('id')->toArray();
+
         return Inertia::render('Admin/User/Edit', [
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'avatar' => $user->avatar,
+                'birthday' => $user->birthday?->format('Y-m-d'),
+                'postal_code' => $user->postal_code,
+                'role_ids' => $userRoleIds,
             ],
+            'roles' => $allRoles->map(fn($role) => ['id' => $role->id, 'name' => $role->name]),
         ]);
     }
 
@@ -116,9 +134,27 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'avatar' => ['nullable', 'string', 'max:255'],
+            'birthday' => ['nullable', 'date', 'before:today'],
+            'postal_code' => ['nullable', 'integer', 'exists:postal_codes,postal_code'],
+            'role_ids' => ['nullable', 'array'],
+            'role_ids.*' => ['integer', 'exists:roles,id'],
         ]);
 
-        $user->update($data);
+        $user->update([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'avatar' => $data['avatar'] ?? $user->avatar,
+            'birthday' => $data['birthday'] ?? $user->birthday,
+            'postal_code' => $data['postal_code'] ?? $user->postal_code,
+        ]);
+
+        // Sync roles
+        if (isset($data['role_ids'])) {
+            $user->syncRoles($data['role_ids']);
+        } else {
+            $user->syncRoles([]);
+        }
 
         return redirect()->route('admin.users.edit', $user)->with('success', 'User updated');
     }

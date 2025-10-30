@@ -5,8 +5,10 @@ import type { BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes/admin';
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
-interface UserItem { id: number; name: string; email: string; created_at?: string; updated_at?: string; verified_at?: string | null; verified_by?: number | null; verified_by_user?: { id: number; name: string } | null; banned_at?: string | null; banned_to?: string | null; ban_reason?: string | null; is_banned?: boolean }
+interface UserItem { id: number; name: string; email: string; avatar?: string | null; birthday?: string | null; postal_code?: { code: string; city: string } | null; created_at?: string; updated_at?: string; verified_at?: string | null; verified_by?: number | null; verified_by_user?: { id: number; name: string } | null; banned_at?: string | null; banned_to?: string | null; ban_reason?: string | null; is_banned?: boolean }
 interface BanItem { id: number; banned_at: string; banned_to?: string | null; reason?: string | null; admin?: { id: number; name: string } | null }
 
 type PageProps = { user: UserItem; bans: BanItem[] };
@@ -27,6 +29,18 @@ function formatDateTime(value?: string | null) {
   } catch {
     return value ?? '';
   }
+}
+
+function calculateAge(birthday?: string | null): number | null {
+  if (!birthday) return null;
+  const birthDate = new Date(birthday);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
 }
 
 function verifyUser() {
@@ -54,57 +68,135 @@ function unbanUser() {
       </div>
     </template>
 
-    <div class="grid gap-4 max-w-xl">
-      <div class="rounded-md border p-4">
-        <div class="font-medium">Name</div>
-        <div>{{ user?.name }}</div>
-      </div>
-      <div class="rounded-md border p-4">
-        <div class="font-medium">Email</div>
-        <div>{{ user?.email }}</div>
-      </div>
-      <div class="rounded-md border p-4">
-        <div class="font-medium">Verification</div>
-        <div v-if="user?.verified_at">
-          Verified at: {{ formatDateTime(user?.verified_at) }}<span v-if="user?.verified_by_user"> by <Link :href="`/admin/users/${user.verified_by_user.id}`" class="text-blue-600 hover:underline">{{ user.verified_by_user.name }}</Link></span>
-        </div>
-        <div v-else class="flex items-center gap-3">
-          <span>Not verified</span>
-          <Button size="sm" @click="verifyUser">Verify user</Button>
-        </div>
-      </div>
-      <div class="rounded-md border p-4 grid grid-cols-2 gap-4">
-        <div>
-          <div class="font-medium">Created</div>
-          <div>{{ formatDateTime(user?.created_at) }}</div>
-        </div>
-        <div>
-          <div class="font-medium">Updated</div>
-          <div>{{ formatDateTime(user?.updated_at) }}</div>
-        </div>
-      </div>
-    </div>
+    <div class="grid gap-6 max-w-3xl">
+      <!-- Basic Information Card -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Basic Information</CardTitle>
+        </CardHeader>
+        <CardContent class="grid gap-4">
+          <div v-if="user?.avatar" class="flex items-center gap-4 pb-4 border-b">
+            <img :src="user.avatar" :alt="user.name" class="w-20 h-20 rounded-full object-cover" />
+            <div>
+              <div class="text-sm font-medium text-muted-foreground">Avatar</div>
+              <div class="text-sm text-muted-foreground">{{ user.avatar }}</div>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm font-medium text-muted-foreground mb-1">Name</div>
+              <div class="text-base">{{ user?.name }}</div>
+            </div>
+            <div>
+              <div class="text-sm font-medium text-muted-foreground mb-1">Email</div>
+              <div class="text-base">{{ user?.email }}</div>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm font-medium text-muted-foreground mb-1">Birthday</div>
+              <div class="text-base">
+                <template v-if="user?.birthday">
+                  {{ new Date(user.birthday).toLocaleDateString() }}
+                  <span class="text-sm text-muted-foreground ml-2">(Age: {{ calculateAge(user.birthday) }})</span>
+                </template>
+                <template v-else>—</template>
+              </div>
+            </div>
+            <div>
+              <div class="text-sm font-medium text-muted-foreground mb-1">Postal Code</div>
+              <div class="text-base">
+                <template v-if="user?.postal_code">
+                  {{ user.postal_code.code }} - {{ user.postal_code.city }}
+                </template>
+                <template v-else>—</template>
+              </div>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm font-medium text-muted-foreground mb-1">Created</div>
+              <div class="text-sm">{{ formatDateTime(user?.created_at) }}</div>
+            </div>
+            <div>
+              <div class="text-sm font-medium text-muted-foreground mb-1">Last Updated</div>
+              <div class="text-sm">{{ formatDateTime(user?.updated_at) }}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-    <div class="rounded-md border p-4 mt-6 max-w-2xl">
-      <div class="font-medium mb-2">Ban history</div>
-      <div v-if="(bans as any)?.length === 0" class="text-sm text-muted-foreground">No bans.</div>
-      <div v-else class="space-y-3">
-        <div v-for="b in bans" :key="b.id" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-t pt-3 first:border-t-0 first:pt-0">
+      <!-- Status Card -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Account Status</CardTitle>
+        </CardHeader>
+        <CardContent class="grid gap-4">
           <div>
-            <div class="text-sm">Banned at: {{ formatDateTime(b.banned_at as any) }}</div>
-            <div class="text-sm text-muted-foreground" v-if="(b.banned_to as any)">Until: {{ formatDateTime(b.banned_to as any) }}</div>
-            <div class="text-sm" v-if="b.reason">Reason: {{ b.reason }}</div>
+            <div class="text-sm font-medium text-muted-foreground mb-2">Verification Status</div>
+            <div v-if="user?.verified_at" class="flex items-center gap-2">
+              <Badge variant="default">Verified</Badge>
+              <span class="text-sm text-muted-foreground">
+                {{ formatDateTime(user?.verified_at) }}
+                <span v-if="user?.verified_by_user">
+                  by <Link :href="`/admin/users/${user.verified_by_user.id}`" class="text-blue-600 hover:underline">{{ user.verified_by_user.name }}</Link>
+                </span>
+              </span>
+            </div>
+            <div v-else class="flex items-center gap-3">
+              <Badge variant="secondary">Not Verified</Badge>
+              <Button size="sm" @click="verifyUser">Verify User</Button>
+            </div>
           </div>
-          <div class="text-sm text-muted-foreground">
-            <template v-if="b.admin">
-              by <Link :href="`/admin/users/${b.admin.id}`" class="text-blue-600 hover:underline">{{ b.admin.name }}</Link>
-            </template>
-            <template v-else>
-              by System
-            </template>
+          <div v-if="user?.is_banned">
+            <div class="text-sm font-medium text-muted-foreground mb-2">Ban Status</div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <Badge variant="destructive">Banned</Badge>
+              <span class="text-sm text-muted-foreground">
+                Since {{ formatDateTime(user?.banned_at) }}
+                <span v-if="user?.banned_to"> until {{ formatDateTime(user?.banned_to) }}</span>
+              </span>
+            </div>
+            <div v-if="user?.ban_reason" class="mt-2 text-sm">
+              <span class="font-medium">Reason:</span> {{ user?.ban_reason }}
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
+
+      <!-- Ban History Card -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Ban History</CardTitle>
+          <CardDescription>Complete history of all bans for this user</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div v-if="(bans as any)?.length === 0" class="text-sm text-muted-foreground">No ban records found.</div>
+          <div v-else class="space-y-4">
+            <div v-for="b in bans" :key="b.id" class="flex flex-col gap-2 pb-4 border-b last:border-b-0 last:pb-0">
+              <div class="flex items-start justify-between gap-2">
+                <div class="space-y-1">
+                  <div class="text-sm font-medium">{{ formatDateTime(b.banned_at as any) }}</div>
+                  <div class="text-sm text-muted-foreground" v-if="(b.banned_to as any)">
+                    Until: {{ formatDateTime(b.banned_to as any) }}
+                  </div>
+                  <div class="text-sm" v-if="b.reason">
+                    <span class="font-medium">Reason:</span> {{ b.reason }}
+                  </div>
+                </div>
+                <div class="text-sm text-muted-foreground whitespace-nowrap">
+                  <template v-if="b.admin">
+                    by <Link :href="`/admin/users/${b.admin.id}`" class="text-blue-600 hover:underline">{{ b.admin.name }}</Link>
+                  </template>
+                  <template v-else>
+                    by System
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   </AppLayout>
 </template>

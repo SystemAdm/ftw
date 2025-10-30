@@ -320,9 +320,9 @@ class MultiStepLoginController extends Controller
             'username' => ['nullable', 'string', 'max:255'],
             'password' => ['nullable', 'string', 'min:8'],
             // Accept either a single phone string or an array of phones; both optional
-            'phone' => ['nullable', 'string', new PhoneRule(['NO'])],
+            'phone' => ['nullable', 'string', (new PhoneRule())->country(['NO', 'FR', 'SE', 'DE', 'US', 'GB', 'ES', 'DK', 'FI', 'NL', 'BE', 'CH', 'AT', 'IT', 'PT', 'PL', 'IE', 'IS'])],
             'phones' => ['nullable', 'array'],
-            'phones.*' => ['nullable', 'string', new PhoneRule(['NO'])],
+            'phones.*' => ['nullable', 'string', (new PhoneRule())->country(['NO', 'FR', 'SE', 'DE', 'US', 'GB', 'ES', 'DK', 'FI', 'NL', 'BE', 'CH', 'AT', 'IT', 'PT', 'PL', 'IE', 'IS'])],
             'primary_phone' => ['nullable', 'string'],
         ]);
 
@@ -538,9 +538,9 @@ class MultiStepLoginController extends Controller
             return;
         }
 
-        // Validate each using Propaganistas/Laravel-Phone rules (country hint NO by default)
+        // Validate each using Propaganistas/Laravel-Phone rules (accepts international numbers + 8-digit Norwegian)
         foreach ($raws as $raw) {
-            validator(['phone' => $raw], ['phone' => ['required', 'string', new PhoneRule(['NO'])]])->validate();
+            validator(['phone' => $raw], ['phone' => ['required', 'string', (new PhoneRule())->country(['NO', 'FR', 'SE', 'DE', 'US', 'GB', 'ES', 'DK', 'FI', 'NL', 'BE', 'CH', 'AT', 'IT', 'PT', 'PL', 'IE', 'IS'])]])->validate();
         }
 
         // Normalize and create/find phone number records

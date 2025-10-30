@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\GuardianInvitationMail;
+use Propaganistas\LaravelPhone\Rules\Phone as PhoneRule;
 
 class RegisteredUserController extends Controller
 {
@@ -189,8 +190,8 @@ class RegisteredUserController extends Controller
 
             // Contact: at least one of email or phone required
             'email' => $emailRules,
-            // Laravel-Phone rule, accept any country (auto-detect) and E.164/strict validation
-            'phone' => ['required_without:email','nullable','phone'],
+            // Laravel-Phone rule, accepts international numbers + 8-digit Norwegian numbers
+            'phone' => ['required_without:email','nullable', (new PhoneRule())->country(['NO', 'FR', 'SE', 'DE', 'US', 'GB', 'ES', 'DK', 'FI', 'NL', 'BE', 'CH', 'AT', 'IT', 'PT', 'PL', 'IE', 'IS'])],
 
             // Password optional (will be generated if omitted)
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
@@ -290,7 +291,7 @@ class RegisteredUserController extends Controller
         // Attach phone number if provided
         if (!empty($validated['phone'])) {
             try {
-                $e164 = phone($validated['phone'])->formatE164();
+                $e164 = phone($validated['phone'], 'NO')->formatE164();
                 if ($e164) {
                     $phone = PhoneNumber::firstOrCreate(['e164' => $e164], ['raw' => $validated['phone']]);
                     $user->phoneNumbers()->syncWithoutDetaching([$phone->id => ['primary' => true]]);

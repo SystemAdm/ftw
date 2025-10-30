@@ -2,23 +2,29 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router, usePage, Link } from '@inertiajs/vue3';
+import { Head, router, usePage, Link, useForm } from '@inertiajs/vue3';
 import type { BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes/admin';
 import { computed, ref } from 'vue';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 
 interface RoleItem { id: number; name: string; guard_name: string; created_at?: string; permissions_count?: number }
+interface Permission { id: number; name: string }
 
 type PageProps = {
   roles: { data: RoleItem[]; current_page: number; last_page: number; per_page: number; total: number };
+  permissions: Permission[];
   filters?: any;
   sort?: any;
 };
 const page = usePage<PageProps>();
 
 const roles = computed(() => page.props.roles?.data ?? []);
+const permissions = computed(() => page.props.permissions ?? []);
 const currentFilters = computed(() => page.props.filters ?? {});
 const currentSort = computed(() => page.props.sort ?? { by: 'name', dir: 'asc' });
 
@@ -27,6 +33,12 @@ const search = ref(currentFilters.value.search ?? '');
 const showDelete = ref(false);
 const deleteRoleId = ref<number | null>(null);
 const deleteRoleName = ref('');
+
+const showCreate = ref(false);
+const createForm = useForm({
+  name: '',
+  permissions: [] as number[],
+});
 
 function openDelete(role: RoleItem) {
   deleteRoleId.value = role.id;
@@ -38,6 +50,31 @@ async function confirmDelete() {
   if (!deleteRoleId.value) return;
   await router.delete(`/admin/roles/${deleteRoleId.value}`, { preserveScroll: true });
   showDelete.value = false;
+}
+
+function openCreate() {
+  createForm.reset();
+  createForm.clearErrors();
+  showCreate.value = true;
+}
+
+function togglePermission(id: number) {
+  const index = createForm.permissions.indexOf(id);
+  if (index > -1) {
+    createForm.permissions.splice(index, 1);
+  } else {
+    createForm.permissions.push(id);
+  }
+}
+
+function submitCreate() {
+  createForm.post('/admin/roles', {
+    preserveScroll: true,
+    onSuccess: () => {
+      showCreate.value = false;
+      createForm.reset();
+    },
+  });
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -69,15 +106,15 @@ function formatDate(value?: string) {
 <template>
   <Head title="Roles" />
   <AppLayout :breadcrumbs="breadcrumbs">
+    <template #actions>
+      <Button @click="openCreate">Create Role</Button>
+    </template>
     <template #header>
       <div class="flex items-center justify-between gap-4">
         <h1 class="text-xl font-semibold">Roles</h1>
         <div class="flex items-center gap-2">
           <Input v-model="search" placeholder="Search roles" class="w-64" @keyup.enter="apply({ search, sort_by: currentSort.by, sort_dir: currentSort.dir })" />
           <Button variant="secondary" @click="apply({ search, sort_by: currentSort.by, sort_dir: currentSort.dir })">Search</Button>
-          <Link :href="`/admin/roles/create`">
-            <Button>Create Role</Button>
-          </Link>
         </div>
       </div>
     </template>
@@ -137,5 +174,55 @@ function formatDate(value?: string) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <!-- Create role sheet -->
+    <Sheet v-model:open="showCreate">
+      <SheetContent class="sm:max-w-xl overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Create Role</SheetTitle>
+        </SheetHeader>
+        <form @submit.prevent="submitCreate" class="space-y-6 mt-4">
+          <div class="space-y-2">
+            <Label for="role-name">Role Name</Label>
+            <Input
+              id="role-name"
+              v-model="createForm.name"
+              type="text"
+              required
+              placeholder="e.g., moderator"
+              :class="{ 'border-red-500': createForm.errors.name }"
+            />
+            <p v-if="createForm.errors.name" class="text-sm text-red-500">{{ createForm.errors.name }}</p>
+          </div>
+
+          <div class="space-y-3">
+            <Label>Permissions</Label>
+            <div class="border rounded-md p-4 space-y-2 max-h-96 overflow-y-auto">
+              <div v-for="permission in permissions" :key="permission.id" class="flex items-center space-x-2">
+                <Checkbox
+                  :id="`create-perm-${permission.id}`"
+                  :modelValue="createForm.permissions.includes(permission.id)"
+                  @update:modelValue="togglePermission(permission.id)"
+                />
+                <label :for="`create-perm-${permission.id}`" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                  {{ permission.name }}
+                </label>
+              </div>
+              <p v-if="permissions.length === 0" class="text-sm text-muted-foreground">No permissions available</p>
+            </div>
+            <p v-if="createForm.errors.permissions" class="text-sm text-red-500">{{ createForm.errors.permissions }}</p>
+          </div>
+
+          <SheetFooter class="gap-2">
+            <SheetClose as-child>
+              <Button type="button" variant="outline">Cancel</Button>
+            </SheetClose>
+            <Button type="submit" :disabled="createForm.processing">
+              {{ createForm.processing ? 'Creating...' : 'Create Role' }}
+            </Button>
+          </SheetFooter>
+        </form>
+      </SheetContent>
+    </Sheet>
   </AppLayout>
 </template>

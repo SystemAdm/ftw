@@ -29,9 +29,12 @@ class User extends Authenticatable implements ReactsInterface
         'password',
         'username',
         'avatar',
+        'birthday',
+        'postal_code',
         'phone_public',
         'email_verified_at',
         'google_id',
+        'discord_id',
         'ban_reason',
         'banned_by',
     ];
@@ -58,6 +61,7 @@ class User extends Authenticatable implements ReactsInterface
             'verified_at' => 'datetime',
             'banned_at' => 'datetime',
             'banned_to' => 'datetime',
+            'birthday' => 'date',
             'password' => 'hashed',
             'phone_public' => 'boolean',
         ];
@@ -73,7 +77,7 @@ class User extends Authenticatable implements ReactsInterface
 
     public function postalCode() : BelongsTo
     {
-        return $this->belongsTo(PostalCode::class);
+        return $this->belongsTo(PostalCode::class, 'postal_code', 'postal_code');
     }
 
     public function guardians()

@@ -53,8 +53,11 @@ class PermissionController extends Controller
             ];
         }));
 
+        $roles = Role::orderBy('name')->get(['id', 'name']);
+
         return Inertia::render('Admin/Permission/Index', [
             'permissions' => $permissions,
+            'roles' => $roles,
             'filters' => $filters,
             'sort' => [
                 'by' => $by,
@@ -138,7 +141,7 @@ class PermissionController extends Controller
 
         $permission->syncRoles($data['roles'] ?? []);
 
-        return redirect()->route('admin.permissions.edit', $permission)->with('success', 'Permission updated');
+        return redirect()->route('admin.permissions.index')->with('success', 'Permission updated');
     }
 
     public function destroy(Permission $permission): RedirectResponse

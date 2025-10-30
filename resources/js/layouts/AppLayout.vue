@@ -13,6 +13,9 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
+        <template v-if="$slots.actions" #actions>
+            <slot name="actions" />
+        </template>
         <slot />
     </AppLayout>
 </template>

@@ -10,7 +10,7 @@ import { computed, ref } from 'vue';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 
-interface UserItem { id: number; name: string; email: string; created_at?: string; is_banned?: boolean }
+interface UserItem { id: number; name: string; email: string; created_at?: string; is_banned?: boolean; roles?: { id: number; name: string }[] }
 
 type PageProps = {
   users: { data: UserItem[]; current_page: number; last_page: number; per_page: number; total: number };
@@ -93,6 +93,7 @@ function formatDate(value?: string) {
           <TableRow>
             <TableHead class="cursor-pointer" @click="toggleSort('name')">Name</TableHead>
             <TableHead class="cursor-pointer" @click="toggleSort('email')">Email</TableHead>
+            <TableHead>Roles</TableHead>
             <TableHead class="cursor-pointer" @click="toggleSort('created_at')">Joined</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -103,6 +104,12 @@ function formatDate(value?: string) {
               <Link :href="`/admin/users/${u.id}`" class="hover:underline">{{ u.name }}</Link>
             </TableCell>
             <TableCell>{{ u.email }}</TableCell>
+            <TableCell>
+              <span v-if="u.roles && u.roles.length > 0">
+                {{ u.roles.map(r => r.name).join(', ') }}
+              </span>
+              <span v-else class="text-muted-foreground">—</span>
+            </TableCell>
             <TableCell>{{ formatDate(u.created_at) }}</TableCell>
             <TableCell class="flex items-center gap-2">
               <Link :href="`/admin/users/${u.id}/edit`" class="text-blue-600 hover:underline">Edit</Link>

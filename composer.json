@@ -19,6 +19,7 @@
         "propaganistas/laravel-phone": "^6.0",
         "qirolab/laravel-reactions": "^3.1",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "socialiteproviders/discord": "^4.2",
         "spatie/calendar-links": "^1.11",
         "spatie/laravel-cookie-consent": "^3.3",
         "spatie/laravel-permission": "^6.21",

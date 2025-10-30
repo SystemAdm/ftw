@@ -69,8 +69,8 @@ const breadcrumbs: BreadcrumbItem[] = [
           <div v-for="role in page.props.roles" :key="role.id" class="flex items-center space-x-2">
             <Checkbox
               :id="`role-${role.id}`"
-              :checked="form.roles.includes(role.id)"
-              @update:checked="toggleRole(role.id)"
+              :modelValue="form.roles.includes(role.id)"
+              @update:modelValue="toggleRole(role.id)"
             />
             <label :for="`role-${role.id}`" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
               {{ role.name }}
