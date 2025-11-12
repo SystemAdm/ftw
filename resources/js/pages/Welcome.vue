@@ -105,6 +105,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                 </Card>
             </section>
         </main>
+
         <!-- Footer -->
         <footer class="border-t border-white/10 py-8 text-center text-xs text-white/50">
             <p>Besøksadresse: Skollerudveien 5, 1353 Bærums Verk</p>
