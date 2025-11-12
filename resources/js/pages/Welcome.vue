@@ -41,7 +41,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                         <p
                             class="mb-2 inline-flex items-center gap-2 rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1 text-xs tracking-wider text-green-300 uppercase"
                         >
-                            Spillexpo
+                            JUL & NYTT ÅR
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-400"></span>
                         </p>
                         <h1 class="text-3xl leading-tight font-black tracking-tight md:text-5xl">
