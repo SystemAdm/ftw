@@ -22,7 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                 <h1 class="text-xl font-bold tracking-wide">SPILLHUSET</h1>
             </div>
             <nav class="flex items-center gap-3 text-sm">
-                <Button @click="router.get('/login')">Login/Register</Button>
+                <!--<Button @click="router.get('/login')">Login/Register</Button>-->
             </nav>
         </header>
 
@@ -39,31 +39,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                 <div class="flex items-start justify-between gap-8">
                     <div class="md:w-1/2">
                         <p
-                            class="mb-2 inline-flex items-center gap-2 rounded-full border border-fuchsia-400/20 bg-fuchsia-500/10 px-3 py-1 text-xs tracking-wider text-fuchsia-300 uppercase"
+                            class="mb-2 inline-flex items-center gap-2 rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1 text-xs tracking-wider text-green-300 uppercase"
                         >
                             Spillexpo
-                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-fuchsia-400"></span>
+                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-400"></span>
                         </p>
                         <h1 class="text-3xl leading-tight font-black tracking-tight md:text-5xl">
-                            Møt oss på
-                            <span class="bg-gradient-to-r from-fuchsia-400 to-rose-400 bg-clip-text text-nowrap text-transparent">Spillexpo Oslo</span
-                            >.
+                            Vi ønsker deg og dine en riktig
+                            <span class="bg-gradient-to-r from-green-400 to-red-400 bg-clip-text text-nowrap text-transparent">God Jul</span> og <span class="bg-gradient-to-r from-yellow-200 to-yellow-900 bg-clip-text text-transparent">Godt nytt år</span>
                         </h1>
                         <p class="mt-4 text-sm/relaxed text-white md:text-base/relaxed">
-                            Vi har egen stand på Spillexpo Oslo i år, kom å hils på oss! <span class="text-nowrap">7. - 9. november 2025</span>
+                            Vi må dessverre holde stengt i romjulen,<br /> siste åpningsdag: <span class="text-nowrap font-bold">18. desember 2025</span><br />
+                            åpner igjen: <span class="text-nowrap font-bold">9. januar 2026</span>
                         </p>
-                        <p class="text-muted-foreground">Egne billetter er påkrevd</p>
-                        <div class="mt-6 flex flex-wrap items-center gap-3">
-                            <Button asChild>
-                                <Link
-                                    href="https://spillexpo.no/oslo"
-                                    target="_blank"
-                                    class="bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
-                                >
-                                    SPILLEXPO OSLO
-                                </Link>
-                            </Button>
-                        </div>
+
                     </div>
 
                     <!-- Mocked game card / screenshot -->
