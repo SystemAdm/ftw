@@ -52,7 +52,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                             Vi må dessverre holde stengt i romjulen,<br /> siste åpningsdag: <span class="text-nowrap font-bold">18. desember 2025</span><br />
                             åpner igjen: <span class="text-nowrap font-bold">9. januar 2026</span>
                         </p>
-
                     </div>
                     <!-- Mocked game card / screenshot -->
                     <div class="md:w-1/2">
