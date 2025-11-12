@@ -72,7 +72,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                     </div>
                 </div>
             </section>
-
             <!-- Features -->
             <section id="features" class="mx-auto grid grid-cols-1 gap-4 py-12 sm:grid-cols-2 lg:grid-cols-2">
                 <Card class="rounded-xl border border-white/10 bg-white/5 p-6 text-center">
