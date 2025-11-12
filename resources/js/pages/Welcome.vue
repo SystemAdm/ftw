@@ -54,7 +54,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                         </p>
 
                     </div>
-
                     <!-- Mocked game card / screenshot -->
                     <div class="md:w-1/2">
                         <p
