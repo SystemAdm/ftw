@@ -38,7 +38,8 @@ const props = defineProps<{
     status?: string;
 }>();
 
-const step = ref<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>((props.step as any) || 1);
+// Ensure `step` is a number. Inertia query params often arrive as strings
+const step = ref<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>((props.step !== undefined && props.step !== null ? (Number(props.step) as any) : 1));
 const identifier = ref('');
 const loading = ref(false);
 const localError = ref('');
