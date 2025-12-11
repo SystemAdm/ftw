@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Head } from '@inertiajs/vue3';
 </script>
 
 <template>
@@ -12,23 +10,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
         />
     </Head>
 
-    <div class="min-h-screen bg-background text-foreground selection:bg-green-500/40">
+    <div class="min-h-screen bg-black text-foreground selection:bg-green-500/40">
         <!-- Top nav -->
         <header class="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
             <div class="flex items-center gap-3">
                 <span class="inline-grid h-9 w-9 place-items-center rounded-md bg-black bg-gradient-to-br shadow-lg shadow-green-500/20">
-                    <img src="images/Spillhuset.png" alt="Spillhuset logo" />
+                    <img src="/images/Spillhuset.png" alt="Spillhuset logo" />
                 </span>
-                <h1 class="text-xl font-bold tracking-wide">SPILLHUSET</h1>
+                <p class="text-xl font-bold tracking-wide">SPILLHUSET</p>
             </div>
             <nav class="flex items-center gap-3 text-sm">
-                <!--<Button @click="router.get('/login')">Login/Register</Button>-->
             </nav>
         </header>
 
         <!-- Hero -->
         <main class="mx-auto w-full max-w-7xl px-6">
-            <section class="relative overflow-hidden rounded-2xl border bg-background  text-foreground p-8 lg:p-14">
+            <section class="relative overflow-hidden rounded-2xl border bg-background text-foreground p-8 lg:p-14">
                 <!-- Glow -->
                 <div class="pointer-events-none absolute -inset-20 -z-10 opacity-60" aria-hidden="true">
                     <div
@@ -48,7 +45,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                             Vi ønsker deg og dine en riktig
                             <span class="bg-gradient-to-r from-green-400 to-red-400 bg-clip-text text-nowrap text-transparent">God Jul</span> og <span class="bg-gradient-to-r from-yellow-200 to-yellow-900 bg-clip-text text-transparent">Godt nytt år</span>
                         </h1>
-                        <p class="mt-4 text-sm/relaxed  text-foreground md:text-base/relaxed">
+                        <p class="mt-4 text-sm/relaxed text-foreground md:text-base/relaxed">
                             Vi må dessverre holde stengt i romjulen,<br /> siste åpningsdag: <span class="text-nowrap font-bold">18. desember 2025</span><br />
                             åpner igjen: <span class="text-nowrap font-bold">9. januar 2026</span>
                         </p>
@@ -61,11 +58,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
                             Løkketangen
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-blue-400"></span>
                         </p>
-                        <h1 class="text-3xl leading-tight font-black tracking-tight md:text-5xl">
+                        <h2 class="text-3xl leading-tight font-black tracking-tight md:text-5xl">
                             Vi forbereder oss på flytting til
                             <span class="bg-gradient-to-r from-blue-400 to-blue-950 bg-clip-text text-transparent">Sandvika</span>.
-                        </h1>
-                        <p class="mt-4 text-sm/relaxed  text-foreground md:text-base/relaxed">
+                        </h2>
+                        <p class="mt-4 text-sm/relaxed text-foreground md:text-base/relaxed">
                             Ingen dato er fastsatt, men vi jobber for fullt med å flytte til ett litt mer sentralt strøk, Sandvika.
                         </p>
                         <p class="text-muted-foreground">Vi er fremdeles veldig tidlig i prosessen.</p>
@@ -74,39 +71,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
             </section>
             <!-- Features -->
             <section id="features" class="mx-auto grid grid-cols-1 gap-4 py-12 sm:grid-cols-2 lg:grid-cols-2">
-                <Card class="rounded-xl border bg-background p-6 text-center">
-                    <CardHeader class="flex flex-col items-center p-0">
+                <div class="rounded-xl border bg-background p-6 text-center">
+                    <div class="flex flex-col items-center p-0">
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-500/15 text-fuchsia-300">
-                            <img src="images/UFB_logo.png" alt="UFB logo" />
+                            <img src="/images/UFB_logo.png" alt="UFB logo" />
                         </div>
-                        <CardTitle class="font-semibold  text-foreground">Torsdagsåpent!</CardTitle>
-                    </CardHeader>
-                    <CardContent class="p-0">
-                        <p class="mt-1 text-sm  text-foreground-muted">
+                        <h3 class="font-semibold text-foreground">Torsdagsåpent!</h3>
+                    </div>
+                    <div class="p-0">
+                        <p class="mt-1 text-sm text-muted-foreground">
                             Vi holder åpent sammen med
-                            <a href="https://www.ufbinfo.no" class="font-bold  text-foreground"><abbr title="Ungdom og Fritid i Bærum kommune">UFB</abbr></a
+                            <a href="https://www.ufbinfo.no" class="font-bold text-foreground"><abbr title="Ungdom og Fritid i Bærum kommune">UFB</abbr></a
                             >.<br />Åpningstid: 15:00 - 21:00<br />Åpent for alle over 13 år
                         </p>
-                    </CardContent>
-                </Card>
-                <Card class="rounded-xl border  bg-background p-6 text-center">
-                    <CardHeader class="flex flex-col items-center p-0">
+                    </div>
+                </div>
+                <div class="rounded-xl border bg-background p-6 text-center">
+                    <div class="flex flex-col items-center p-0">
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white">
-                            <img src="images/Spillhuset.png" alt="Spillhuset logo" />
+                            <img src="/images/Spillhuset.png" alt="Spillhuset logo" />
                         </div>
-                        <CardTitle class="font-semibold text-white">Fredagsåpent</CardTitle>
-                    </CardHeader>
-                    <CardContent class="p-0">
-                        <p class="mt-1 text-sm  text-foreground-muted">
+                        <h3 class="font-semibold text-white">Fredagsåpent</h3>
+                    </div>
+                    <div class="p-0">
+                        <p class="mt-1 text-sm text-muted-foreground">
                             Kun Spillhuset er på bygget.<br />Åpningstid: 18:00 - 22:00<br />Åpent for alle over 13 år
                         </p>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </section>
         </main>
 
         <!-- Footer -->
-        <footer class="border-t  py-8 text-center text-xs text-muted-foreground">
+        <footer class="border-t py-8 text-center text-xs text-muted-foreground">
             <p>Besøksadresse: Skollerudveien 5, 1353 Bærums Verk</p>
         </footer>
     </div>

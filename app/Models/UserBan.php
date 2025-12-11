@@ -10,6 +10,11 @@ class UserBan extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'user_id',
         'banned_at',
@@ -18,17 +23,31 @@ class UserBan extends Model
         'reason',
     ];
 
-    protected $casts = [
-        'banned_at' => 'datetime',
-        'banned_to' => 'datetime',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'banned_at' => 'datetime',
+            'banned_to' => 'datetime',
+        ];
+    }
 
+    /**
+     * The user who is banned.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function admin(): BelongsTo
+    /**
+     * The admin/user who performed the ban.
+     */
+    public function bannedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'banned_by');
     }

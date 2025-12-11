@@ -3,20 +3,22 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Qirolab\Laravel\Reactions\Contracts\ReactsInterface;
-use Spatie\Permission\Traits\HasRoles;
 use Qirolab\Laravel\Reactions\Traits\Reacts;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements ReactsInterface
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, HasRoles, Reacts ;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, HasRoles, Notifiable, Reacts, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -75,40 +77,51 @@ class User extends Authenticatable implements ReactsInterface
             ->withTimestamps();
     }
 
-    public function postalCode() : BelongsTo
+    public function postalCode(): BelongsTo
     {
         return $this->belongsTo(PostalCode::class, 'postal_code', 'postal_code');
     }
 
-    public function guardians()
+    public function guardians(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'guardian_user', 'minor_id', 'guardian_id')
             ->withPivot(['relationship', 'confirmed_guardian', 'confirmed_admin'])
             ->withTimestamps();
     }
 
-    public function minors() {
+    public function minors(): BelongsToMany
+    {
         return $this->belongsToMany(User::class, 'guardian_user', 'guardian_id', 'minor_id')
             ->withPivot(['relationship', 'confirmed_guardian', 'confirmed_admin'])
             ->withTimestamps();
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<EventLog> */
-    public function logs()
+    /** @return HasMany<EventLog> */
+    public function logs(): HasMany
     {
         return $this->hasMany(EventLog::class);
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<UserBan> */
-    public function bans()
+    /** @return HasMany<UserBan> */
+    public function bans(): HasMany
     {
         return $this->hasMany(UserBan::class);
     }
 
     public function isBanned(): bool
     {
-        if (!$this->banned_at) return false;
-        if ($this->banned_to === null) return true;
+        if (! $this->banned_at) {
+            return false;
+        }
+        if ($this->banned_to === null) {
+            return true;
+        }
+
         return now()->lt($this->banned_to);
+    }
+
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class);
     }
 }

@@ -4,18 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Event extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'title',
-        //'slug',
         'excerpt',
         'description',
         'image_path',
@@ -31,43 +35,70 @@ class Event extends Model
         'status',
     ];
 
-    protected $casts = [
-        'event_start' => 'datetime',
-        'event_end' => 'datetime',
-        'signup_needed' => 'boolean',
-        'signup_start' => 'datetime',
-        'signup_end' => 'datetime',
-        'age_min' => 'integer',
-        'age_max' => 'integer',
-        'number_of_seats' => 'integer',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'event_start' => 'datetime',
+            'event_end' => 'datetime',
+            'signup_needed' => 'boolean',
+            'signup_start' => 'datetime',
+            'signup_end' => 'datetime',
+            'age_min' => 'integer',
+            'age_max' => 'integer',
+            'number_of_seats' => 'integer',
+        ];
+    }
 
+    /**
+     * Location where event happens (nullable).
+     */
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
     }
 
-    /** @return BelongsToMany<User> */
+    /**
+     * Logs for this event.
+     *
+     * @return HasMany<EventLog>
+     */
+    public function logs(): HasMany
+    {
+        return $this->hasMany(EventLog::class);
+    }
+
+    /**
+     * Users who reserved a seat for this event.
+     *
+     * @return BelongsToMany<User>
+     */
     public function reservations(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'event_reservation')->withTimestamps();
     }
 
-    /** @return BelongsToMany<User> */
+    /**
+     * Users who are marked as attendees of this event.
+     *
+     * @return BelongsToMany<User>
+     */
     public function attendees(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'event_attendee')->withTimestamps();
     }
 
-    /** @return BelongsToMany<User> */
+    /**
+     * Users currently inside the event.
+     *
+     * @return BelongsToMany<User>
+     */
     public function inside(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'event_inside')->withTimestamps();
-    }
-
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<EventLog> */
-    public function logs()
-    {
-        return $this->hasMany(EventLog::class);
     }
 }

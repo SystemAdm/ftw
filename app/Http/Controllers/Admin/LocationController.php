@@ -3,186 +3,87 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreLocationRequest;
+use App\Http\Requests\Admin\UpdateLocationRequest;
 use App\Models\Location;
-use Illuminate\Http\Request;
+use App\Models\PostalCode;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class LocationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function index(): mixed
     {
-        $filters = [
-            'search' => $request->string('search')->toString(),
-            'active' => $request->has('active') ? $request->boolean('active') : null,
-            'trashed' => $request->string('trashed')->toString(), // all | only | without
-        ];
-        $sort = [
-            'by' => $request->string('sort_by')->toString() ?: 'name',
-            'dir' => strtolower($request->string('sort_dir')->toString() ?: 'asc'), // asc | desc
-        ];
+        $locations = Location::query()
+            // Limit relation payload to the fields we actually need in the table
+            ->with(['postalCode:postal_code,city'])
+            ->withTrashed()
+            ->latest('id')
+            ->paginate(15);
 
-        $query = Location::query();
+        // Append computed attributes without globally adding to all queries
+        $locations->getCollection()->each->append('postal');
 
-        // trashed filter
-        switch ($filters['trashed'] === 'without' ? '' : $filters['trashed']) {
-            case 'only':
-                $query->onlyTrashed();
-                break;
-            case 'all':
-                $query->withTrashed();
-                break;
-            default:
-                // without trashed by default
-                break;
-        }
-
-        // search across name and postal_code
-        if ($filters['search']) {
-            $q = '%' . $filters['search'] . '%';
-            $query->where(function ($sub) use ($q) {
-                $sub->where('name', 'like', $q)
-                    ->orWhere('postal_code', 'like', $q);
-            });
-        }
-
-        // active filter
-        if ($filters['active'] !== null) {
-            $query->where('active', $filters['active']);
-        }
-
-        // whitelist sortable columns
-        $sortable = ['name', 'active', 'postal_code', 'created_at'];
-        $by = in_array($sort['by'], $sortable, true) ? $sort['by'] : 'name';
-        $dir = $sort['dir'] === 'desc' ? 'desc' : 'asc';
-        $query->orderBy($by, $dir);
-
-        $locations = $query->paginate(15)->withQueryString();
-
-        return Inertia::render('Admin/Location/Index', [
-            'locations' => $locations,
-            'filters' => $filters,
-            'sort' => [
-                'by' => $by,
-                'dir' => $dir,
-            ],
-        ]);
+        return Inertia::render('admin/locations/index', compact('locations'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        return Inertia::render('Admin/Location/Create');
+        $postalCodes = PostalCode::query()->orderBy('postal_code')->get(['postal_code', 'city']);
+
+        return Inertia::render('admin/locations/create', compact('postalCodes'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreLocationRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'postal_code' => ['required', 'integer', 'exists:postal_codes,postal_code'],
-            'name' => ['required', 'string', 'max:255'],
-            'active' => ['sometimes', 'boolean'],
-            'description' => ['nullable', 'string'],
-            'latitude' => ['nullable', 'string', 'max:255'],
-            'longitude' => ['nullable', 'string', 'max:255'],
-            'google_maps_url' => ['nullable', 'string', 'max:2048'],
-            'images' => ['nullable', 'string'],
-            'street_address' => ['nullable', 'string', 'max:255'],
-            'street_number' => ['nullable', 'string', 'max:255'],
-            'link' => ['nullable', 'string', 'max:2048'],
-        ]);
+        $location = Location::query()->create($request->validated());
 
-        // Ensure active is set (unchecked checkboxes may be missing)
-        $validated['active'] = (bool) ($validated['active'] ?? false);
-
-        Location::create($validated);
-
-        return redirect()->route('admin.locations.index')
-            ->with('success', 'Location created successfully.');
+        return redirect()->route('admin.locations.show', $location)->with('success', 'Location created.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function show(Location $location): Response
     {
-        $location = Location::withTrashed()->findOrFail($id);
-        return Inertia::render('Admin/Location/Edit', compact('location'));
+        $location->load(['postalCode:postal_code,city'])->append('postal');
+
+        return Inertia::render('admin/locations/show', compact('location'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function edit(Location $location): Response
     {
-        $validated = $request->validate([
-            'postal_code' => ['required', 'integer', 'exists:postal_codes,postal_code'],
-            'name' => ['required', 'string', 'max:255'],
-            'active' => ['sometimes', 'boolean'],
-            'description' => ['nullable', 'string'],
-            'latitude' => ['nullable', 'string', 'max:255'],
-            'longitude' => ['nullable', 'string', 'max:255'],
-            'google_maps_url' => ['nullable', 'string', 'max:2048'],
-            'images' => ['nullable', 'string'],
-            'street_address' => ['nullable', 'string', 'max:255'],
-            'street_number' => ['nullable', 'string', 'max:255'],
-            'link' => ['nullable', 'string', 'max:2048'],
-        ]);
+        $postalCodes = PostalCode::query()->orderBy('postal_code')->get(['postal_code', 'city']);
+        $location->load(['postalCode:postal_code,city'])->append('postal');
 
-        $validated['active'] = (bool) ($validated['active'] ?? false);
-
-        $location = Location::withTrashed()->findOrFail($id);
-        $location->update($validated);
-
-        return redirect()->route('admin.locations.index')
-            ->with('success', 'Location updated successfully.');
+        return Inertia::render('admin/locations/edit', compact('location', 'postalCodes'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function update(UpdateLocationRequest $request, Location $location): RedirectResponse
     {
-        $location = Location::findOrFail($id);
+        $location->update($request->validated());
+
+        return redirect()->route('admin.locations.show', $location)->with('success', 'Location updated.');
+    }
+
+    public function destroy(Location $location): RedirectResponse
+    {
         $location->delete();
 
-        return redirect()->route('admin.locations.index')
-            ->with('success', 'Location deleted.');
+        return redirect()->route('admin.locations.index')->with('success', 'Location deleted.');
     }
 
-    /**
-     * Restore the specified resource from storage.
-     */
-    public function restore(string $id)
+    public function restore(int $id): RedirectResponse
     {
         $location = Location::withTrashed()->findOrFail($id);
-        if ($location->trashed()) {
-            $location->restore();
-        }
+        $location->restore();
 
-        return redirect()->route('admin.locations.index')
-            ->with('success', 'Location restored.');
+        return redirect()->route('admin.locations.index')->with('success', 'Location restored.');
     }
 
-    /**
-     * Permanently delete the specified resource from storage.
-     */
-    public function forceDestroy(string $id)
+    public function forceDestroy(int $id): RedirectResponse
     {
         $location = Location::withTrashed()->findOrFail($id);
-        if ($location->trashed()) {
-            $location->forceDelete();
-        } else {
-            $location->forceDelete();
-        }
+        $location->forceDelete();
 
-        return redirect()->route('admin.locations.index')
-            ->with('success', 'Location permanently deleted.');
+        return redirect()->route('admin.locations.index')->with('success', 'Location permanently deleted.');
     }
 }

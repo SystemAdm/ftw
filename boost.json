@@ -1,0 +1,12 @@
+{
+    "agents": [
+        "phpstorm"
+    ],
+    "editors": [
+        "phpstorm"
+    ],
+    "guidelines": [
+        "https://reka-ui.com/llms.txt"
+    ],
+    "herd_mcp": true
+}
