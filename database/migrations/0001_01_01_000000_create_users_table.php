@@ -32,6 +32,7 @@ return new class extends Migration {
             $table->string('steam_id')->nullable();
             $table->string('twitch_id')->nullable();
             $table->string('discord_id')->nullable();
+            $table->string('battlenet_id')->nullable();
 
             $table->string('password')->nullable();
 
