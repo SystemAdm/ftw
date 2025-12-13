@@ -33,6 +33,7 @@ class User extends Authenticatable implements ReactsInterface
         'avatar',
         'birthday',
         'postal_code',
+        'appearance',
         'phone_public',
         'email_verified_at',
         'google_id',

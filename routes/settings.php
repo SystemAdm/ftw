@@ -1,43 +1,28 @@
 <?php
 
-use App\Http\Controllers\Settings\GuardianController;
-use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
-use App\Http\Controllers\Settings\PhoneController;
-use App\Http\Controllers\Settings\SocialController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
     Route::redirect('settings', '/settings/profile');
 
-    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Settings: Profile page
+    Route::get('settings/profile', [ProfileController::class, 'show'])
+        ->name('settings.profile');
 
-    // Phone settings
-    Route::get('settings/phone', [PhoneController::class, 'edit'])->name('phone.edit');
-    Route::post('settings/phone', [PhoneController::class, 'store'])->name('phone.store');
-    Route::delete('settings/phone/{phone}', [PhoneController::class, 'destroy'])->name('phone.destroy');
-    Route::patch('settings/phone/{phone}/primary', [PhoneController::class, 'makePrimary'])->name('phone.primary');
+    // Update Profile basics (birthdate, postal code)
+    Route::patch('settings/profile', [ProfileController::class, 'updateProfile'])
+        ->name('settings.profile.update');
 
-    Route::get('settings/password', [PasswordController::class, 'edit'])->name('password.edit');
+    // Update Appearance (theme)
+    Route::patch('settings/appearance', [ProfileController::class, 'updateAppearance'])
+        ->name('settings.appearance.update');
 
-    Route::put('settings/password', [PasswordController::class, 'update'])
-        ->middleware('throttle:6,1')
-        ->name('password.update');
+    // Update Password
+    Route::patch('settings/password', [ProfileController::class, 'updatePassword'])
+        ->name('settings.password.update');
 
-    // Guardian settings
-    Route::get('settings/guardian', [GuardianController::class, 'edit'])->name('guardian.edit');
-    Route::post('settings/guardian', [GuardianController::class, 'store'])->name('guardian.store');
-    Route::delete('settings/guardian/{user}', [GuardianController::class, 'destroy'])->name('guardian.destroy');
-
-    Route::get('settings/appearance', function () {
-        return Inertia::render('settings/Appearance');
-    })->name('appearance');
-
-    // Social account connections
-    Route::get('settings/social/discord', [SocialController::class, 'discordRedirect'])->name('social.discord.redirect');
-    Route::get('settings/social/discord/callback', [SocialController::class, 'discordCallback'])->name('social.discord.callback');
-    Route::delete('settings/social/discord', [SocialController::class, 'discordDisconnect'])->name('social.discord.disconnect');
+    // Update Avatar
+    Route::post('settings/avatar', [ProfileController::class, 'updateAvatar'])
+        ->name('settings.avatar.update');
 });

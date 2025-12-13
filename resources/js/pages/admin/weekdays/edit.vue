@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select/index';
 import { add as addExclusion, remove as removeExclusion } from '@/routes/admin/weekdays/exclusions';
 import { show as showRoute, update as updateRoute } from '@/routes/admin/weekdays/index';
@@ -17,6 +18,8 @@ const teams = (page.props as any).teams as Array<{ id: number; name: string }>;
 const locations = (page.props as any).locations as Array<{ id: number; name: string }>;
 
 const form = reactive({
+    name: (weekday.name ?? '') as string,
+    description: (weekday.description ?? '') as string,
     weekday: weekday.weekday as number,
     team_id: (weekday.team?.id ?? weekday.team_id) as number | undefined,
     location_id: (weekday.location?.id ?? weekday.location_id) as number | undefined,
@@ -97,6 +100,18 @@ const locationIdValue = computed<string>({
 
         <form class="max-w-xl space-y-4" @submit.prevent="submit">
             <FieldSet>
+                <Field>
+                    <FieldLabel class="block text-sm font-medium">Name</FieldLabel>
+                    <Input v-model="form.name" class="mt-1 w-full" type="text" />
+                    <FieldError v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</FieldError>
+                </Field>
+
+                <Field>
+                    <FieldLabel class="block text-sm font-medium">Description (optional)</FieldLabel>
+                    <Textarea v-model="form.description" class="mt-1 w-full" rows="3" />
+                    <FieldError v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description[0] }}</FieldError>
+                </Field>
+
                 <Field>
                     <FieldLabel class="block text-sm font-medium">Day of week</FieldLabel>
                     <Select :model-value="weekdayValue" @update:model-value="(v) => (weekdayValue = v as string)">

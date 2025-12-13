@@ -13,6 +13,8 @@ class Weekday extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
+        'description',
         'weekday',
         'team_id',
         'location_id',
@@ -31,6 +33,8 @@ class Weekday extends Model
     protected function casts(): array
     {
         return [
+            'name' => 'string',
+            'description' => 'string',
             'weekday' => 'integer',
             'team_id' => 'integer',
             'location_id' => 'integer',

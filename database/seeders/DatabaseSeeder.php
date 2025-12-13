@@ -33,6 +33,27 @@ class DatabaseSeeder extends Seeder
         // Blog::factory(30)->create();
 
         Team::create(['name' => 'Spillhuset', 'slug' => 'SH']);
-        Weekday::create(['weekday' => 5, 'team_id' => 1, 'location_id' => 2, 'active' => true, 'start_time' => '18:00:00', 'end_time' => '22:00:00']);
+        Team::create(['name' => 'Flisespikkeriet', 'slug' => 'FS']);
+        Team::create(['name' => 'Ungdom og Fritid Bærum Kommune', 'slug' => 'UFB']);
+        Weekday::create([
+            'name' => 'Fredagsåpent',
+            'description' => 'Åpent for alle over 13 år',
+            'weekday' => 5,
+            'team_id' => 1,
+            'location_id' => 2,
+            'active' => true,
+            'start_time' => '18:00:00',
+            'end_time' => '22:00:00',
+        ]);
+        Weekday::create([
+            'name' => 'Torsdagsåpent',
+            'description' => 'Åpent for alle over 13 år',
+            'weekday' => 4,
+            'team_id' => 3,
+            'location_id' => 2,
+            'active' => true,
+            'start_time' => '15:00:00',
+            'end_time' => '21:00:00',
+        ]);
     }
 }

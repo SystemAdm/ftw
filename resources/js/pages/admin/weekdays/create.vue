@@ -3,6 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { usePage, router } from '@inertiajs/vue3';
 import { computed, reactive } from 'vue';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
@@ -14,6 +15,8 @@ const teams = (page.props as any).teams as Array<{ id: number; name: string }>;
 const locations = (page.props as any).locations as Array<{ id: number; name: string }>;
 
 const form = reactive({
+  name: '' as string,
+  description: '' as string,
   weekday: 1 as number,
   team_id: undefined as number | undefined,
   location_id: undefined as number | undefined,
@@ -64,6 +67,18 @@ const locationIdValue = computed<string>({
 
     <form class="max-w-xl space-y-4" @submit.prevent="submit">
       <FieldSet>
+        <Field>
+          <FieldLabel class="block text-sm font-medium">Name</FieldLabel>
+          <Input v-model="form.name" class="mt-1 w-full" type="text" />
+          <FieldError v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</FieldError>
+        </Field>
+
+        <Field>
+          <FieldLabel class="block text-sm font-medium">Description (optional)</FieldLabel>
+          <Textarea v-model="form.description" class="mt-1 w-full" rows="3" />
+          <FieldError v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description[0] }}</FieldError>
+        </Field>
+
         <Field>
           <FieldLabel class="block text-sm font-medium">Day of week</FieldLabel>
           <Select :model-value="weekdayValue" @update:model-value="(v) => (weekdayValue = v as string)">

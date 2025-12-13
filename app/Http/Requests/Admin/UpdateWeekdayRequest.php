@@ -17,6 +17,8 @@ class UpdateWeekdayRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
             'weekday' => ['required', 'integer', 'between:0,6'],
             'team_id' => ['nullable', 'integer', 'exists:teams,id'],
             'location_id' => ['nullable', 'integer', 'exists:locations,id'],

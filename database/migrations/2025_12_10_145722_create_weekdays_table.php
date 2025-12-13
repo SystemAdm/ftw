@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('weekdays', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
             $table->smallInteger('weekday')->comment('1 = Monday, 0 = Sunday');
             $table->foreignIdFor(Team::class)->nullable();
             $table->boolean('active')->default(true);

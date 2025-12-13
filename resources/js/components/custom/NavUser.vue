@@ -11,8 +11,10 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronsUpDown, LucideBadgeCheck as BadgeCheck, Bell, LogOut } from 'lucide-vue-next';
+import { ChevronsUpDown, Settings, Bell, LogOut, LayoutDashboard } from 'lucide-vue-next';
 import { Link } from '@inertiajs/vue3';
+import { profile as profileSettingsRoute } from '@/routes/settings';
+import { dashboard as dashboardRoute } from '@/routes';
 
 const props = defineProps<{
     user: {
@@ -28,7 +30,7 @@ const initials = computed(() => {
     const name = props.user?.name ?? '';
     const parts = name.trim().split(/\s+/).filter(Boolean);
     const first = parts[0]?.[0] ?? '';
-    const last = parts.length > 1 ? parts[parts.length - 1][0] ?? '' : '';
+    const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? '') : '';
     return (first + last).toUpperCase() || '?';
 });
 </script>
@@ -70,9 +72,17 @@ const initials = computed(() => {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                        <DropdownMenuItem>
-                            <BadgeCheck />
-                            Account
+                        <DropdownMenuItem as-child>
+                            <Link :href="dashboardRoute.url()" class="flex w-full items-center gap-2">
+                                <LayoutDashboard />
+                                Dashboard
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem as-child>
+                            <Link :href="profileSettingsRoute.url()" class="flex w-full items-center gap-2">
+                                <Settings />
+                                Settings
+                            </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                             <Bell />
@@ -81,13 +91,7 @@ const initials = computed(() => {
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem as-child>
-                        <Link
-                            :href="'/logout'"
-                            method="post"
-                            as="button"
-                            :preserve-scroll="false"
-                            class="w-full flex items-center gap-2"
-                        >
+                        <Link :href="'/logout'" method="post" as="button" :preserve-scroll="false" class="flex w-full items-center gap-2">
                             <LogOut />
                             Log out
                         </Link>

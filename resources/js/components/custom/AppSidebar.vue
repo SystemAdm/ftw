@@ -13,7 +13,7 @@ import { index as adminWeekdaysRoute } from '@/routes/admin/weekdays/index';
 import { index as adminPostcodesRoute } from '@/routes/admin/postcodes';
 import { index as adminLocationsRoute } from '@/routes/admin/locations';
 import { usePage } from '@inertiajs/vue3';
-import { Gavel, ShieldAlert, UserIcon, Users, CalendarDays, Mail, MapPin } from 'lucide-vue-next';
+import { Gavel, ShieldAlert, UserIcon, Users, CalendarDays, Mail, MapPinIcon, LayoutDashboard, Cog } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const page = usePage<PageProps>();
@@ -36,12 +36,20 @@ const user = computed(() => {
                     { title: 'Permissions', icon: Gavel, url: adminPermissionsRoute.url() },
                     { title: 'Teams', icon: Users, url: adminTeamsRoute.url() },
                     { title: 'Postcodes', icon: Mail, url: adminPostcodesRoute.url() },
-                    { title: 'Locations', icon: MapPin, url: adminLocationsRoute.url() },
-                    { title: 'Weekdays', icon: CalendarDays, url: adminWeekdaysRoute.url() }
+                    { title: 'Locations', icon: MapPinIcon, url: adminLocationsRoute.url() },
+                    { title: 'Weekdays', icon: CalendarDays, url: adminWeekdaysRoute.url() },
                 ]"
             ></NavAdmin>
             <NavMod></NavMod>
-            <NavDefault></NavDefault>
+            <NavDefault
+                :items="[
+                    { title: 'Dashboard', icon: LayoutDashboard, url: '/dashboard' },
+                    { title: 'Profile', icon: UserIcon, url: '/profile' },
+                    { title: 'Settings', icon: Cog, url: '/settings' },
+                    { title: 'Teams', icon: Users, url: '/teams'},
+                    { title: 'Locations', icon: MapPinIcon, url: '/locations'},
+                ]"
+            ></NavDefault>
         </SidebarContent>
         <SidebarFooter>
             <NavUser v-if="user" :user="user"></NavUser>
