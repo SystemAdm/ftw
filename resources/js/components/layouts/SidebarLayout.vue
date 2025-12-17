@@ -3,6 +3,7 @@ import AppSidebar from '@/components/custom/AppSidebar.vue';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
+import Footer from '@/components/layouts/Footer.vue';
 </script>
 
 <template>
@@ -33,6 +34,7 @@ import { Separator } from '@/components/ui/separator';
                     <slot />
                 </div>
             </div>
+            <Footer />
         </SidebarInset>
     </SidebarProvider>
 </template>

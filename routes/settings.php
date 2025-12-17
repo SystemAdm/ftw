@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\BillingController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +26,11 @@ Route::middleware('auth')->group(function () {
     // Update Avatar
     Route::post('settings/avatar', [ProfileController::class, 'updateAvatar'])
         ->name('settings.avatar.update');
+
+    // Settings: Billing
+    Route::get('settings/billing', [BillingController::class, 'index'])->name('settings.billing');
+    Route::post('settings/billing/checkout', [BillingController::class, 'checkout'])->name('settings.billing.checkout');
+    Route::post('settings/billing/portal', [BillingController::class, 'portal'])->name('settings.billing.portal');
+    Route::get('settings/billing/success', [BillingController::class, 'success'])->name('settings.billing.success');
+    Route::get('settings/billing/cancel', [BillingController::class, 'cancel'])->name('settings.billing.cancel');
 });

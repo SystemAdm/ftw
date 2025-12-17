@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Qirolab\Laravel\Reactions\Contracts\ReactsInterface;
 use Qirolab\Laravel\Reactions\Traits\Reacts;
 use Spatie\Permission\Traits\HasRoles;
@@ -18,10 +19,10 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements ReactsInterface
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable, Reacts, SoftDeletes;
+    use Billable, HasFactory, HasRoles, Notifiable, Reacts, SoftDeletes;
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are mass-assignable.
      *
      * @var list<string>
      */

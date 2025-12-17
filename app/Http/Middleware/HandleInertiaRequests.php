@@ -40,6 +40,7 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $user = $request->user();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -50,6 +51,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'status' => fn () => $request->session()->get('status'),
+            // Expose environment flag so we can hide experimental UI in production
+            'isProduction' => app()->isProduction(),
         ];
     }
 }
