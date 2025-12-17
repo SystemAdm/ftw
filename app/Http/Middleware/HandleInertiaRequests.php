@@ -51,6 +51,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'status' => fn () => $request->session()->get('status'),
+            'error' => fn () => $request->session()->get('error'),
             // Expose environment flag so we can hide experimental UI in production
             'isProduction' => app()->isProduction(),
             // Minimal i18n payload for public + settings UI

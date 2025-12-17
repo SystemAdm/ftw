@@ -30,6 +30,17 @@ watch(
   },
   { immediate: false }
 )
+
+// Bridge Laravel flash error -> Sonner error toast
+watch(
+  () => (page.props as any).error,
+  (val) => {
+    if (val) {
+      toast.error(String(val))
+    }
+  },
+  { immediate: false }
+)
 </script>
 
 <template>

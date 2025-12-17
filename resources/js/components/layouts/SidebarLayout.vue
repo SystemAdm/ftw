@@ -19,6 +19,17 @@ watch(
   },
   { immediate: false }
 )
+
+// Show toast for Laravel flash error on settings pages
+watch(
+  () => (page.props as any).error,
+  (val) => {
+    if (val) {
+      toast.error(String(val))
+    }
+  },
+  { immediate: false }
+)
 </script>
 
 <template>

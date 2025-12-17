@@ -19,6 +19,7 @@ const page = usePage<I18n>()
 const t = computed(() => page.props.i18n?.trans?.pages?.contact ?? {})
 const siteKey = computed(() => (page.props as any).captcha?.turnstile_site_key ?? '')
 const status = computed(() => (page.props as any).status ?? null)
+const error = computed(() => (page.props as any).error ?? null)
 
 // Cloudflare Turnstile integration
 const widgetEl = ref<HTMLDivElement | null>(null)
@@ -91,6 +92,10 @@ function submit() {
     <!-- Success / status message -->
     <div v-if="status" class="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300">
       {{ status }}
+    </div>
+    <!-- Error message -->
+    <div v-if="error" class="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+      {{ error }}
     </div>
 
     <form @submit.prevent="submit" class="space-y-4">

@@ -39,7 +39,8 @@ class ContactController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()->withInput()->with('status', 'We could not send the email right now. Please try again later.');
+            // Flash error separately so UI can show a red toast/banner
+            return back()->withInput()->with('error', 'We could not send the email right now. Please try again later.');
         }
     }
 }

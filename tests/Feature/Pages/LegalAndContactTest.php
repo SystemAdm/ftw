@@ -45,3 +45,25 @@ it('sends contact email', function (): void {
 
     Mail::assertSent(ContactMail::class);
 });
+
+it('flashes error when mail sending fails', function (): void {
+    // Configure captcha bypass for testing (non-empty token is accepted)
+    config()->set('services.turnstile.secret_key', 'test-secret');
+
+    // Force Mail::send to throw an exception
+    Mail::shouldReceive('to')->andReturnSelf();
+    Mail::shouldReceive('send')->andThrow(new Exception('SMTP down'));
+
+    $payload = [
+        'name' => 'Tester',
+        'email' => 'tester@example.com',
+        'subject' => 'Hello',
+        'message' => 'This is a test',
+        'cf-turnstile-response' => 'test-token',
+    ];
+
+    $response = $this->from('/contact')->post('/contact', $payload);
+
+    $response->assertRedirect('/contact');
+    $response->assertSessionHas('error', 'We could not send the email right now. Please try again later.');
+});
