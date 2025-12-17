@@ -3,10 +3,39 @@ import Footer from '@/components/layouts/Footer.vue'
 import { Link } from '@inertiajs/vue3'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger, SheetClose } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
+import { usePage } from '@inertiajs/vue3'
+import { computed, watch } from 'vue'
+import { Toaster, toast } from 'vue-sonner'
+
+type I18n = {
+  i18n: {
+    locale: string
+    fallback: string
+    trans: {
+      ui: Record<string, any>
+    }
+  }
+}
+
+const page = usePage<I18n>()
+const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
+
+// Bridge Laravel flash status -> Sonner toast
+watch(
+  () => (page.props as any).status,
+  (val) => {
+    if (val) {
+      toast.success(String(val))
+    }
+  },
+  { immediate: false }
+)
 </script>
 
 <template>
   <div class="min-h-screen bg-black text-foreground selection:bg-green-500/40">
+    <!-- Global toast provider (Sonner) -->
+    <Toaster position="top-right" rich-colors />
     <!-- Top nav -->
     <header class="sticky top-0 z-50 mx-auto w-full max-w-7xl bg-black/80 supports-backdrop-filter:bg-black/60 backdrop-blur border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5">
       <div class="relative grid grid-cols-[1fr_auto_1fr] items-center">
@@ -17,7 +46,7 @@ import { Button } from '@/components/ui/button'
           </span>
         </div>
         <!-- Center title -->
-        <p class="text-center text-lg font-bold tracking-wide sm:text-xl">SPILLHUSET</p>
+        <p class="text-center text-lg font-bold tracking-wide sm:text-xl">{{ ui.brand ?? 'Spillhuset' }}</p>
         <!-- Right hamburger -->
         <div class="flex items-center justify-end pr-1">
           <Sheet v-if="!$page.props.isProduction">
@@ -30,23 +59,23 @@ import { Button } from '@/components/ui/button'
             </SheetTrigger>
             <SheetContent side="right" class="w-80 max-w-[85vw]">
               <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
-                <SheetDescription>Select a section</SheetDescription>
+                <SheetTitle>{{ ui.menu?.title ?? 'Menu' }}</SheetTitle>
+                <SheetDescription>{{ ui.menu?.title ?? 'Menu' }}</SheetDescription>
               </SheetHeader>
 
               <nav class="mt-6 grid gap-2 text-sm">
-                <Link href="/" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">Home</Link>
-                <a href="#features" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">Features</a>
-                <Link href="/settings/profile" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">Settings</Link>
-                <Link href="/settings/billing" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">Billing</Link>
-                <Link href="/privacy" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">Privacy</Link>
-                <Link href="/terms" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">Terms</Link>
-                <Link href="/cookie" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">Cookie Policy</Link>
+                <Link href="/" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">{{ ui.menu?.home ?? 'Home' }}</Link>
+                <a href="#features" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">{{ ui.menu?.features ?? 'Features' }}</a>
+                <Link href="/settings/profile" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">{{ ui.menu?.settings ?? 'Settings' }}</Link>
+                <Link href="/settings/billing" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">{{ ui.menu?.billing ?? 'Billing' }}</Link>
+                <Link href="/privacy" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">{{ ui.legal?.privacy ?? 'Privacy notice' }}</Link>
+                <Link href="/terms" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">{{ ui.legal?.terms ?? 'Terms & conditions' }}</Link>
+                <Link href="/cookie" class="rounded-md px-3 py-2 hover:bg-white/5 transition text-foreground">{{ ui.legal?.cookie ?? 'Cookie policy' }}</Link>
               </nav>
 
               <div class="mt-8">
                 <SheetClose as-child>
-                  <Button variant="secondary" class="w-full">Close</Button>
+                  <Button variant="secondary" class="w-full">{{ ui.menu?.close ?? 'Close' }}</Button>
                 </SheetClose>
               </div>
             </SheetContent>

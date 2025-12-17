@@ -4,10 +4,27 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layouts/Footer.vue';
+import { Toaster, toast } from 'vue-sonner'
+import { usePage } from '@inertiajs/vue3'
+import { watch } from 'vue'
+
+// Show toast for Laravel flash status on settings pages
+const page = usePage()
+watch(
+  () => (page.props as any).status,
+  (val) => {
+    if (val) {
+      toast.success(String(val))
+    }
+  },
+  { immediate: false }
+)
 </script>
 
 <template>
     <SidebarProvider>
+        <!-- Global toast provider (Sonner) for settings area -->
+        <Toaster position="top-right" rich-colors />
         <AppSidebar />
         <SidebarInset>
             <header

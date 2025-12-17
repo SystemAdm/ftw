@@ -85,4 +85,11 @@ return [
         // Optional convenience: default price id for subscriptions shown in Settings
         'price_id' => env('STRIPE_PRICE_ID'),
     ],
+
+    // Cloudflare Turnstile (captcha)
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+        'verify_url' => env('TURNSTILE_VERIFY_URL', 'https://challenges.cloudflare.com/turnstile/v0/siteverify'),
+    ],
 ];

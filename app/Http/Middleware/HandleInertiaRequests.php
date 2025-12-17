@@ -53,6 +53,16 @@ class HandleInertiaRequests extends Middleware
             'status' => fn () => $request->session()->get('status'),
             // Expose environment flag so we can hide experimental UI in production
             'isProduction' => app()->isProduction(),
+            // Minimal i18n payload for public + settings UI
+            'i18n' => [
+                'locale' => app()->getLocale(),
+                'fallback' => config('app.fallback_locale'),
+                'trans' => [
+                    'ui' => trans('ui'),
+                    // Legal and other page copy
+                    'pages' => trans('pages'),
+                ],
+            ],
         ];
     }
 }

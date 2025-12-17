@@ -1,5 +1,18 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
+
+type I18n = {
+  i18n: {
+    trans: {
+      ui: Record<string, any>
+    }
+  }
+}
+
+const page = usePage<I18n>()
+const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
 </script>
 
 <template>
@@ -12,7 +25,7 @@ import { Link } from '@inertiajs/vue3'
           <span class="inline-grid h-10 w-10 place-items-center rounded-md ">
             <img src="/images/Spillhuset.png" alt="Spillhuset logo" />
           </span>
-          <span class="text-base font-semibold tracking-wide text-foreground uppercase">Spillhuset</span>
+          <span class="text-base font-semibold tracking-wide text-foreground uppercase">{{ ui.brand ?? 'Spillhuset' }}</span>
         </div>
 
         <!-- Socials -->
@@ -42,23 +55,23 @@ import { Link } from '@inertiajs/vue3'
       <div class="grid grid-cols-1 gap-8 text-sm text-muted-foreground md:grid-cols-3">
         <!-- Legal -->
         <div class="text-center md:text-left">
-          <h3 class="mb-3 text-foreground font-semibold">Legal</h3>
+          <h3 class="mb-3 text-foreground font-semibold">{{ ui.legal?.heading ?? 'Legal' }}</h3>
           <ul class="space-y-2">
-            <li><Link href="/privacy" class="hover:text-foreground transition">Privacy notice</Link></li>
-            <li><Link href="/terms" class="hover:text-foreground transition">Terms & conditions</Link></li>
-            <li><Link href="/cookie" class="hover:text-foreground transition">Cookie policy</Link></li>
+            <li><Link href="/privacy" class="hover:text-foreground transition">{{ ui.legal?.privacy ?? 'Privacy notice' }}</Link></li>
+            <li><Link href="/terms" class="hover:text-foreground transition">{{ ui.legal?.terms ?? 'Terms & conditions' }}</Link></li>
+            <li><Link href="/cookie" class="hover:text-foreground transition">{{ ui.legal?.cookie ?? 'Cookie policy' }}</Link></li>
           </ul>
         </div>
 
         <!-- Contact / Visit -->
         <div class="text-center md:text-left">
-          <h3 class="mb-3 text-foreground font-semibold">Contact</h3>
+          <h3 class="mb-3 text-foreground font-semibold">{{ ui.contact?.heading ?? 'Contact' }}</h3>
           <ul class="space-y-2">
-            <li>Besøksadresse: Skollerudveien 5, 1353 Bærums Verk</li>
-            <li>Bankkonto: <span class="font-medium text-foreground">2220.29.86645</span></li>
-            <li>Vipps: <span class="font-medium text-foreground">#611764</span></li>
+            <li>{{ ui.contact?.visit ?? 'Visit address' }}: Skollerudveien 5, 1353 Bærums Verk</li>
+            <li>{{ ui.contact?.bank ?? 'Bank account' }}: <span class="font-medium text-foreground">2220.29.86645</span> <span>Sparebanken Øst</span></li>
+            <li>{{ ui.contact?.vipps ?? 'Vipps' }}: <span class="font-medium text-foreground">#611764</span></li>
             <li>
-              Org.nr:
+              {{ ui.contact?.org ?? 'Org.nr' }}:
               <a
                 href="https://virksomhet.brreg.no/nb/oppslag/enheter/917616140"
                 target="_blank"
@@ -66,21 +79,21 @@ import { Link } from '@inertiajs/vue3'
                 class="font-medium text-foreground hover:underline"
               >
                 917616140
-              </a>
+              </a> <span>Link til Brønnøysundregisterene</span>
             </li>
-            <li><Link href="/contact" class="hover:text-foreground transition">Kontakt skjema</Link></li>
+            <li><Link href="/contact" class="hover:text-foreground transition">{{ ui.contact?.form ?? 'Contact form' }}</Link></li>
           </ul>
         </div>
 
         <!-- About -->
         <div class="text-center md:text-left">
-          <h3 class="mb-3 text-foreground font-semibold">About</h3>
-          <p class="text-sm/6">Et møtepunkt for spillere – play, compete, win. Følg oss på sosiale medier for nyheter og arrangementer.</p>
+          <h3 class="mb-3 text-foreground font-semibold">{{ ui.about?.heading ?? 'About' }}</h3>
+          <p class="text-sm/6">{{ ui.about?.description ?? 'A meetup for gamers – play, compete, win. Follow us on social media for news and events.' }}</p>
         </div>
       </div>
 
       <!-- Bottom -->
-      <div class="mt-10 text-center text-xs text-muted-foreground">© {{ new Date().getFullYear() }} Spillhuset. All rights reserved.</div>
+      <div class="mt-10 text-center text-xs text-muted-foreground">© {{ new Date().getFullYear() }} {{ ui.brand ?? 'Spillhuset' }}. {{ ui.footer?.rights ?? 'All rights reserved.' }}</div>
     </div>
   </footer>
 </template>

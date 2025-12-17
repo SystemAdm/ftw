@@ -1,104 +1,110 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
+
+type I18n = {
+  i18n: {
+    trans: {
+      pages: Record<string, any>
+    }
+  }
+}
+
+const page = usePage<I18n>()
+const t = computed(() => page.props.i18n?.trans?.pages?.cookie ?? {})
 </script>
 
 <template>
   <PublicLayout>
   <div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-    <Head title="Cookie policy" />
+    <Head :title="t.title ?? 'Cookie policy'" />
 
     <header class="mb-8 space-y-2">
-      <h1 class="text-3xl font-bold tracking-tight">Cookie Policy</h1>
-      <p class="text-sm text-muted-foreground">How Spillhuset uses cookies and similar technologies. Last updated: 2025‑12‑17</p>
+      <h1 class="text-3xl font-bold tracking-tight">{{ t.title ?? 'Cookie Policy' }}</h1>
+      <p class="text-sm text-muted-foreground">{{ t.updated ?? 'Last updated' }}</p>
     </header>
 
     <!-- Quick summary -->
     <section class="mb-8 rounded-lg border p-4 bg-background/50">
-      <h2 class="text-lg font-semibold">In short</h2>
+      <h2 class="text-lg font-semibold">{{ t.summary_title ?? 'In short' }}</h2>
       <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-        <li>We use only essential and basic preference cookies to run the site.</li>
-        <li>No marketing/advertising cookies.</li>
-        <li>Payments are processed by Stripe; their pages may set their own cookies.</li>
+        <li>{{ t.summary?.essential }}</li>
+        <li>{{ t.summary?.nomarketing }}</li>
+        <li>{{ t.summary?.stripe }}</li>
       </ul>
     </section>
 
     <!-- Table of contents -->
     <nav class="mb-8 rounded-lg border p-4">
-      <h2 class="text-lg font-semibold">Contents</h2>
+      <h2 class="text-lg font-semibold">{{ t.toc?.title ?? 'Contents' }}</h2>
       <ul class="mt-3 grid gap-2 text-sm text-muted-foreground">
-        <li><a class="hover:underline" href="#what">What are cookies?</a></li>
-        <li><a class="hover:underline" href="#types">Types of cookies we use</a></li>
-        <li><a class="hover:underline" href="#list">Cookies we use</a></li>
-        <li><a class="hover:underline" href="#third">Third‑party cookies (Stripe)</a></li>
-        <li><a class="hover:underline" href="#manage">How to manage cookies</a></li>
-        <li><a class="hover:underline" href="#withdraw">Withdraw consent</a></li>
-        <li><a class="hover:underline" href="#contact">Contact</a></li>
-        <li><a class="hover:underline" href="#changes">Changes to this policy</a></li>
+        <li><a class="hover:underline" href="#what">{{ t.toc?.what ?? 'What are cookies?' }}</a></li>
+        <li><a class="hover:underline" href="#types">{{ t.toc?.types ?? 'Types of cookies we use' }}</a></li>
+        <li><a class="hover:underline" href="#list">{{ t.toc?.list ?? 'Cookies we use' }}</a></li>
+        <li><a class="hover:underline" href="#third">{{ t.toc?.third ?? 'Third‑party cookies (Stripe)' }}</a></li>
+        <li><a class="hover:underline" href="#manage">{{ t.toc?.manage ?? 'How to manage cookies' }}</a></li>
+        <li><a class="hover:underline" href="#withdraw">{{ t.toc?.withdraw ?? 'Withdraw consent' }}</a></li>
+        <li><a class="hover:underline" href="#contact">{{ t.toc?.contact ?? 'Contact' }}</a></li>
+        <li><a class="hover:underline" href="#changes">{{ t.toc?.changes ?? 'Changes to this policy' }}</a></li>
       </ul>
     </nav>
 
     <section id="what" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">What are cookies?</h2>
-      <p class="text-sm text-muted-foreground">
-        Cookies are small text files stored on your device by your browser. They help websites remember information
-        about your visit, like keeping you signed in or remembering preferences.
-      </p>
+      <h2 class="text-xl font-semibold">{{ t.what?.heading ?? 'What are cookies?' }}</h2>
+      <p class="text-sm text-muted-foreground">{{ t.what?.body }}</p>
     </section>
 
     <section id="types" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">Types of cookies we use</h2>
+      <h2 class="text-xl font-semibold">{{ t.types?.heading ?? 'Types of cookies we use' }}</h2>
       <ul class="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-        <li><span class="text-foreground font-medium">Strictly necessary</span>: required for core functionality such as authentication and security.</li>
-        <li><span class="text-foreground font-medium">Preferences</span>: remembers your appearance (light/dark/system) and UI state like the sidebar.</li>
-        <li><span class="text-foreground font-medium">Analytics/Marketing</span>: not used.</li>
+        <li><span class="text-foreground font-medium">{{ t.types?.items?.necessary?.split(':')[0] ?? 'Strictly necessary' }}</span>: {{ t.types?.items?.necessary?.split(':')[1] ?? 'required for core functionality such as authentication and security.' }}</li>
+        <li><span class="text-foreground font-medium">{{ t.types?.items?.prefs?.split(':')[0] ?? 'Preferences' }}</span>: {{ t.types?.items?.prefs?.split(':')[1] ?? 'remembers your appearance (light/dark/system) and UI state like the sidebar.' }}</li>
+        <li><span class="text-foreground font-medium">{{ t.types?.items?.analytics?.split(':')[0] ?? 'Analytics/Marketing' }}</span>: {{ t.types?.items?.analytics?.split(':')[1] ?? 'not used.' }}</li>
       </ul>
     </section>
 
     <section id="list" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">Cookies we use</h2>
+      <h2 class="text-xl font-semibold">{{ t.list?.heading ?? 'Cookies we use' }}</h2>
       <div class="overflow-hidden rounded-lg border">
         <div class="divide-y divide-white/10">
           <div class="p-4 text-sm">
             <div class="font-medium text-foreground">XSRF-TOKEN</div>
-            <div class="text-muted-foreground">Helps protect against cross‑site request forgery. Required for forms and authentication.</div>
+            <div class="text-muted-foreground">{{ t.list?.xsrf }}</div>
           </div>
           <div class="p-4 text-sm">
             <div class="font-medium text-foreground">laravel_session</div>
-            <div class="text-muted-foreground">Session cookie that keeps you signed in and remembers state between requests.</div>
+            <div class="text-muted-foreground">{{ t.list?.session }}</div>
           </div>
           <div class="p-4 text-sm">
             <div class="font-medium text-foreground">appearance</div>
-            <div class="text-muted-foreground">Stores your theme preference (light/dark/system). Set by our middleware.</div>
+            <div class="text-muted-foreground">{{ t.list?.appearance }}</div>
           </div>
           <div class="p-4 text-sm">
             <div class="font-medium text-foreground">sidebar_state</div>
-            <div class="text-muted-foreground">Remembers whether the sidebar is open or collapsed.</div>
+            <div class="text-muted-foreground">{{ t.list?.sidebar }}</div>
           </div>
           <div class="p-4 text-sm">
             <div class="font-medium text-foreground">laravel_cookie_consent</div>
-            <div class="text-muted-foreground">Records whether you dismissed/accepted the cookie notice.</div>
+            <div class="text-muted-foreground">{{ t.list?.consent }}</div>
           </div>
         </div>
       </div>
-      <p class="mt-3 text-xs text-muted-foreground">Note: Cookie names may vary slightly between environments.</p>
+      <p class="mt-3 text-xs text-muted-foreground">{{ t.list?.note }}</p>
     </section>
 
     <section id="third" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">Third‑party cookies (Stripe)</h2>
+      <h2 class="text-xl font-semibold">{{ t.third?.heading ?? 'Third‑party cookies (Stripe)' }}</h2>
       <p class="text-sm text-muted-foreground">
-        When you start the subscription checkout, you may be redirected to Stripe. Stripe may set its own cookies to
-        operate their checkout experience. See <a href="https://stripe.com/cookies-policy/legal" target="_blank" rel="noopener noreferrer" class="underline">stripe.com/cookies-policy</a> and
+        {{ t.third?.body }}
+        See <a href="https://stripe.com/cookies-policy/legal" target="_blank" rel="noopener noreferrer" class="underline">stripe.com/cookies-policy</a> and
         <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" class="underline">stripe.com/privacy</a> for details.
       </p>
     </section>
 
     <section id="manage" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">How to manage cookies</h2>
-      <p class="text-sm text-muted-foreground">
-        You can control cookies in your browser settings and delete existing cookies. Disabling necessary cookies may
-        affect site functionality (e.g., sign‑in will not work).
-      </p>
+      <h2 class="text-xl font-semibold">{{ t.manage?.heading ?? 'How to manage cookies' }}</h2>
+      <p class="text-sm text-muted-foreground">{{ t.manage?.body }}</p>
       <ul class="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
         <li>Chrome: Settings → Privacy and security → Cookies and other site data</li>
         <li>Safari: Preferences → Privacy</li>
@@ -108,24 +114,18 @@ import PublicLayout from '@/components/layouts/PublicLayout.vue'
     </section>
 
     <section id="withdraw" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">Withdraw consent</h2>
-      <p class="text-sm text-muted-foreground">
-        If you consented to optional cookies in the past, you can withdraw your consent at any time by clearing cookies
-        in your browser or using cookie controls if shown.
-      </p>
+      <h2 class="text-xl font-semibold">{{ t.withdraw?.heading ?? 'Withdraw consent' }}</h2>
+      <p class="text-sm text-muted-foreground">{{ t.withdraw?.body }}</p>
     </section>
 
     <section id="contact" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">Contact</h2>
-      <p class="text-sm text-muted-foreground">
-        Questions about this policy? Email <a href="mailto:web@spillhuset.com" class="underline">web@spillhuset.com</a> or use our
-        <a href="/contact" class="underline">contact form</a>.
-      </p>
+      <h2 class="text-xl font-semibold">{{ t.contact?.heading ?? 'Contact' }}</h2>
+      <p class="text-sm text-muted-foreground">{{ t.contact?.body }}</p>
     </section>
 
     <section id="changes" class="mb-8 space-y-2">
-      <h2 class="text-xl font-semibold">Changes to this policy</h2>
-      <p class="text-sm text-muted-foreground">We may update this policy from time to time. Please review it periodically for changes.</p>
+      <h2 class="text-xl font-semibold">{{ t.changes?.heading ?? 'Changes to this policy' }}</h2>
+      <p class="text-sm text-muted-foreground">{{ t.changes?.body }}</p>
     </section>
   </div>
   </PublicLayout>
