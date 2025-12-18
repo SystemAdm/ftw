@@ -40,7 +40,7 @@ class ContactController extends Controller
             report($e);
 
             // Flash error separately so UI can show a red toast/banner
-            return back()->withInput()->with('error', 'We could not send the email right now. Please try again later.');
+            return back()->withInput()->with('error', 'We could not send the email right now. Please try again later. You may send us e-mail through your own mail-client instead. <a href="mailto://post@spillhuset.com?Kontakt&nbsp;Oss">post@spillhuset.com</a>');
         }
     }
 }
