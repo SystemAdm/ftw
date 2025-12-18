@@ -1,6 +1,6 @@
 @php /** @var string $name *//** @var string $email *//** @var string $subjectLine *//** @var string $body */ @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_','-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +14,8 @@
     </head>
 <body>
 <div class="wrap">
-    <h1>Contact form submission</h1>
-    <p class="muted">From: {{ $name }} &lt;{{ $email }}&gt;</p>
+    <h1>{{ __('ui.contact_email.heading') }}</h1>
+    <p class="muted">{{ __('ui.contact_email.from') }}: {{ $name }} &lt;{{ $email }}&gt;</p>
     <div class="box">
         <h2 style="margin-top:0">{{ $subjectLine }}</h2>
         <pre style="white-space:pre-wrap; font-family: inherit; line-height:1.5;">{{ $body }}</pre>

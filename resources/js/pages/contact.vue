@@ -90,12 +90,12 @@ function submit() {
     <h1 class="text-2xl font-bold tracking-tight mb-4">{{ t.title ?? 'Contact' }}</h1>
 
     <!-- Success / status message -->
-    <div v-if="status" class="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300">
-      {{ status }}
+    <div v-if="status" class="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300" v-html="status">
+
     </div>
     <!-- Error message -->
-    <div v-if="error" class="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-      {{ error }}
+    <div v-if="error" class="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300" v-html="error">
+
     </div>
 
     <form @submit.prevent="submit" class="space-y-4">

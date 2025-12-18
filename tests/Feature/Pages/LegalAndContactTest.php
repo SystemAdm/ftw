@@ -65,5 +65,5 @@ it('flashes error when mail sending fails', function (): void {
     $response = $this->from('/contact')->post('/contact', $payload);
 
     $response->assertRedirect('/contact');
-    $response->assertSessionHas('error', 'We could not send the email right now. Please try again later.');
+    $response->assertSessionHas('error', trans('ui.contact.email_error'));
 });

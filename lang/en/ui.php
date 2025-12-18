@@ -19,6 +19,14 @@ return [
         'cookie' => 'Cookie policy',
     ],
 
+    'appearance' => [
+        'heading' => 'Appearance',
+        'system' => 'System',
+        'light' => 'Light',
+        'dark' => 'Dark',
+        'changed' => 'Theme updated',
+    ],
+
     'contact' => [
         'heading' => 'Contact',
         'visit' => 'Visit address',
@@ -26,6 +34,13 @@ return [
         'vipps' => 'Vipps',
         'org' => 'Org.no',
         'form' => 'Contact form',
+        'email_error' => 'We could not send the email right now. Please try again later. You may send us e-mail through your own mail-client instead. <a href="mailto://post@spillhuset.com?Kontakt&nbsp;Oss">post@spillhuset.com</a>',
+    ],
+
+    // Translations used in outgoing contact email template
+    'contact_email' => [
+        'heading' => 'Contact form submission',
+        'from' => 'From',
     ],
 
     'about' => [

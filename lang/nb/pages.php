@@ -30,7 +30,7 @@ return [
         ],
         'who' => [
             'heading' => 'Hvem vi er',
-            'body' => 'Spillhuset (Org.nr: 917616140) arrangerer aktiviteter og medlemskap for gamere. Adresse: Skollerudveien 5, 1353 Bærums Verk, Norge.',
+            'body' => 'Spillhuset (Org.nr: 917616140) er en frivillig organisasjon som arrangerer aktiviteter og tilbyr medlemskap for gamere. Adresse: Skollerudveien 5, 1353 Bærums Verk, Norge.',
         ],
         'data' => [
             'heading' => 'Hvilke data vi samler inn',
@@ -139,7 +139,7 @@ return [
         ],
         'website' => [
             'heading' => 'Vilkår for bruk av nettstedet',
-            'p1' => 'Disse vilkårene gjelder for bruk av nettstedet vårt på ftw.test og tilknyttede domener.',
+            'p1' => 'Disse vilkårene gjelder for bruk av nettstedet vårt på spillhusets domener.',
             'items' => [
                 'acceptable' => 'Akseptabel bruk: ikke forstyr tjenesten, ikke forsøk uautorisert tilgang, ikke bryt loven.',
                 'accounts' => 'Kontoer: hold legitimasjon sikker og opplysningene dine korrekte.',
@@ -199,7 +199,7 @@ return [
             'heading' => 'Cookies vi bruker',
             'xsrf' => 'XSRF‑TOKEN: beskytter mot CSRF. Nødvendig for skjemaer og innlogging.',
             'session' => 'laravel_session: holder deg innlogget og lagrer tilstand mellom forespørsler.',
-            'appearance' => 'appearance: lagrer tema‑valg. Satt av vår mellomvare.',
+            'appearance' => 'appearance: lagrer tema‑valg.',
             'sidebar' => 'sidebar_state: husker om sidepanelet er åpent eller lukket.',
             'consent' => 'laravel_cookie_consent: lagrer om du har akseptert varselet.',
             'note' => 'Merk: Navn kan variere mellom miljøer.',

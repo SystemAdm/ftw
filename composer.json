@@ -31,7 +31,9 @@
         "spatie/calendar-links": "^1.11",
         "spatie/laravel-cookie-consent": "^3.3",
         "spatie/laravel-permission": "^6.21",
-        "spatie/laravel-tags": "^4.10"
+        "spatie/laravel-tags": "^4.10",
+        "symfony/http-client": "^8.0",
+        "symfony/mailgun-mailer": "^8.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

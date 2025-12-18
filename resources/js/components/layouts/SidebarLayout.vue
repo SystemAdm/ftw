@@ -4,38 +4,33 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layouts/Footer.vue';
-import { Toaster, toast } from 'vue-sonner'
+import { Toaster } from 'vue-sonner'
 import { usePage } from '@inertiajs/vue3'
-import { watch } from 'vue'
+import { useFlashToasts } from '@/composables/useFlashToasts'
 
-// Show toast for Laravel flash status on settings pages
+// Bridge Laravel flash messages -> Sonner toasts with dedupe
 const page = usePage()
-watch(
-  () => (page.props as any).status,
-  (val) => {
-    if (val) {
-      toast.success(String(val))
-    }
-  },
-  { immediate: false }
-)
-
-// Show toast for Laravel flash error on settings pages
-watch(
-  () => (page.props as any).error,
-  (val) => {
-    if (val) {
-      toast.error(String(val))
-    }
-  },
-  { immediate: false }
-)
+useFlashToasts(page)
 </script>
 
 <template>
     <SidebarProvider>
         <!-- Global toast provider (Sonner) for settings area -->
-        <Toaster position="top-right" rich-colors />
+        <Toaster
+          position="top-right"
+          rich-colors
+          close-button
+          expand
+          theme="system"
+          offset="64px"
+          :duration="4000"
+          :toast-options="{
+            class: 'border border-white/10 bg-background/95 text-foreground rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
+            descriptionClass: 'text-sm text-muted-foreground',
+            actionButtonClass: 'rounded-md bg-white/10 hover:bg-white/15 text-foreground',
+            cancelButtonClass: 'rounded-md bg-transparent hover:bg-white/5 text-muted-foreground'
+          }"
+        />
         <AppSidebar />
         <SidebarInset>
             <header

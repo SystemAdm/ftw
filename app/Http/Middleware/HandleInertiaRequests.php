@@ -41,6 +41,20 @@ class HandleInertiaRequests extends Middleware
 
         $user = $request->user();
 
+        // Determine appearance from cookie, attempting to gracefully decrypt if it was previously encrypted
+        $rawAppearance = $request->cookie('appearance', 'system');
+        $appearance = is_string($rawAppearance) ? $rawAppearance : 'system';
+        if (is_string($appearance) && str_starts_with($appearance, 'eyJ')) {
+            try {
+                $appearance = Crypt::decryptString($appearance);
+            } catch (\Throwable) {
+                // ignore, keep raw value
+            }
+        }
+        if (! in_array($appearance, ['light', 'dark', 'system'], true)) {
+            $appearance = 'system';
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -54,6 +68,8 @@ class HandleInertiaRequests extends Middleware
             'error' => fn () => $request->session()->get('error'),
             // Expose environment flag so we can hide experimental UI in production
             'isProduction' => app()->isProduction(),
+            // Current appearance preference from cookie (light | dark | system)
+            'appearance' => $appearance,
             // Minimal i18n payload for public + settings UI
             'i18n' => [
                 'locale' => app()->getLocale(),
