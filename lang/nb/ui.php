@@ -26,6 +26,8 @@ return [
         'vipps' => 'Vipps',
         'org' => 'Org.nr',
         'form' => 'Kontaktskjema',
+        'or' => ' eller ',
+        'direct' => 'direkte e-post: <a class="text-foreground" href="mailto://web@spillhuset.com?subject=Kontakt&nbsp;Oss">post@spillhuset.com</a>'
     ],
 
     'about' => [

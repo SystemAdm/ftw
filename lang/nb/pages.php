@@ -104,10 +104,8 @@ return [
             'body' => 'Vi iverksetter rimelige tekniske og organisatoriske tiltak for å beskytte data. Ingen systemer er 100% sikre, men vi forbedrer kontinuerlig våre tiltak.',
         ],
         'contact' => [
-            'heading' => 'Kontakt oss',
-            'email_prefix' => 'E‑post:',
-            'address' => 'Adresse: Skollerudveien 5, 1353 Bærums Verk, Norge · Org.nr: 917616140',
-            'form' => 'Kontaktskjema',
+            'heading' => 'Kontakt',
+            'body' => 'Spørsmål? Kontakt oss:',
         ],
         'changes' => [
             'heading' => 'Endringer i erklæringen',
@@ -162,7 +160,7 @@ return [
         ],
         'contact' => [
             'heading' => 'Kontakt',
-            'body' => 'Spørsmål? Kontakt oss via kontaktskjemaet eller e‑post.',
+            'body' => 'Spørsmål? Kontakt oss:',
         ],
     ],
     'cookie' => [

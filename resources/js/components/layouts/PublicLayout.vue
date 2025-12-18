@@ -56,8 +56,10 @@ watch(
             <img src="/images/Spillhuset.png" alt="Spillhuset logo" class="hidden md:block" />
           </span>
         </div>
-        <!-- Center title -->
-        <p class="text-center text-lg font-bold tracking-wide sm:text-xl">{{ ui.brand ?? 'Spillhuset' }}</p>
+        <!-- Center title (brand links to home) -->
+        <Link href="/" aria-label="Go to home" class="text-center text-lg font-bold tracking-wide sm:text-xl hover:opacity-90 transition">
+          {{ ui.brand ?? 'Spillhuset' }}
+        </Link>
         <!-- Right hamburger -->
         <div class="flex items-center justify-end pr-1">
           <Sheet v-if="!$page.props.isProduction">

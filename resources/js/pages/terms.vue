@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import PublicLayout from '@/components/layouts/PublicLayout.vue';
 
@@ -97,8 +97,10 @@ const ui = computed(() => page.props.i18n?.trans?.ui ?? {});
                 <h2 class="text-xl font-semibold">{{ t.contact?.heading ?? 'Contact' }}</h2>
                 <p class="text-sm text-muted-foreground">
                     {{ t.contact?.body }}
-                    <a href="/contact" class="underline">{{ ui.contact?.form }}</a> ·
-                    <a href="mailto:web@spillhuset.com" class="underline">web@spillhuset.com</a>.
+                    <Link href="/contact" class="hover:text-foreground transition">
+                        <span class="text-foreground" v-html="ui.contact?.form ?? 'Contact form'"></span>
+                    </Link>{{ui.contact?.or ?? ''}}
+                    <span v-html="ui.contact?.direct ?? ''"></span>
                 </p>
             </section>
         </div>
