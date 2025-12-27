@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { router, usePage } from '@inertiajs/vue3';
 import { edit as editRoute, destroy as destroyRoute, index as indexRoute } from '@/routes/admin/locations';
 import { restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/locations';
+import { trans } from 'laravel-vue-i18n';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,44 +42,44 @@ function forceDel() {
 <template>
   <SidebarLayout>
     <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-xl font-semibold">Location {{ location.name }}</h1>
+      <h1 class="text-xl font-semibold">{{ trans('pages.settings.locations.fields.name') }} {{ location.name }}</h1>
       <div class="flex gap-2">
         <template v-if="!location.deleted_at">
-          <Button @click.prevent="router.visit(editRoute.url(location.id))">Edit</Button>
+          <Button @click.prevent="router.visit(editRoute.url(location.id))">{{ trans('pages.settings.locations.actions.edit') }}</Button>
           <AlertDialog>
             <AlertDialogTrigger as-child>
-              <Button variant="destructive">Delete</Button>
+              <Button variant="destructive">{{ trans('pages.settings.locations.actions.delete') }}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete {{ location.name }}?</AlertDialogTitle>
+                <AlertDialogTitle>{{ trans('pages.settings.locations.delete.title', { name: location.name }) }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will move the location to the trash. You can restore it later.
+                  {{ trans('pages.settings.locations.delete.description') }}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction @click="del">Delete</AlertDialogAction>
+                <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
+                <AlertDialogAction @click="del">{{ trans('pages.settings.locations.actions.delete') }}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </template>
         <template v-else>
-          <Button variant="secondary" @click="restoreLoc">Restore</Button>
+          <Button variant="secondary" @click="restoreLoc">{{ trans('pages.settings.locations.actions.restore') }}</Button>
           <AlertDialog>
             <AlertDialogTrigger as-child>
-              <Button variant="destructive">Force Delete</Button>
+              <Button variant="destructive">{{ trans('pages.settings.locations.actions.force_delete') }}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Permanently delete {{ location.name }}?</AlertDialogTitle>
+                <AlertDialogTitle>{{ trans('pages.settings.locations.force_delete.title', { name: location.name }) }}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently remove the location.
+                  {{ trans('pages.settings.locations.force_delete.description') }}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction @click="forceDel">Delete permanently</AlertDialogAction>
+                <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
+                <AlertDialogAction @click="forceDel">{{ trans('pages.settings.locations.actions.delete_permanently') }}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -89,35 +90,35 @@ function forceDel() {
     <div class="max-w-2xl rounded border">
       <dl class="divide-y">
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Postal Code</dt>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.postal_code') }}</dt>
           <dd class="col-span-2">{{ location.postal }}</dd>
         </div>
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Active</dt>
-          <dd class="col-span-2">{{ location.active ? 'Yes' : 'No' }}</dd>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.active') }}</dt>
+          <dd class="col-span-2">{{ location.active ? trans('pages.settings.locations.fields.yes') : trans('pages.settings.locations.fields.no') }}</dd>
         </div>
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Description</dt>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.description') }}</dt>
           <dd class="col-span-2">{{ location.description }}</dd>
         </div>
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Latitude</dt>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.latitude') }}</dt>
           <dd class="col-span-2">{{ location.latitude }}</dd>
         </div>
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Longitude</dt>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.longitude') }}</dt>
           <dd class="col-span-2">{{ location.longitude }}</dd>
         </div>
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Google Maps URL</dt>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.google_maps_url') }}</dt>
           <dd class="col-span-2"><a v-if="location.google_maps_url" :href="location.google_maps_url" target="_blank" class="underline">{{ location.google_maps_url }}</a></dd>
         </div>
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Website</dt>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.website') }}</dt>
           <dd class="col-span-2"><a v-if="location.link" :href="location.link" target="_blank" class="underline">{{ location.link }}</a></dd>
         </div>
         <div class="grid grid-cols-3 gap-4 p-3">
-          <dt class="text-sm text-muted-foreground">Street</dt>
+          <dt class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.fields.street_address') }}</dt>
           <dd class="col-span-2">{{ location.street_address }} {{ location.street_number }}</dd>
         </div>
       </dl>

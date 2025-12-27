@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layouts/Footer.vue';
-import { Toaster } from 'vue-sonner'
+import { Toaster } from '@/components/ui/sonner'
 import { usePage } from '@inertiajs/vue3'
 import { useFlashToasts } from '@/composables/useFlashToasts'
 
@@ -24,12 +24,6 @@ useFlashToasts(page)
           theme="system"
           offset="64px"
           :duration="4000"
-          :toast-options="{
-            class: 'border border-white/10 bg-background/95 text-foreground rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)]',
-            descriptionClass: 'text-sm text-muted-foreground',
-            actionButtonClass: 'rounded-md bg-white/10 hover:bg-white/15 text-foreground',
-            cancelButtonClass: 'rounded-md bg-transparent hover:bg-white/5 text-muted-foreground'
-          }"
         />
         <AppSidebar />
         <SidebarInset>

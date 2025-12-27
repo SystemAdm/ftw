@@ -23,10 +23,11 @@ configureEcho({
     enabledTransports: isTLS ? ['wss'] : ['ws', 'wss'],
 });
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
 createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
+    title: (title) => {
+        const appName = JSON.parse(document.getElementById('app')?.dataset.page || '{}').props?.name || import.meta.env.VITE_APP_NAME || 'Laravel';
+        return title ? `${title} - ${appName}` : appName;
+    },
     resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })

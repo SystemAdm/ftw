@@ -8,6 +8,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ref, computed } from 'vue';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const weekday = computed<any>(() => (page.props as any).weekday);
@@ -30,81 +33,89 @@ function addExcluded() {
     },
   );
 }
-
-function weekdayLabel(n: number): string {
-  const names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  return names[n] ?? String(n);
-}
-
-// Backend now provides Carbon-formatted date as `excluded_date_formatted`
 </script>
 
 <template>
   <SidebarLayout>
     <div v-if="weekday" class="mb-4 flex items-center justify-between">
-      <h1 class="text-xl font-semibold">Weekday</h1>
+      <h1 class="text-xl font-semibold">{{ trans('pages.settings.weekdays.fields.weekday') }}: {{ trans(`pages.settings.weekdays.days.${weekday.weekday}`) }}</h1>
       <div class="flex gap-2">
-        <Button variant="secondary" @click="router.visit(indexRoute.url())">Back</Button>
-        <Button @click="router.visit(editRoute.url(weekday.id))">Edit</Button>
+        <Button variant="secondary" @click="router.visit(indexRoute.url())">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
+        <Button @click="router.visit(editRoute.url(weekday.id))">{{ trans('pages.settings.locations.actions.edit') }}</Button>
       </div>
     </div>
 
-    <div v-if="weekday" class="grid max-w-xl grid-cols-1 gap-2 rounded border p-4">
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-500">Day</div>
-        <div class="font-medium">{{ weekdayLabel(weekday.weekday) }}</div>
-      </div>
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-500">Team</div>
-        <div class="font-medium">{{ weekday.team?.name ?? '—' }}</div>
-      </div>
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-500">Location</div>
-        <div class="font-medium">{{ weekday.location?.name ?? '—' }}</div>
-      </div>
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-500">Status</div>
-        <div class="font-medium" :class="weekday.is_ended ? 'text-red-600' : (weekday.active ? 'text-green-600' : 'text-gray-500')">
-          {{ weekday.status_label }}
+    <Card v-if="weekday" class="max-w-4xl">
+      <CardHeader>
+        <CardTitle>{{ trans('pages.settings.weekdays.title') }}</CardTitle>
+        <CardDescription>{{ trans('pages.settings.weekdays.fields.description') }}: {{ weekday.description || '—' }}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <dt class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.weekdays.fields.weekday') }}</dt>
+            <dd class="text-lg font-semibold">{{ trans(`pages.settings.weekdays.days.${weekday.weekday}`) }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.weekdays.fields.team') }}</dt>
+            <dd class="text-lg font-semibold">{{ weekday.team?.name ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.weekdays.fields.location') }}</dt>
+            <dd class="text-lg font-semibold">{{ weekday.location?.name ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.teams.fields.status') }}</dt>
+            <dd class="text-lg font-semibold" :class="weekday.is_ended ? 'text-red-600' : (weekday.active ? 'text-green-600' : 'text-gray-500')">
+              {{ weekday.active ? trans('pages.settings.teams.status.active') : trans('pages.settings.teams.status.inactive') }}
+            </dd>
+          </div>
+          <div class="sm:col-span-2">
+            <dt class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.locations.fields.postal_code') }} ({{ trans('pages.settings.weekdays.fields.date') }})</dt>
+            <dd class="text-lg font-semibold">{{ weekday.start_time }} - {{ weekday.end_time }}</dd>
+          </div>
+        </dl>
+
+        <Separator class="my-6" />
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">{{ trans('pages.settings.weekdays.fields.exclusions') }}</h3>
+            <Dialog v-model:open="open">
+              <DialogTrigger as-child>
+                <Button size="sm">{{ trans('pages.settings.weekdays.actions.add_exclusion') }}</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{{ trans('pages.settings.weekdays.actions.add_exclusion') }}</DialogTitle>
+                </DialogHeader>
+                <div class="space-y-4 py-4">
+                  <div class="space-y-2">
+                    <Label for="date">{{ trans('pages.settings.weekdays.fields.date') }}</Label>
+                    <Input id="date" v-model="exclusionDate" type="date" />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" @click="open = false">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
+                  <Button @click="addExcluded">{{ trans('pages.settings.locations.actions.create') }}</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <ul class="divide-y rounded-md border">
+            <li v-if="(weekday.exclusions ?? []).length === 0" class="p-4 text-center text-sm text-muted-foreground">
+              {{ trans('pages.settings.locations.none') }}
+            </li>
+            <li v-for="ex in (weekday.exclusions ?? [])" :key="ex.id" class="flex items-center justify-between p-4">
+              <span>{{ ex.excluded_date_formatted ?? ex.excluded_date }}</span>
+              <span class="text-xs text-muted-foreground">ID: {{ ex.id }}</span>
+            </li>
+          </ul>
         </div>
-      </div>
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-500">Time</div>
-        <div class="font-medium">{{ weekday.start_time }} - {{ weekday.end_time }}</div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
 
-    <div v-if="weekday" class="mt-8 max-w-xl">
-      <div class="mb-2 flex items-center justify-between">
-        <h2 class="text-lg font-semibold">Excluded Dates</h2>
-        <Dialog v-model:open="open">
-          <DialogTrigger as-child>
-            <Button size="sm">Add exclusion</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add excluded date</DialogTitle>
-            </DialogHeader>
-            <div>
-              <Label class="block text-sm font-medium">Date</Label>
-              <Input v-model="exclusionDate" type="date" class="mt-1 w-full" />
-            </div>
-            <DialogFooter>
-              <Button variant="secondary" @click="open = false">Cancel</Button>
-              <Button @click="addExcluded">Add</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-      <ul class="divide-y rounded border">
-        <li v-if="(weekday.exclusions ?? []).length === 0" class="p-3 text-sm text-gray-500">No exclusions</li>
-        <li v-for="ex in (weekday.exclusions ?? [])" :key="ex.id" class="flex items-center justify-between p-3">
-          <span>{{ ex.excluded_date_formatted ?? ex.excluded_date }}</span>
-          <span class="text-xs text-gray-500">#{{ ex.id }}</span>
-        </li>
-      </ul>
-    </div>
-
-    <div v-else class="p-4 text-sm text-gray-500">Loading...</div>
+    <div v-else class="p-4 text-sm text-muted-foreground">Loading...</div>
   </SidebarLayout>
 </template>

@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Checkbox } from '@/components/ui/checkbox';
 import { index } from '@/routes/admin/teams';
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const usersList = (page.props as any).users ?? [];
@@ -40,58 +41,54 @@ function toggleUser(userId: number, checked: boolean | 'indeterminate') {
 
 <template>
     <SidebarLayout>
-        <h1 class="mb-4 text-xl font-semibold">Create Team</h1>
+        <h1 class="mb-4 text-xl font-semibold">{{ trans('pages.settings.teams.new') }}</h1>
 
         <form class="max-w-xl space-y-4" @submit.prevent="submit">
             <Field>
-                <FieldLabel class="block text-sm font-medium">Name</FieldLabel>
+                <FieldLabel>{{ trans('pages.settings.teams.fields.name') }}</FieldLabel>
                 <Input
                     v-model="form.name"
-                    class="mt-1 w-full rounded border px-3 py-2"
                     type="text"
                     :class="{ 'border-red-500': errors.name }"
                     @input="errors.name = ''"
                 />
-                <FieldError v-if="errors.name">{{ errors.name }}</FieldError>
+                <FieldError v-if="errors.name">{{ errors.name[0] }}</FieldError>
             </Field>
 
-            <div>
-                <Label class="block text-sm font-medium">Slug</Label>
+            <Field>
+                <FieldLabel>{{ trans('pages.settings.teams.fields.slug') }}</FieldLabel>
                 <Input
                     v-model="form.slug"
-                    class="mt-1 w-full rounded border px-3 py-2"
                     type="text"
                     :class="{ 'border-red-500': errors.slug }"
                     @input="errors.slug = ''"
                 />
-                <div v-if="errors.slug" class="mt-1 text-sm text-red-600">{{ errors.slug[0] }}</div>
-            </div>
+                <FieldError v-if="errors.slug">{{ errors.slug[0] }}</FieldError>
+            </Field>
 
-            <div>
-                <Label class="block text-sm font-medium">Description</Label>
+            <Field>
+                <FieldLabel>{{ trans('pages.settings.teams.fields.description') }}</FieldLabel>
                 <Textarea
                     v-model="form.description"
-                    class="mt-1 w-full rounded border px-3 py-2"
                     :class="{ 'border-red-500': errors.description }"
                     @input="errors.description = ''"
                 ></Textarea>
-                <div v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description[0] }}</div>
-            </div>
+                <FieldError v-if="errors.description">{{ errors.description[0] }}</FieldError>
+            </Field>
 
-            <div>
-                <label class="block text-sm font-medium">Logo URL</label>
-                <input
+            <Field>
+                <FieldLabel>{{ trans('pages.settings.teams.fields.logo_url') }}</FieldLabel>
+                <Input
                     v-model="form.logo"
-                    class="mt-1 w-full rounded border px-3 py-2"
                     type="url"
                     :class="{ 'border-red-500': errors.logo }"
                     @input="errors.logo = ''"
                 />
-                <div v-if="errors.logo" class="mt-1 text-sm text-red-600">{{ errors.logo[0] }}</div>
-            </div>
+                <FieldError v-if="errors.logo">{{ errors.logo[0] }}</FieldError>
+            </Field>
 
             <div>
-                <Label class="block text-sm font-medium">Members</Label>
+                <Label class="block text-sm font-medium">{{ trans('pages.settings.teams.fields.members') }}</Label>
                 <div class="mt-2 grid max-h-64 grid-cols-1 gap-2 overflow-y-auto rounded border p-3 sm:grid-cols-2">
                     <label v-for="u in usersList" :key="u.id" class="flex items-center gap-2">
                         <Checkbox
@@ -105,14 +102,14 @@ function toggleUser(userId: number, checked: boolean | 'indeterminate') {
                 <div v-if="errors.users" class="mt-1 text-sm text-red-600">{{ errors.users[0] }}</div>
             </div>
 
-            <label class="inline-flex items-center gap-2">
-                <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v === true)" />
-                <span>Active</span>
-            </label>
+            <div class="flex items-center gap-2">
+                <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v)" />
+                <Label>{{ trans('pages.settings.teams.fields.active') }}</Label>
+            </div>
 
             <div class="flex gap-2">
-                <Button>Save</Button>
-                <Button variant="secondary" @click.prevent="router.visit(index.url())">Cancel</Button>
+                <Button type="submit">{{ trans('pages.settings.locations.actions.save') }}</Button>
+                <Button variant="secondary" @click.prevent="router.visit(index.url())">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
             </div>
         </form>
     </SidebarLayout>

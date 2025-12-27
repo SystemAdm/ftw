@@ -54,6 +54,28 @@ class User extends Authenticatable implements ReactsInterface
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'is_banned',
+    ];
+
+    /**
+     * Get the user's ban status.
+     */
+    public function getIsBannedAttribute(): bool
+    {
+        return $this->isBanned();
+    }
+
+    public function verifier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -125,5 +147,56 @@ class User extends Authenticatable implements ReactsInterface
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class);
+    }
+
+    /**
+     * Get the next billing date for the user's default subscription.
+     */
+    public function getSubscriptionNextBillingDate(): ?string
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription) {
+            return null;
+        }
+
+        if ($subscription->onGracePeriod()) {
+            return $subscription->ends_at?->toIso8601String();
+        }
+
+        try {
+            return $subscription->currentPeriodEnd()?->toIso8601String();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to fetch Stripe subscription for user '.$this->id.': '.$e->getMessage());
+
+            return null;
+        }
+    }
+
+    /**
+     * Get the time left for the user's default subscription.
+     */
+    public function getSubscriptionTimeLeft(): ?string
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription) {
+            return null;
+        }
+
+        if ($subscription->onGracePeriod()) {
+            return $subscription->ends_at->diffForHumans();
+        }
+
+        if ($this->subscribed('default')) {
+            try {
+                return $subscription->currentPeriodEnd()?->diffForHumans();
+            } catch (\Exception $e) {
+                // Already logged in getSubscriptionNextBillingDate if called
+                return null;
+            }
+        }
+
+        return null;
     }
 }

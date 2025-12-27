@@ -2,6 +2,7 @@
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import type { Component } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 
 interface NavItem {
     title: string;
@@ -16,7 +17,7 @@ defineProps<{
 
 <template>
     <SidebarGroup class="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel>User Menu</SidebarGroupLabel>
+        <SidebarGroupLabel>{{ trans('pages.ui.navigation.user_menu') }}</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
                 <SidebarMenuButton :tooltip="item.title" as-child>

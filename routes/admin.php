@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\EventsController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\PermissionsController;
 use App\Http\Controllers\Admin\PostCodeController;
@@ -40,5 +41,12 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(
     Route::resource('weekdays', WeekdaysController::class);
     Route::post('weekdays/{weekday}/exclusions', [WeekdaysController::class, 'addExclusion'])->name('weekdays.exclusions.add');
     Route::delete('weekdays/{weekday}/exclusions/{exclusion}', [WeekdaysController::class, 'removeExclusion'])->name('weekdays.exclusions.remove');
+
+    // Admin Events
+    Route::get('events/images', [EventsController::class, 'images'])->name('events.images');
+    Route::post('events/images', [EventsController::class, 'uploadImage'])->name('events.images.upload');
+    Route::resource('events', EventsController::class);
+    Route::post('events/{id}/restore', [EventsController::class, 'restore'])->name('events.restore');
+    Route::delete('events/{id}/force', [EventsController::class, 'forceDestroy'])->name('events.force-destroy');
 
 });

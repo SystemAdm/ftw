@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const team = page.props.team as any;
@@ -52,52 +53,52 @@ function forceDeleteTeam() {
           <div class="space-y-1">
             <CardTitle class="text-2xl">{{ team.name }}</CardTitle>
             <CardDescription class="flex items-center gap-2">
-              <span class="text-xs text-muted-foreground">Slug:</span>
+              <span class="text-xs text-muted-foreground">{{ trans('pages.settings.teams.fields.slug') }}:</span>
               <code class="rounded bg-muted px-1.5 py-0.5 text-xs">{{ team.slug }}</code>
               <Separator orientation="vertical" class="mx-1 hidden h-4 sm:inline-block" />
-              <Badge v-if="team.deleted_at" variant="destructive">Deleted</Badge>
-              <Badge v-else :variant="team.active ? 'default' : 'secondary'">{{ team.active ? 'Active' : 'Inactive' }}</Badge>
+              <Badge v-if="team.deleted_at" variant="destructive">{{ trans('pages.settings.teams.status.deleted') }}</Badge>
+              <Badge v-else :variant="team.active ? 'default' : 'secondary'">{{ team.active ? trans('pages.settings.teams.status.active') : trans('pages.settings.teams.status.inactive') }}</Badge>
             </CardDescription>
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <Button variant="outline" @click="goBack">Back</Button>
-            <Button variant="secondary" v-if="!team.deleted_at" @click="editTeam">Edit</Button>
+            <Button variant="outline" @click="goBack">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
+            <Button variant="secondary" v-if="!team.deleted_at" @click="editTeam">{{ trans('pages.settings.locations.actions.edit') }}</Button>
 
             <AlertDialog v-if="!team.deleted_at">
               <AlertDialogTrigger as-child>
-                <Button variant="destructive">Delete</Button>
+                <Button variant="destructive">{{ trans('pages.settings.locations.actions.delete') }}</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete team?</AlertDialogTitle>
+                  <AlertDialogTitle>{{ trans('pages.settings.teams.delete.title') }}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action will soft delete the team. You can restore it later.
+                    {{ trans('pages.settings.teams.delete.description') }}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction @click="deleteTeam">Delete</AlertDialogAction>
+                  <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
+                  <AlertDialogAction @click="deleteTeam">{{ trans('pages.settings.locations.actions.delete') }}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
 
-            <Button v-else @click="restoreTeam">Restore</Button>
+            <Button v-else @click="restoreTeam">{{ trans('pages.settings.teams.actions.restore') }}</Button>
 
             <AlertDialog v-if="team.deleted_at">
               <AlertDialogTrigger as-child>
-                <Button variant="destructive">Force Delete</Button>
+                <Button variant="destructive">{{ trans('pages.settings.teams.actions.force_delete') }}</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Permanently delete team?</AlertDialogTitle>
+                  <AlertDialogTitle>{{ trans('pages.settings.teams.force_delete.title') }}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the team and remove its data.
+                    {{ trans('pages.settings.teams.force_delete.description') }}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction @click="forceDeleteTeam">Force Delete</AlertDialogAction>
+                  <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
+                  <AlertDialogAction @click="forceDeleteTeam">{{ trans('pages.settings.teams.actions.force_delete') }}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -109,23 +110,23 @@ function forceDeleteTeam() {
             <!-- Details -->
             <div class="lg:col-span-2 space-y-6">
               <section>
-                <h2 class="mb-2 text-sm font-medium text-muted-foreground">About</h2>
+                <h2 class="mb-2 text-sm font-medium text-muted-foreground">{{ trans('pages.settings.teams.fields.about') }}</h2>
                 <div class="rounded-md border bg-card p-4">
                   <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3">
                     <div class="sm:col-span-3">
-                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">Description</dt>
+                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.teams.fields.description') }}</dt>
                       <dd class="mt-1 text-sm text-card-foreground">{{ team.description || '—' }}</dd>
                     </div>
                     <div>
-                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">Created</dt>
+                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.teams.fields.created') }}</dt>
                       <dd class="mt-1 text-sm">{{ team.created_at }}</dd>
                     </div>
                     <div>
-                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">Updated</dt>
+                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.teams.fields.updated') }}</dt>
                       <dd class="mt-1 text-sm">{{ team.updated_at }}</dd>
                     </div>
                     <div v-if="team.deleted_at">
-                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">Deleted</dt>
+                      <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.teams.fields.deleted') }}</dt>
                       <dd class="mt-1 text-sm">{{ team.deleted_at }}</dd>
                     </div>
                   </dl>
@@ -133,19 +134,19 @@ function forceDeleteTeam() {
               </section>
 
               <section>
-                <h2 class="mb-2 text-sm font-medium text-muted-foreground">Members</h2>
+                <h2 class="mb-2 text-sm font-medium text-muted-foreground">{{ trans('pages.settings.teams.fields.members') }}</h2>
                 <div class="rounded-md border bg-card p-4">
                   <div v-if="(team.users ?? []).length" class="flex flex-wrap gap-2">
                     <Badge v-for="u in team.users" :key="u.id" variant="outline">{{ u.name }}</Badge>
                   </div>
-                  <div v-else class="text-sm text-muted-foreground">No members assigned.</div>
+                  <div v-else class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.none') }}</div>
                 </div>
               </section>
             </div>
 
             <!-- Logo preview -->
             <aside class="space-y-3">
-              <h2 class="text-sm font-medium text-muted-foreground">Logo</h2>
+              <h2 class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.teams.fields.logo') }}</h2>
               <div class="rounded-md border bg-card p-4">
                 <div v-if="team.logo" class="space-y-3">
                   <div class="overflow-hidden rounded-md border">
@@ -153,15 +154,15 @@ function forceDeleteTeam() {
                   </div>
                   <a :href="team.logo" target="_blank" class="text-xs text-blue-600 underline break-all">{{ team.logo }}</a>
                 </div>
-                <div v-else class="text-sm text-muted-foreground">No logo provided.</div>
+                <div v-else class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.none') }}</div>
               </div>
             </aside>
           </div>
         </CardContent>
 
         <CardFooter class="flex justify-end gap-2">
-          <Button variant="outline" @click="goBack">Back</Button>
-          <Button v-if="!team.deleted_at" variant="secondary" @click="editTeam">Edit</Button>
+          <Button variant="outline" @click="goBack">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
+          <Button v-if="!team.deleted_at" variant="secondary" @click="editTeam">{{ trans('pages.settings.locations.actions.edit') }}</Button>
         </CardFooter>
       </Card>
     </SidebarLayout>

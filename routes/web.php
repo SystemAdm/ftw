@@ -15,7 +15,19 @@ require __DIR__.'/admin.php';
 
 // Stripe Webhook (Cashier) - exclude CSRF so Stripe can POST
 Route::post('stripe/webhook', [CashierWebhookController::class, 'handleWebhook'])
-    ->withoutMiddleware(VerifyCsrfToken::class);
+    ->withoutMiddleware(VerifyCsrfToken::class)->name('cashier.webhook');
+
+// Manual debug route for testing webhooks (only in local)
+if (app()->isLocal()) {
+    Route::get('stripe/debug', function () {
+        return response()->json([
+            'stripe_key_set' => ! empty(config('cashier.key')),
+            'stripe_secret_set' => ! empty(config('cashier.secret')),
+            'webhook_secret_set' => ! empty(config('cashier.webhook.secret')),
+            'app_url' => config('app.url'),
+        ]);
+    });
+}
 
 // Legal pages
 Route::get('/privacy', [LegalController::class, 'privacy'])->name('privacy');
@@ -25,3 +37,13 @@ Route::get('/cookie', [LegalController::class, 'cookie'])->name('cookie');
 // Contact page
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+// Public Events
+Route::get('/events', [\App\Http\Controllers\EventsController::class, 'index'])->name('events.index');
+Route::get('/events/{event}', [\App\Http\Controllers\EventsController::class, 'show'])->name('events.show');
+Route::post('/events/{event}/signup', [\App\Http\Controllers\EventsController::class, 'signup'])
+    ->middleware(['auth', 'verified'])
+    ->name('events.signup');
+Route::delete('/events/{event}/signup', [\App\Http\Controllers\EventsController::class, 'cancelSignup'])
+    ->middleware(['auth', 'verified'])
+    ->name('events.cancelSignup');

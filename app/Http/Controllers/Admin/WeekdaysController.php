@@ -40,7 +40,7 @@ class WeekdaysController extends Controller
         /** @var Weekday $weekday */
         $weekday = Weekday::query()->create($data);
 
-        return redirect()->route('admin.weekdays.show', $weekday)->with('success', 'Weekday created.');
+        return redirect()->route('admin.weekdays.show', $weekday)->with('success', __('pages.settings.weekdays.messages.created'));
     }
 
     public function show(Weekday $weekday): Response
@@ -67,14 +67,14 @@ class WeekdaysController extends Controller
     {
         $weekday->update($request->validated());
 
-        return redirect()->route('admin.weekdays.show', $weekday)->with('success', 'Weekday updated.');
+        return redirect()->route('admin.weekdays.show', $weekday)->with('success', __('pages.settings.weekdays.messages.updated'));
     }
 
     public function destroy(Weekday $weekday): RedirectResponse
     {
         $weekday->delete();
 
-        return redirect()->route('admin.weekdays.index')->with('success', 'Weekday deleted.');
+        return redirect()->route('admin.weekdays.index')->with('success', __('pages.settings.weekdays.messages.deleted'));
     }
 
     public function addExclusion(Request $request, Weekday $weekday): RedirectResponse
@@ -87,7 +87,7 @@ class WeekdaysController extends Controller
             'excluded_date' => $data['excluded_date'],
         ]);
 
-        return back()->with('success', 'Exclusion added.');
+        return back()->with('success', __('pages.settings.weekdays.messages.exclusion_added'));
     }
 
     public function removeExclusion(Weekday $weekday, WeekdayExcluded $exclusion): RedirectResponse
@@ -97,6 +97,6 @@ class WeekdaysController extends Controller
             $exclusion->delete();
         }
 
-        return back()->with('success', 'Exclusion removed.');
+        return back()->with('success', __('pages.settings.weekdays.messages.exclusion_removed'));
     }
 }

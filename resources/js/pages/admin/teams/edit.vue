@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { reactive } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const team = page.props.team as any;
@@ -37,56 +39,56 @@ function cancel() {
 
 <template>
   <SidebarLayout>
-    <h1 class="text-xl font-semibold mb-4">Edit Team</h1>
+    <h1 class="text-xl font-semibold mb-4">{{ trans('pages.settings.teams.edit') }}</h1>
 
     <form class="space-y-4 max-w-xl" @submit.prevent="submit">
-      <div>
-        <Label class="block text-sm font-medium">Name</Label>
-        <Input v-model="form.name" class="mt-1 w-full" type="text" />
-        <div v-if="errors.name" class="text-red-600 text-sm mt-1">{{ errors.name[0] }}</div>
-      </div>
+      <Field>
+        <FieldLabel>{{ trans('pages.settings.teams.fields.name') }}</FieldLabel>
+        <Input v-model="form.name" type="text" />
+        <FieldError v-if="errors.name">{{ errors.name[0] }}</FieldError>
+      </Field>
+
+      <Field>
+        <FieldLabel>{{ trans('pages.settings.teams.fields.slug') }}</FieldLabel>
+        <Input v-model="form.slug" type="text" />
+        <FieldError v-if="errors.slug">{{ errors.slug[0] }}</FieldError>
+      </Field>
+
+      <Field>
+        <FieldLabel>{{ trans('pages.settings.teams.fields.description') }}</FieldLabel>
+        <Textarea v-model="form.description" />
+        <FieldError v-if="errors.description">{{ errors.description[0] }}</FieldError>
+      </Field>
+
+      <Field>
+        <FieldLabel>{{ trans('pages.settings.teams.fields.logo_url') }}</FieldLabel>
+        <Input v-model="form.logo" type="text" />
+        <FieldError v-if="errors.logo">{{ errors.logo[0] }}</FieldError>
+      </Field>
 
       <div>
-        <Label class="block text-sm font-medium">Slug</Label>
-        <Input v-model="form.slug" class="mt-1 w-full" type="text" />
-        <div v-if="errors.slug" class="text-red-600 text-sm mt-1">{{ errors.slug[0] }}</div>
-      </div>
-
-      <div>
-        <Label class="block text-sm font-medium">Description</Label>
-        <Textarea v-model="form.description" class="mt-1 w-full" />
-        <div v-if="errors.description" class="text-red-600 text-sm mt-1">{{ errors.description[0] }}</div>
-      </div>
-
-      <div>
-        <Label class="block text-sm font-medium">Logo URL</Label>
-        <Input v-model="form.logo" class="mt-1 w-full" type="text" />
-        <div v-if="errors.logo" class="text-red-600 text-sm mt-1">{{ errors.logo[0] }}</div>
-      </div>
-
-      <div>
-        <Label class="block text-sm font-medium">Members</Label>
+        <Label class="block text-sm font-medium">{{ trans('pages.settings.teams.fields.members') }}</Label>
         <div class="mt-2 grid max-h-64 grid-cols-1 gap-2 overflow-y-auto rounded border p-3 sm:grid-cols-2">
-          <Label v-for="u in usersList" :key="u.id" class="flex items-center gap-2">
+          <label v-for="u in usersList" :key="u.id" class="flex items-center gap-2">
             <Checkbox
               :model-value="form.users.includes(u.id)"
               @update:model-value="(val) => { const isChecked = val === true; const idx = form.users.indexOf(u.id); if (isChecked && idx === -1) form.users.push(u.id); if (!isChecked && idx !== -1) form.users.splice(idx, 1); }"
               :aria-label="`Select ${u.name}`"
             />
             <span class="text-sm">{{ u.name }}</span>
-          </Label>
+          </label>
         </div>
         <div v-if="errors.users" class="text-red-600 text-sm mt-1">{{ errors.users[0] }}</div>
       </div>
 
-      <label class="inline-flex items-center gap-2">
-        <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v === true)" aria-label="Select Active" class="rounded border"  />
-        <span>Active</span>
-      </label>
+      <div class="flex items-center gap-2">
+        <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v)" aria-label="Select Active" />
+        <Label>{{ trans('pages.settings.teams.fields.active') }}</Label>
+      </div>
 
       <div class="flex gap-2">
-        <Button>Save</Button>
-        <Button variant="secondary" type="button" @click="cancel">Cancel</Button>
+        <Button type="submit">{{ trans('pages.settings.locations.actions.save') }}</Button>
+        <Button variant="secondary" type="button" @click="cancel">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
       </div>
     </form>
   </SidebarLayout>

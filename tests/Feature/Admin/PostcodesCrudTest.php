@@ -11,6 +11,7 @@ it('shows admin postcodes index', function (): void {
 
     $response = $this->get('/admin/postcodes');
     $response->assertSuccessful();
+    $response->assertSee(trans('pages.settings.postcodes.title'));
 });
 
 it('can create, update, soft delete, restore and force delete a postal code', function (): void {

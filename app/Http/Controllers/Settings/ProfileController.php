@@ -20,6 +20,7 @@ class ProfileController extends Controller
     public function show(Request $request): Response
     {
         $user = $request->user()->loadMissing('postalCode');
+        $subscription = $user->subscription('default');
 
         return Inertia::render('settings/profile', [
             'user' => [
@@ -34,6 +35,13 @@ class ProfileController extends Controller
                     'country' => $user->postalCode->country,
                 ] : null,
                 'appearance' => $user->appearance ?? 'system',
+            ],
+            'subscription' => [
+                'active' => $user->subscribed('default'),
+                'ends_at' => $subscription?->ends_at?->toIso8601String(),
+                'on_grace_period' => $subscription?->onGracePeriod() ?? false,
+                'next_billing_date' => $user->getSubscriptionNextBillingDate(),
+                'time_left' => $user->getSubscriptionTimeLeft(),
             ],
         ]);
     }

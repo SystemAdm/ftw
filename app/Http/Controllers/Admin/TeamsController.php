@@ -52,7 +52,7 @@ class TeamsController extends Controller
             $team->users()->sync($userIds);
         }
 
-        return redirect()->route('admin.teams.show', $team)->with('success', 'Team created.');
+        return redirect()->route('admin.teams.show', $team)->with('success', __('pages.settings.teams.messages.created'));
     }
 
     /**
@@ -94,7 +94,7 @@ class TeamsController extends Controller
             $team->users()->sync($userIds);
         }
 
-        return redirect()->route('admin.teams.show', $team)->with('success', 'Team updated.');
+        return redirect()->route('admin.teams.show', $team)->with('success', __('pages.settings.teams.messages.updated'));
     }
 
     /**
@@ -104,7 +104,7 @@ class TeamsController extends Controller
     {
         $team->delete();
 
-        return redirect()->route('admin.teams.index')->with('success', 'Team deleted.');
+        return redirect()->route('admin.teams.index')->with('success', __('pages.settings.teams.messages.deleted'));
     }
 
     public function restore(int $id): RedirectResponse
@@ -112,7 +112,7 @@ class TeamsController extends Controller
         $team = Team::withTrashed()->findOrFail($id);
         $team->restore();
 
-        return redirect()->route('admin.teams.index')->with('success', 'Team restored.');
+        return redirect()->route('admin.teams.index')->with('success', __('pages.settings.teams.messages.restored'));
     }
 
     public function forceDestroy(int $id): RedirectResponse
@@ -120,6 +120,6 @@ class TeamsController extends Controller
         $team = Team::withTrashed()->findOrFail($id);
         $team->forceDelete();
 
-        return redirect()->route('admin.teams.index')->with('success', 'Team permanently deleted.');
+        return redirect()->route('admin.teams.index')->with('success', __('pages.settings.teams.messages.force_deleted'));
     }
 }

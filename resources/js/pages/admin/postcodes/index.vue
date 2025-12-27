@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Button } from '@/components/ui/button';
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { create, show as showRoute, destroy as destroyRoute } from '@/routes/admin/postcodes';
 import { restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/postcodes';
 import { Table, TableBody, TableEmpty, TableHead, TableHeader, TableRow, TableCell, TableFooter } from '@/components/ui/table';
 import Paginator from '@/components/custom/Paginator.vue';
+import { trans } from 'laravel-vue-i18n';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,23 +40,23 @@ function forceDel(pc: any) {
 <template>
   <SidebarLayout>
     <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-xl font-semibold">Postal Codes</h1>
-      <Button @click.prevent="router.visit(create.url())">New</Button>
+      <h1 class="text-xl font-semibold">{{ trans('pages.settings.postcodes.title') }}</h1>
+      <Button @click.prevent="router.visit(create.url())">{{ trans('pages.settings.postcodes.actions.create') }}</Button>
     </div>
 
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Postal Code</TableHead>
-          <TableHead>City</TableHead>
-          <TableHead>State</TableHead>
-          <TableHead>Country</TableHead>
+          <TableHead>{{ trans('pages.settings.postcodes.fields.postal_code') }}</TableHead>
+          <TableHead>{{ trans('pages.settings.postcodes.fields.city') }}</TableHead>
+          <TableHead>{{ trans('pages.settings.postcodes.fields.state') }}</TableHead>
+          <TableHead>{{ trans('pages.settings.postcodes.fields.country') }}</TableHead>
           <TableHead class="w-0 text-right"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableEmpty v-if="!postcodes || postcodes.data.length === 0" :colspan="5">
-          No postal codes yet.
+          {{ trans('pages.settings.postcodes.none') }}
         </TableEmpty>
         <template v-else>
           <TableRow v-for="pc in postcodes.data" :key="pc.postal_code">
@@ -64,40 +65,40 @@ function forceDel(pc: any) {
             <TableCell>{{ pc.state }}</TableCell>
             <TableCell>{{ pc.country }}</TableCell>
             <TableCell class="text-right flex gap-2">
-              <Button size="sm" @click.prevent="router.visit(showRoute.url(pc.postal_code))">View</Button>
+              <Button size="sm" @click.prevent="router.visit(showRoute.url(pc.postal_code))">{{ trans('pages.settings.postcodes.actions.view') }}</Button>
               <AlertDialog v-if="!pc.deleted_at">
                 <AlertDialogTrigger as-child>
-                  <Button size="sm" variant="destructive">Delete</Button>
+                  <Button size="sm" variant="destructive">{{ trans('pages.settings.postcodes.actions.delete') }}</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete postal code {{ pc.postal_code }}?</AlertDialogTitle>
+                    <AlertDialogTitle>{{ trans('pages.settings.postcodes.delete.title', { code: pc.postal_code }) }}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will move the postal code to the trash. You can restore it later.
+                      {{ trans('pages.settings.postcodes.delete.description') }}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction @click="del(pc)">Delete</AlertDialogAction>
+                    <AlertDialogCancel>{{ trans('pages.settings.postcodes.actions.cancel') }}</AlertDialogCancel>
+                    <AlertDialogAction @click="del(pc)">{{ trans('pages.settings.postcodes.actions.delete') }}</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
               <div v-else class="inline-flex gap-2">
-                <Button size="sm" variant="secondary" @click="restorePc(pc)">Restore</Button>
+                <Button size="sm" variant="secondary" @click="restorePc(pc)">{{ trans('pages.settings.postcodes.actions.restore') }}</Button>
                 <AlertDialog>
                   <AlertDialogTrigger as-child>
-                    <Button size="sm" variant="destructive">Force Delete</Button>
+                    <Button size="sm" variant="destructive">{{ trans('pages.settings.postcodes.actions.force_delete') }}</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Permanently delete {{ pc.postal_code }}?</AlertDialogTitle>
+                      <AlertDialogTitle>{{ trans('pages.settings.postcodes.force_delete.title', { code: pc.postal_code }) }}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently remove the postal code.
+                        {{ trans('pages.settings.postcodes.force_delete.description') }}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction @click="forceDel(pc)">Delete permanently</AlertDialogAction>
+                      <AlertDialogCancel>{{ trans('pages.settings.postcodes.actions.cancel') }}</AlertDialogCancel>
+                      <AlertDialogAction @click="forceDel(pc)">{{ trans('pages.settings.postcodes.actions.delete_permanently') }}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

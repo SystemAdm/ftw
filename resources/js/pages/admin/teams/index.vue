@@ -15,23 +15,24 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { index,show,create, restore as restoreRoute, forceDestroy as deleteRoute  } from '@/routes/admin/teams';
+import { index, show, create, restore as restoreRoute, forceDestroy as deleteRoute } from '@/routes/admin/teams';
+import { trans } from 'laravel-vue-i18n';
 
 const inertiaPage = usePage<PageProps>();
 
 function goCreate() {
-    router.visit(create.url() );
+    router.visit(create.url());
 }
 
 function restoreTeam(id: number, e?: Event) {
     e?.stopPropagation();
-    router.post(restoreRoute(id));
+    router.post(restoreRoute.url(id));
 }
 
 function forceDeleteTeam(id: number, e?: Event) {
     e?.stopPropagation();
-    router.delete(deleteRoute(id), {
-        onFinish: () => router.visit(index.url())
+    router.delete(deleteRoute.url(id), {
+        onFinish: () => router.visit(index.url()),
     });
 }
 </script>
@@ -39,46 +40,63 @@ function forceDeleteTeam(id: number, e?: Event) {
 <template>
     <SidebarLayout>
         <div class="mb-4 flex items-center justify-between">
-            <h1 class="text-xl font-semibold">Teams</h1>
-            <button class="rounded bg-black/90 px-3 py-2 text-white" @click="goCreate">New Team</button>
+            <h1 class="text-xl font-semibold">{{ trans('pages.settings.teams.title') }}</h1>
+            <Button @click="goCreate">{{ trans('pages.settings.teams.new') }}</Button>
         </div>
 
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead class="text-right">Actions</TableHead>
+                    <TableHead>{{ trans('pages.settings.teams.fields.name') }}</TableHead>
+                    <TableHead>{{ trans('pages.settings.teams.fields.slug') }}</TableHead>
+                    <TableHead>{{ trans('pages.settings.teams.fields.status') }}</TableHead>
+                    <TableHead class="text-right"></TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow v-for="team in inertiaPage.props.teams.data" :key="team.id" class="cursor-pointer" @click="router.visit(show.url(team.id))">
-                    <TableCell>{{ team.name }}</TableCell>
+                <TableRow
+                    v-for="team in inertiaPage.props.teams.data"
+                    :key="team.id"
+                    class="cursor-pointer"
+                    @click="router.visit(show.url(team.id))"
+                >
+                    <TableCell class="font-medium">{{ team.name }}</TableCell>
                     <TableCell>{{ team.slug }}</TableCell>
                     <TableCell>
                         <span :class="team.deleted_at ? 'text-red-600' : team.active ? 'text-green-600' : 'text-gray-500'">
-                            {{ team.deleted_at ? 'Deleted' : team.active ? 'Active' : 'Inactive' }}
+                            {{
+                                team.deleted_at
+                                    ? trans('pages.settings.teams.status.deleted')
+                                    : team.active
+                                      ? trans('pages.settings.teams.status.active')
+                                      : trans('pages.settings.teams.status.inactive')
+                            }}
                         </span>
                     </TableCell>
                     <TableCell class="text-right">
                         <div v-if="team.deleted_at" class="flex justify-end gap-2">
-                            <Button @click="(e) => restoreTeam(team.id, e)" aria-label="Restore team">Restore</Button>
+                            <Button size="sm" variant="outline" @click="(e) => restoreTeam(team.id, e)">
+                                {{ trans('pages.settings.teams.actions.restore') }}
+                            </Button>
 
                             <AlertDialog>
                                 <AlertDialogTrigger as-child>
-                                    <Button @click.stop aria-label="Permanently delete team">Force Delete</Button>
+                                    <Button size="sm" variant="destructive" @click.stop>
+                                        {{ trans('pages.settings.teams.actions.force_delete') }}
+                                    </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Permanently delete this team?</AlertDialogTitle>
+                                        <AlertDialogTitle>{{ trans('pages.settings.teams.force_delete.title') }}</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete the team.
+                                            {{ trans('pages.settings.teams.force_delete.description') }}
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction @click="(e) => forceDeleteTeam(team.id, e)">Force Delete</AlertDialogAction>
+                                        <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
+                                        <AlertDialogAction @click="(e) => forceDeleteTeam(team.id, e)">
+                                            {{ trans('pages.settings.teams.actions.force_delete') }}
+                                        </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>

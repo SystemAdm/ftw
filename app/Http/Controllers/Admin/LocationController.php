@@ -39,7 +39,7 @@ class LocationController extends Controller
     {
         $location = Location::query()->create($request->validated());
 
-        return redirect()->route('admin.locations.show', $location)->with('success', 'Location created.');
+        return redirect()->route('admin.locations.show', $location)->with('success', __('pages.settings.locations.messages.created'));
     }
 
     public function show(Location $location): Response
@@ -61,14 +61,14 @@ class LocationController extends Controller
     {
         $location->update($request->validated());
 
-        return redirect()->route('admin.locations.show', $location)->with('success', 'Location updated.');
+        return redirect()->route('admin.locations.show', $location)->with('success', __('pages.settings.locations.messages.updated'));
     }
 
     public function destroy(Location $location): RedirectResponse
     {
         $location->delete();
 
-        return redirect()->route('admin.locations.index')->with('success', 'Location deleted.');
+        return redirect()->route('admin.locations.index')->with('success', __('pages.settings.locations.messages.deleted'));
     }
 
     public function restore(int $id): RedirectResponse
@@ -76,7 +76,7 @@ class LocationController extends Controller
         $location = Location::withTrashed()->findOrFail($id);
         $location->restore();
 
-        return redirect()->route('admin.locations.index')->with('success', 'Location restored.');
+        return redirect()->route('admin.locations.index')->with('success', __('pages.settings.locations.messages.restored'));
     }
 
     public function forceDestroy(int $id): RedirectResponse
@@ -84,6 +84,6 @@ class LocationController extends Controller
         $location = Location::withTrashed()->findOrFail($id);
         $location->forceDelete();
 
-        return redirect()->route('admin.locations.index')->with('success', 'Location permanently deleted.');
+        return redirect()->route('admin.locations.index')->with('success', __('pages.settings.locations.messages.force_deleted'));
     }
 }

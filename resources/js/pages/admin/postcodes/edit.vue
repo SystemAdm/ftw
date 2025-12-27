@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { router, usePage } from '@inertiajs/vue3';
-import { show as showRoute, update as updateRoute, index as indexRoute } from '@/routes/admin/postcodes';
+import { show as showRoute, update as updateRoute } from '@/routes/admin/postcodes';
 import { reactive } from 'vue';
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage();
 const postcode = (page.props as any).postcode as any;
@@ -33,38 +34,38 @@ function cancel() {
 
 <template>
   <SidebarLayout>
-    <h1 class="mb-4 text-xl font-semibold">Edit Postal Code</h1>
+    <h1 class="mb-4 text-xl font-semibold">{{ trans('pages.settings.postcodes.edit') }}</h1>
     <form class="max-w-xl space-y-4" @submit.prevent="submit">
       <FieldSet>
         <Field>
-          <FieldLabel>Postal Code</FieldLabel>
+          <FieldLabel>{{ trans('pages.settings.postcodes.fields.postal_code') }}</FieldLabel>
           <Input :model-value="String(postcode.postal_code)" disabled class="mt-1 w-full opacity-60" />
         </Field>
         <Field>
-          <FieldLabel>City</FieldLabel>
+          <FieldLabel>{{ trans('pages.settings.postcodes.fields.city') }}</FieldLabel>
           <Input v-model="form.city" class="mt-1 w-full" />
-          <FieldError v-if="errors.city" class="mt-1 text-sm text-red-600">{{ errors.city[0] }}</FieldError>
+          <FieldError v-if="errors.city">{{ errors.city[0] }}</FieldError>
         </Field>
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Field>
-            <FieldLabel>State</FieldLabel>
+            <FieldLabel>{{ trans('pages.settings.postcodes.fields.state') }}</FieldLabel>
             <Input v-model="form.state" class="mt-1 w-full" />
-            <FieldError v-if="errors.state" class="mt-1 text-sm text-red-600">{{ errors.state[0] }}</FieldError>
+            <FieldError v-if="errors.state">{{ errors.state[0] }}</FieldError>
           </Field>
           <Field>
-            <FieldLabel>Country</FieldLabel>
+            <FieldLabel>{{ trans('pages.settings.postcodes.fields.country') }}</FieldLabel>
             <Input v-model="form.country" class="mt-1 w-full" />
-            <FieldError v-if="errors.country" class="mt-1 text-sm text-red-600">{{ errors.country[0] }}</FieldError>
+            <FieldError v-if="errors.country">{{ errors.country[0] }}</FieldError>
           </Field>
           <Field>
-            <FieldLabel>County</FieldLabel>
+            <FieldLabel>{{ trans('pages.settings.postcodes.fields.county') }}</FieldLabel>
             <Input v-model="form.county" class="mt-1 w-full" />
-            <FieldError v-if="errors.county" class="mt-1 text-sm text-red-600">{{ errors.county[0] }}</FieldError>
+            <FieldError v-if="errors.county">{{ errors.county[0] }}</FieldError>
           </Field>
         </div>
         <div class="flex gap-2">
-          <Button type="submit">Save</Button>
-          <Button type="button" variant="secondary" @click="cancel">Cancel</Button>
+          <Button type="submit">{{ trans('pages.settings.postcodes.actions.save') }}</Button>
+          <Button type="button" variant="secondary" @click="cancel">{{ trans('pages.settings.postcodes.actions.cancel') }}</Button>
         </div>
       </FieldSet>
     </form>

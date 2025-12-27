@@ -6,6 +6,7 @@ import { create as createRoute, show as showRoute, destroy as destroyRoute } fro
 import { restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/locations';
 import { Table, TableBody, TableEmpty, TableHead, TableHeader, TableRow, TableCell, TableFooter } from '@/components/ui/table';
 import Paginator from '@/components/custom/Paginator.vue';
+import { trans } from 'laravel-vue-i18n';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -36,63 +37,63 @@ function forceDel(loc: any) {
 <template>
     <SidebarLayout>
         <div class="mb-4 flex items-center justify-between">
-            <h1 class="text-xl font-semibold">Locations</h1>
-            <Button @click.prevent="router.visit(createRoute.url())">New</Button>
+            <h1 class="text-xl font-semibold">{{ trans('pages.settings.locations.title') }}</h1>
+            <Button @click.prevent="router.visit(createRoute.url())">{{ trans('pages.settings.locations.actions.create') }}</Button>
         </div>
 
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Postal Code</TableHead>
-                    <TableHead>Active</TableHead>
+                    <TableHead>{{ trans('pages.settings.locations.fields.name') }}</TableHead>
+                    <TableHead>{{ trans('pages.settings.locations.fields.postal_code') }}</TableHead>
+                    <TableHead>{{ trans('pages.settings.locations.fields.active') }}</TableHead>
                     <TableHead class="w-0 text-right"></TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableEmpty v-if="!page.props.locations || page.props.locations.data.length === 0" :colspan="4"> No locations yet. </TableEmpty>
+                <TableEmpty v-if="!page.props.locations || page.props.locations.data.length === 0" :colspan="4"> {{ trans('pages.settings.locations.none') }} </TableEmpty>
                 <template v-else>
                     <TableRow v-for="loc in page.props.locations.data" :key="loc.id">
                         <TableCell>{{ loc.name }}</TableCell>
                         <TableCell>{{ loc.postal }}</TableCell>
                         <TableCell>
-                            <span :class="loc.active ? 'text-green-600' : 'text-gray-500'">{{ loc.active ? 'Yes' : 'No' }}</span>
+                            <span :class="loc.active ? 'text-green-600' : 'text-gray-500'">{{ loc.active ? trans('pages.settings.locations.fields.yes') : trans('pages.settings.locations.fields.no') }}</span>
                         </TableCell>
                         <TableCell class="flex gap-2 text-right">
-                            <Button v-if="!loc.deleted_at" size="sm" @click.prevent="router.visit(showRoute.url(loc.id))">View</Button>
+                            <Button v-if="!loc.deleted_at" size="sm" @click.prevent="router.visit(showRoute.url(loc.id))">{{ trans('pages.settings.locations.actions.view') }}</Button>
                             <AlertDialog v-if="!loc.deleted_at">
                                 <AlertDialogTrigger as-child>
-                                    <Button size="sm" variant="destructive">Delete</Button>
+                                    <Button size="sm" variant="destructive">{{ trans('pages.settings.locations.actions.delete') }}</Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete {{ loc.name }}?</AlertDialogTitle>
+                                        <AlertDialogTitle>{{ trans('pages.settings.locations.delete.title', { name: loc.name }) }}</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            This will move the location to the trash. You can restore it later.
+                                            {{ trans('pages.settings.locations.delete.description') }}
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction @click="del(loc)">Delete</AlertDialogAction>
+                                        <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
+                                        <AlertDialogAction @click="del(loc)">{{ trans('pages.settings.locations.actions.delete') }}</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
                             <div v-else class="inline-flex gap-2">
-                                <Button size="sm" variant="secondary" @click="restoreLoc(loc)">Restore</Button>
+                                <Button size="sm" variant="secondary" @click="restoreLoc(loc)">{{ trans('pages.settings.locations.actions.restore') }}</Button>
                                 <AlertDialog>
                                     <AlertDialogTrigger as-child>
-                                        <Button size="sm" variant="destructive">Force Delete</Button>
+                                        <Button size="sm" variant="destructive">{{ trans('pages.settings.locations.actions.force_delete') }}</Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
                                         <AlertDialogHeader>
-                                            <AlertDialogTitle>Permanently delete {{ loc.name }}?</AlertDialogTitle>
+                                            <AlertDialogTitle>{{ trans('pages.settings.locations.force_delete.title', { name: loc.name }) }}</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently remove the location.
+                                                {{ trans('pages.settings.locations.force_delete.description') }}
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction @click="forceDel(loc)">Delete permanently</AlertDialogAction>
+                                            <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
+                                            <AlertDialogAction @click="forceDel(loc)">{{ trans('pages.settings.locations.actions.delete_permanently') }}</AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
                                 </AlertDialog>

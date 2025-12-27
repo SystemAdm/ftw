@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { trans } from 'laravel-vue-i18n';
 
 type UserProps = {
   name: string;
@@ -17,8 +18,17 @@ type UserProps = {
   appearance?: 'light' | 'dark' | 'system';
 };
 
-const page = usePage<{ user: UserProps }>();
+type SubscriptionProps = {
+  active: boolean;
+  ends_at: string | null;
+  on_grace_period: boolean;
+  next_billing_date: string | null;
+  time_left: string | null;
+};
+
+const page = usePage<{ user: UserProps; subscription: SubscriptionProps }>();
 const user = computed(() => page.props.user);
+const subscription = computed(() => page.props.subscription);
 
 // Appearance form
 const appearanceForm = useForm({
@@ -166,6 +176,44 @@ function submitAvatar() {
               {{ avatarForm.processing ? 'Uploading…' : 'Upload' }}
             </Button>
           </form>
+        </Card>
+
+        <!-- Subscription -->
+        <Card class="p-6 space-y-4">
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.billing.membership') }}</h2>
+          <div class="space-y-2">
+            <div v-if="subscription.active" class="space-y-1">
+              <p class="text-sm font-medium">
+                {{ trans('pages.settings.billing.status') }}:
+                <span :class="subscription.on_grace_period ? 'text-yellow-600' : 'text-green-600'">
+                  {{ subscription.on_grace_period ? trans('pages.settings.billing.cancelling') : trans('pages.settings.billing.active') }}
+                  <span v-if="subscription.time_left" class="text-gray-500 font-normal ml-1">
+                    ({{ subscription.time_left }})
+                  </span>
+                </span>
+              </p>
+              <p v-if="subscription.next_billing_date" class="text-sm text-gray-500">
+                {{ subscription.on_grace_period ? trans('pages.settings.billing.ends') : trans('pages.settings.billing.renews') }}:
+                {{ new Date(subscription.next_billing_date).toLocaleDateString((page.props as any).i18n.locale, {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                }) }}
+              </p>
+            </div>
+            <div v-else class="space-y-1">
+              <p class="text-sm font-medium text-gray-500">{{ trans('pages.settings.billing.not_subscribed') }}</p>
+              <p class="text-sm text-gray-500 italic">{{ trans('pages.settings.billing.support_us') }}</p>
+              <p class="mt-2 text-xs text-yellow-600 italic">
+                {{ trans('pages.settings.billing.note') }}
+              </p>
+            </div>
+          </div>
+          <div class="pt-2">
+            <Link href="/settings/billing">
+              <Button variant="secondary">{{ trans('pages.settings.billing.manage_subscription') }}</Button>
+            </Link>
+          </div>
         </Card>
       </div>
     </div>

@@ -14,7 +14,10 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::withTrashed()->paginate(5);
+        $users = User::withTrashed()
+            ->with(['bans', 'verifier:id,name'])
+            ->latest()
+            ->paginate(15);
 
         return Inertia::render('admin/users/index', compact('users'));
     }

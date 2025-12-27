@@ -1,20 +1,22 @@
 <?php
 
-function inertiaPropsFromHtml(string $html): array
-{
-    if (preg_match('/data-page="([^"]+)"/i', $html, $m)) {
-        $json = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5);
-        $page = json_decode($json, true);
+if (! function_exists('inertiaPropsFromHtml')) {
+    function inertiaPropsFromHtml(string $html): array
+    {
+        if (preg_match('/data-page="([^"]+)"/i', $html, $m)) {
+            $json = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5);
+            $page = json_decode($json, true);
 
-        return $page['props'] ?? [];
+            return $page['props'] ?? [];
+        }
+        if (preg_match('/window\.\__INERTIA__\s*=\s*(\{.*?\});/s', $html, $m)) {
+            $page = json_decode($m[1], true);
+
+            return $page['props'] ?? [];
+        }
+
+        return [];
     }
-    if (preg_match('/window\.\__INERTIA__\s*=\s*(\{.*?\});/s', $html, $m)) {
-        $page = json_decode($m[1], true);
-
-        return $page['props'] ?? [];
-    }
-
-    return [];
 }
 
 it('shares system appearance by default when cookie is missing', function (): void {

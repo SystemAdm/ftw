@@ -46,7 +46,7 @@ class EventFactory extends Factory
 
         return [
             'title' => $title,
-            'slug' => Str::slug($title) . '-' . fake()->unique()->numberBetween(1000, 999999),
+            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(1000, 999999),
             'excerpt' => fake()->optional()->paragraph(),
             'description' => fake()->optional()->paragraphs(asText: true),
             'image_path' => fake()->optional()->imageUrl(1200, 630, 'events', true),
@@ -66,7 +66,7 @@ class EventFactory extends Factory
 
             'number_of_seats' => fake()->optional()->numberBetween(10, 500),
 
-            'status' => fake()->randomElement(['draft', 'active', null]),
+            'status' => fake()->randomElement(['draft', 'published', 'cancelled', null]),
         ];
     }
 }

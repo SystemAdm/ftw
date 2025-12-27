@@ -8,7 +8,7 @@ const lastShown: { status?: string | null; error?: string | null } = {}
 export function useFlashToasts(page: Page) {
   // Success/status
   watch(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     () => (page.props as any).status,
     (val) => {
       if (!val) return
@@ -21,7 +21,7 @@ export function useFlashToasts(page: Page) {
 
   // Error
   watch(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     () => (page.props as any).error,
     (val) => {
       if (!val) return

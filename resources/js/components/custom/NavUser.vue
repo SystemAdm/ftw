@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ChevronsUpDown, Settings, Bell, LogOut, LayoutDashboard } from 'lucide-vue-next';
 import { Link } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
 import { profile as profileSettingsRoute } from '@/routes/settings';
 import { dashboard as dashboardRoute } from '@/routes';
 
@@ -75,25 +76,25 @@ const initials = computed(() => {
                         <DropdownMenuItem as-child>
                             <Link :href="dashboardRoute.url()" class="flex w-full items-center gap-2">
                                 <LayoutDashboard />
-                                Dashboard
+                                {{ trans('pages.ui.navigation.dashboard') }}
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem as-child>
                             <Link :href="profileSettingsRoute.url()" class="flex w-full items-center gap-2">
                                 <Settings />
-                                Settings
+                                {{ trans('pages.ui.navigation.settings') }}
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                             <Bell />
-                            Notifications
+                            {{ trans('pages.ui.navigation.notifications') }}
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem as-child>
                         <Link :href="'/logout'" method="post" as="button" :preserve-scroll="false" class="flex w-full items-center gap-2">
                             <LogOut />
-                            Log out
+                            {{ trans('pages.ui.navigation.logout') }}
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuContent>

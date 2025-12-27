@@ -56,7 +56,7 @@ class RolesController extends Controller
             $role->syncPermissions(Permission::query()->whereIn('id', $permissionIds)->pluck('name')->all());
         }
 
-        return redirect()->route('admin.roles.show', $role)->with('success', 'Role created.');
+        return redirect()->route('admin.roles.show', $role)->with('success', __('pages.settings.roles.messages.created'));
     }
 
     /**
@@ -99,7 +99,7 @@ class RolesController extends Controller
             $role->syncPermissions(Permission::query()->whereIn('id', $permissionIds)->pluck('name')->all());
         }
 
-        return redirect()->route('admin.roles.show', $role)->with('success', 'Role updated.');
+        return redirect()->route('admin.roles.show', $role)->with('success', __('pages.settings.roles.messages.updated'));
     }
 
     /**
@@ -109,7 +109,7 @@ class RolesController extends Controller
     {
         $role->delete();
 
-        return redirect()->route('admin.roles.index')->with('success', 'Role deleted.');
+        return redirect()->route('admin.roles.index')->with('success', __('pages.settings.roles.messages.deleted'));
     }
 
     public function searchUsers(Role $role): JsonResponse
@@ -142,13 +142,13 @@ class RolesController extends Controller
         $user = User::findOrFail($validated['user_id']);
         $user->assignRole($role);
 
-        return redirect()->route('admin.roles.show', $role)->with('success', 'User assigned to role.');
+        return redirect()->route('admin.roles.show', $role)->with('success', __('pages.settings.roles.messages.assigned'));
     }
 
     public function removeUser(Role $role, User $user): RedirectResponse
     {
         $user->removeRole($role);
 
-        return redirect()->route('admin.roles.show', $role)->with('success', 'User removed from role.');
+        return redirect()->route('admin.roles.show', $role)->with('success', __('pages.settings.roles.messages.removed'));
     }
 }

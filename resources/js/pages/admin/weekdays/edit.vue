@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { add as addExclusion, remove as removeExclusion } from '@/routes/admin/weekdays/exclusions';
 import { show as showRoute, update as updateRoute } from '@/routes/admin/weekdays/index';
 import { router, usePage } from '@inertiajs/vue3';
-import { computed, onMounted, reactive } from 'vue';
+import { computed, reactive } from 'vue';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const weekday = (page.props as any).weekday as any;
@@ -36,9 +37,7 @@ const errors = reactive<Record<string, string[]>>({});
 const exclusionDate = reactive<{ date: string }>({ date: '' });
 
 const sortedExclusions = computed(() => (weekday.exclusions ?? []).slice().sort((a: any, b: any) => (a.excluded_date < b.excluded_date ? 1 : -1)));
-onMounted(() => {
-    console.log(locations);
-})
+
 function submit() {
     // Coerce empty strings to null for nullable date fields
     const payload: Record<string, any> = {
@@ -66,11 +65,6 @@ function cancel() {
     router.visit(showRoute.url(weekday.id));
 }
 
-function weekdayLabel(n: number): string {
-    const names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return names[n] ?? String(n);
-}
-
 // Bridge numeric/optional values to Select's string v-model
 const weekdayValue = computed<string>({
     get: () => String(form.weekday ?? ''),
@@ -96,116 +90,110 @@ const locationIdValue = computed<string>({
 
 <template>
     <SidebarLayout>
-        <h1 class="mb-4 text-xl font-semibold">Edit Weekday</h1>
+        <h1 class="mb-4 text-xl font-semibold">{{ trans('pages.settings.weekdays.edit') }}</h1>
 
-        <form class="max-w-xl space-y-4" @submit.prevent="submit">
+        <form class="max-w-3xl space-y-4" @submit.prevent="submit">
             <FieldSet>
                 <Field>
-                    <FieldLabel class="block text-sm font-medium">Name</FieldLabel>
+                    <FieldLabel>{{ trans('pages.settings.locations.fields.name') }}</FieldLabel>
                     <Input v-model="form.name" class="mt-1 w-full" type="text" />
-                    <FieldError v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</FieldError>
+                    <FieldError v-if="errors.name">{{ errors.name[0] }}</FieldError>
                 </Field>
 
                 <Field>
-                    <FieldLabel class="block text-sm font-medium">Description (optional)</FieldLabel>
+                    <FieldLabel>{{ trans('pages.settings.weekdays.fields.description') }}</FieldLabel>
                     <Textarea v-model="form.description" class="mt-1 w-full" rows="3" />
-                    <FieldError v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description[0] }}</FieldError>
+                    <FieldError v-if="errors.description">{{ errors.description[0] }}</FieldError>
                 </Field>
 
-                <Field>
-                    <FieldLabel class="block text-sm font-medium">Day of week</FieldLabel>
-                    <Select :model-value="weekdayValue" @update:model-value="(v) => (weekdayValue = v as string)">
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select day" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem v-for="n in 7" :key="n - 1" :value="String(n - 1)">{{ weekdayLabel(n - 1) }}</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FieldError v-if="errors.weekday" class="mt-1 text-sm text-red-600">{{ errors.weekday[0] }}</FieldError>
-                </Field>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Field>
+                        <FieldLabel>{{ trans('pages.settings.weekdays.fields.weekday') }}</FieldLabel>
+                        <Select :model-value="weekdayValue" @update:model-value="(v) => (weekdayValue = v as string)">
+                            <SelectTrigger>
+                                <SelectValue :placeholder="trans('pages.settings.weekdays.fields.weekday')" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem v-for="n in 7" :key="n - 1" :value="String(n - 1)">{{ trans(`pages.settings.weekdays.days.${n-1}`) }}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FieldError v-if="errors.weekday">{{ errors.weekday[0] }}</FieldError>
+                    </Field>
+
+                    <Field>
+                        <FieldLabel>{{ trans('pages.settings.weekdays.fields.team') }}</FieldLabel>
+                        <Select :model-value="teamIdValue" @update:model-value="(v) => (teamIdValue = v as string)">
+                            <SelectTrigger>
+                                <SelectValue placeholder="—" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="__none__">—</SelectItem>
+                                <SelectItem v-for="t in teams" :key="t.id" :value="String(t.id)">{{ t.name }}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FieldError v-if="errors.team_id">{{ errors.team_id[0] }}</FieldError>
+                    </Field>
+                </div>
 
                 <Field>
-                    <FieldLabel class="block text-sm font-medium">Team (optional)</FieldLabel>
-                    <Select :model-value="teamIdValue" @update:model-value="(v) => (teamIdValue = v as string)">
-                        <SelectTrigger>
-                            <SelectValue placeholder="— None —" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="__none__">— None —</SelectItem>
-                            <SelectItem v-for="t in teams" :key="t.id" :value="String(t.id)">{{ t.name }}</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FieldError v-if="errors.team_id" class="mt-1 text-sm text-red-600">{{ errors.team_id[0] }}</FieldError>
-                </Field>
-
-                <Field>
-                    <FieldLabel class="block text-sm font-medium">Location (optional)</FieldLabel>
+                    <FieldLabel>{{ trans('pages.settings.weekdays.fields.location') }}</FieldLabel>
                     <Select :model-value="locationIdValue" @update:model-value="(v) => (locationIdValue = v as string)">
                         <SelectTrigger>
-                            <SelectValue placeholder="— None —" />
+                            <SelectValue placeholder="—" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="__none__">— None —</SelectItem>
+                            <SelectItem value="__none__">—</SelectItem>
                             <SelectItem v-for="l in locations" :key="l.id" :value="String(l.id)">{{ l.name }}</SelectItem>
                         </SelectContent>
                     </Select>
-                    <FieldError v-if="errors.location_id" class="mt-1 text-sm text-red-600">{{ errors.location_id[0] }}</FieldError>
+                    <FieldError v-if="errors.location_id">{{ errors.location_id[0] }}</FieldError>
                 </Field>
 
                 <div class="grid grid-cols-2 gap-4">
                     <Field>
-                        <FieldLabel class="block text-sm font-medium">Start time</FieldLabel>
+                        <FieldLabel>{{ trans('pages.settings.weekdays.fields.start_time') }}</FieldLabel>
                         <Input v-model="form.start_time" class="mt-1 w-full" type="time" />
-                        <FieldError v-if="errors.start_time" class="mt-1 text-sm text-red-600">{{ errors.start_time[0] }}</FieldError>
+                        <FieldError v-if="errors.start_time">{{ errors.start_time[0] }}</FieldError>
                     </Field>
                     <Field>
-                        <FieldLabel class="block text-sm font-medium">End time</FieldLabel>
+                        <FieldLabel>{{ trans('pages.settings.weekdays.fields.end_time') }}</FieldLabel>
                         <Input v-model="form.end_time" class="mt-1 w-full" type="time" />
-                        <FieldError v-if="errors.end_time" class="mt-1 text-sm text-red-600">{{ errors.end_time[0] }}</FieldError>
+                        <FieldError v-if="errors.end_time">{{ errors.end_time[0] }}</FieldError>
                     </Field>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <Field>
-                        <FieldLabel class="block text-sm font-medium">Event starts on (optional)</FieldLabel>
-                        <Input v-model="(form as any).event_start" class="mt-1 w-full" type="date" />
-                        <p class="mt-1 text-xs text-muted-foreground">Leave empty if it already started.</p>
-                        <FieldError v-if="errors.event_start" class="mt-1 text-sm text-red-600">{{ errors.event_start[0] }}</FieldError>
-                    </Field>
-                    <Field>
-                        <FieldLabel class="block text-sm font-medium">Event ends on (optional)</FieldLabel>
-                        <Input v-model="(form as any).event_end" class="mt-1 w-full" type="date" />
-                        <p class="mt-1 text-xs text-muted-foreground">Leave empty if the end is not defined.</p>
-                        <FieldError v-if="errors.event_end" class="mt-1 text-sm text-red-600">{{ errors.event_end[0] }}</FieldError>
-                    </Field>
-                </div>
-                <Field orientation="horizontal">
-                    <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v === true)" />
-                    <FieldLabel class="inline-flex items-center gap-2">Active</FieldLabel>
+                <Field>
+                    <div class="flex items-center gap-2">
+                        <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v)" />
+                        <FieldLabel>{{ trans('pages.settings.weekdays.fields.active') }}</FieldLabel>
+                    </div>
+                    <FieldError v-if="errors.active">{{ errors.active[0] }}</FieldError>
                 </Field>
-                <div class="flex gap-2">
-                    <Button>Save</Button>
-                    <Button type="button" variant="secondary" @click="cancel">Cancel</Button>
+
+                <div class="flex gap-2 pt-4">
+                    <Button type="submit">{{ trans('pages.settings.locations.actions.save') }}</Button>
+                    <Button type="button" variant="secondary" @click="cancel">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
                 </div>
             </FieldSet>
         </form>
 
-        <div class="mt-10 max-w-xl">
-            <h2 class="mb-2 text-lg font-semibold">Excluded Dates</h2>
-            <div class="mb-3 flex items-end gap-2">
-                <div class="flex-1">
-                    <Label class="block text-sm font-medium">Exclude date</Label>
-                    <Input v-model="exclusionDate.date" type="date" class="mt-1 w-full" />
+        <div class="mt-10 max-w-3xl">
+            <h2 class="mb-4 text-lg font-semibold">{{ trans('pages.settings.weekdays.fields.exclusions') }}</h2>
+            <div class="mb-4 flex items-end gap-2">
+                <div class="flex-1 space-y-2">
+                    <Label for="excl_date">{{ trans('pages.settings.weekdays.fields.date') }}</Label>
+                    <Input id="excl_date" v-model="exclusionDate.date" type="date" class="w-full" />
                 </div>
-                <Button type="button" @click="addExcl">Add</Button>
+                <Button type="button" @click="addExcl">{{ trans('pages.settings.locations.actions.create') }}</Button>
             </div>
 
-            <ul class="divide-y rounded border">
-                <li v-if="sortedExclusions.length === 0" class="p-3 text-sm text-gray-500">No exclusions</li>
-                <li v-for="ex in sortedExclusions" :key="ex.id" class="flex items-center justify-between p-3">
-                    <span>{{ ex.excluded_date }}</span>
-                    <Button size="sm" variant="secondary" @click="removeExcl(ex.id)">Remove</Button>
+            <ul class="divide-y rounded-md border">
+                <li v-if="sortedExclusions.length === 0" class="p-4 text-center text-sm text-muted-foreground">
+                    {{ trans('pages.settings.locations.none') }}
+                </li>
+                <li v-for="ex in sortedExclusions" :key="ex.id" class="flex items-center justify-between p-4">
+                    <span>{{ ex.excluded_date_formatted ?? ex.excluded_date }}</span>
+                    <Button size="sm" variant="secondary" @click="removeExcl(ex.id)">{{ trans('pages.settings.weekdays.actions.remove_exclusion') }}</Button>
                 </li>
             </ul>
         </div>

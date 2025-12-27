@@ -2,27 +2,31 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class BillingController extends Controller
 {
     public function index(Request $request): Response
     {
         $user = $request->user();
+        $subscription = $user->subscription('default');
 
         return Inertia::render('settings/Billing', [
             'hasActiveSubscription' => $user->subscribed('default'),
-            'onGracePeriod' => $user->subscription('default')?->onGracePeriod() ?? false,
+            'onGracePeriod' => $subscription?->onGracePeriod() ?? false,
             'stripePortalEnabled' => true,
             'priceId' => (string) (config('services.stripe.price_id') ?? ''),
+            'time_left' => $user->getSubscriptionTimeLeft(),
+            'next_billing_date' => $user->getSubscriptionNextBillingDate(),
         ]);
     }
 
-    public function checkout(Request $request): RedirectResponse
+    public function checkout(Request $request): SymfonyResponse
     {
         $request->validate([
             'price' => ['required', 'string'],
@@ -45,13 +49,63 @@ class BillingController extends Controller
                 'locale' => $this->normalizeStripeLocale(),
             ]);
 
-        // Cashier's Checkout returns an object that can directly redirect (303)
-        return $checkout->redirect();
+        return Inertia::location($checkout->redirect()->getTargetUrl());
     }
 
-    public function success(): RedirectResponse
+    public function success(Request $request): RedirectResponse
     {
-        return redirect()->route('settings.billing');
+        if ($sessionId = $request->get('session_id')) {
+            $user = $request->user();
+            $stripe = $user->stripe();
+
+            $session = $stripe->checkout->sessions->retrieve($sessionId);
+
+            if (! $user->stripe_id) {
+                $user->update(['stripe_id' => $session->customer]);
+            }
+
+            // If this was a subscription checkout, try to pull the subscription immediately
+            if ($session->subscription) {
+                try {
+                    $stripeSubscription = $stripe->subscriptions->retrieve($session->subscription);
+
+                    $subscription = $user->subscriptions()->updateOrCreate([
+                        'stripe_id' => $stripeSubscription->id,
+                    ], [
+                        'type' => 'default',
+                        'stripe_status' => $stripeSubscription->status,
+                        'stripe_price' => $stripeSubscription->items->data[0]->price->id ?? null,
+                        'quantity' => $stripeSubscription->items->data[0]->quantity ?? null,
+                        'trial_ends_at' => $stripeSubscription->trial_end ? \Illuminate\Support\Carbon::createFromTimestamp($stripeSubscription->trial_end) : null,
+                        'ends_at' => null,
+                    ]);
+
+                    // Update items as well to be thorough
+                    foreach ($stripeSubscription->items->data as $item) {
+                        $subscription->items()->updateOrCreate([
+                            'stripe_id' => $item->id,
+                        ], [
+                            'stripe_product' => $item->price->product,
+                            'stripe_price' => $item->price->id,
+                            'quantity' => $item->quantity ?? null,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    // Fallback to sync existing if retrieval failed or other error
+                }
+            }
+
+            // Also try to sync any existing incomplete subscriptions just in case
+            try {
+                $user->subscriptions()->where('stripe_status', 'incomplete')->each(function ($subscription) {
+                    $subscription->syncStripeStatus();
+                });
+            } catch (\Exception $e) {
+                // Ignore errors here, webhook will eventually sync it.
+            }
+        }
+
+        return redirect()->route('settings.billing')->with('status', 'Subscription successful!');
     }
 
     public function cancel(): RedirectResponse
@@ -59,11 +113,11 @@ class BillingController extends Controller
         return redirect()->route('settings.billing');
     }
 
-    public function portal(Request $request): RedirectResponse
+    public function portal(Request $request): SymfonyResponse
     {
         $returnUrl = url('/settings/billing');
 
-        return $request->user()->redirectToBillingPortal($returnUrl);
+        return Inertia::location($request->user()->billingPortalUrl($returnUrl));
     }
 
     /**

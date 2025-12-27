@@ -34,7 +34,7 @@ class PostCodeController extends Controller
         /** @var PostalCode $postcode */
         $postcode = PostalCode::query()->create($data);
 
-        return redirect()->route('admin.postcodes.show', $postcode)->with('success', 'Postal code created.');
+        return redirect()->route('admin.postcodes.show', $postcode)->with('success', __('pages.settings.postcodes.messages.created'));
     }
 
     public function show(PostalCode $postcode): Response
@@ -55,14 +55,14 @@ class PostCodeController extends Controller
     {
         $postcode->update($request->validated());
 
-        return redirect()->route('admin.postcodes.show', $postcode)->with('success', 'Postal code updated.');
+        return redirect()->route('admin.postcodes.show', $postcode)->with('success', __('pages.settings.postcodes.messages.updated'));
     }
 
     public function destroy(PostalCode $postcode): RedirectResponse
     {
         $postcode->delete();
 
-        return redirect()->route('admin.postcodes.index')->with('success', 'Postal code deleted.');
+        return redirect()->route('admin.postcodes.index')->with('success', __('pages.settings.postcodes.messages.deleted'));
     }
 
     public function restore(int $id): RedirectResponse
@@ -70,7 +70,7 @@ class PostCodeController extends Controller
         $postcode = PostalCode::withTrashed()->findOrFail($id);
         $postcode->restore();
 
-        return redirect()->route('admin.postcodes.index')->with('success', 'Postal code restored.');
+        return redirect()->route('admin.postcodes.index')->with('success', __('pages.settings.postcodes.messages.restored'));
     }
 
     public function forceDestroy(int $id): RedirectResponse
@@ -78,6 +78,6 @@ class PostCodeController extends Controller
         $postcode = PostalCode::withTrashed()->findOrFail($id);
         $postcode->forceDelete();
 
-        return redirect()->route('admin.postcodes.index')->with('success', 'Postal code permanently deleted.');
+        return redirect()->route('admin.postcodes.index')->with('success', __('pages.settings.postcodes.messages.force_deleted'));
     }
 }

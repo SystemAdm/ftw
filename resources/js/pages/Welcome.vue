@@ -71,7 +71,7 @@ import PublicLayout from '@/components/layouts/PublicLayout.vue'
                 <div class="rounded-xl border bg-background p-6 text-center">
                     <div class="flex flex-col items-center p-0">
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white">
-                            <img src="/images/Spillhuset.png" alt="Spillhuset logo" />
+                            <img src="/images/Spillhuset_logo_light.png" alt="Spillhuset logo" />
                         </div>
                         <h3 class="font-semibold text-white">Fredagsåpent</h3>
                     </div>

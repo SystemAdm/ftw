@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faFacebook, faInstagram, faGoogle, faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons'
@@ -18,6 +18,48 @@ type I18n = {
 
 const page = usePage<I18n>()
 const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
+
+const appearance = ref<'light' | 'dark' | 'system'>((page.props as any).appearance ?? 'system')
+const systemIsDark = ref(false)
+
+const logoUrl = computed(() => {
+  if (appearance.value === 'dark') {
+    return '/images/Spillhuset_logo_light.png'
+  }
+
+  if (appearance.value === 'light') {
+    return '/images/Spillhuset_logo_dark.png'
+  }
+
+  return systemIsDark.value ? '/images/Spillhuset_logo_light.png' : '/images/Spillhuset_logo_dark.png'
+})
+
+function applyAppearance(mode: 'light' | 'dark' | 'system') {
+  const root = document.documentElement
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const isDark = mode === 'dark' || (mode === 'system' && prefersDark)
+  root.classList.toggle('dark', isDark)
+}
+
+onMounted(() => {
+  const mq = window.matchMedia('(prefers-color-scheme: dark)')
+  systemIsDark.value = mq.matches
+
+  applyAppearance(appearance.value)
+
+  const handler = () => {
+    systemIsDark.value = mq.matches
+    if (appearance.value === 'system') {
+      applyAppearance('system')
+    }
+  }
+
+  if (mq?.addEventListener) {
+    mq.addEventListener('change', handler)
+  } else if ((mq as any)?.addListener) {
+    (mq as any).addListener(handler)
+  }
+})
 </script>
 
 <template>
@@ -27,10 +69,10 @@ const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
       <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
         <!-- Brand -->
         <Link href="/" aria-label="Go to home" class="flex items-center gap-3 hover:opacity-90 transition">
-          <span class="inline-grid h-10 w-10 place-items-center rounded-md ">
-            <img src="/images/Spillhuset.png" alt="Spillhuset logo" />
+          <span class="inline-grid h-10 place-items-center rounded-md ">
+            <img :src="logoUrl" alt="Spillhuset logo" class="h-15 md:block" />
           </span>
-          <span class="text-base font-semibold tracking-wide text-foreground uppercase">{{ ui.brand ?? 'Spillhuset' }}</span>
+          <!--<span class="text-base font-semibold tracking-wide text-foreground uppercase">{{ ui.brand ?? 'Spillhuset' }}</span>-->
         </Link>
 
         <!-- Socials -->
@@ -54,7 +96,7 @@ const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
       </div>
 
       <!-- Divider -->
-      <div class="my-8 h-px w-full bg-white/10" />
+      <div class="my-8 h-px w-full" aria-hidden="true" role="presentation" />
 
       <!-- Links / Info -->
       <div class="grid grid-cols-1 gap-8 text-sm text-muted-foreground md:grid-cols-3">
@@ -115,7 +157,7 @@ const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
       </div>
 
       <!-- Bottom -->
-      <div class="mt-10 text-center text-xs text-muted-foreground">© {{ new Date().getFullYear() }} {{ ui.brand ?? 'Spillhuset' }}. {{ ui.footer?.rights ?? 'All rights reserved.' }}</div>
+      <div class="mt-10 text-center text-xs text-muted-foreground">© {{ "2014 - " + new Date().getFullYear() }} {{ ui.brand ?? 'Spillhuset' }}. {{ ui.footer?.rights ?? 'All rights reserved.' }}</div>
     </div>
   </footer>
 </template>
