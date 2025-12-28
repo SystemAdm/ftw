@@ -1,41 +1,70 @@
 <script setup lang="ts">
+import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { BreadcrumbItemType } from '@/types';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { router, usePage } from '@inertiajs/vue3';
-import { create as createRoute, show as showRoute, destroy as destroyRoute } from '@/routes/admin/locations';
+import { create as createRoute, show as showRoute, edit as editRoute, destroy as destroyRoute } from '@/routes/admin/locations';
 import { restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/locations';
 import { Table, TableBody, TableEmpty, TableHead, TableHeader, TableRow, TableCell, TableFooter } from '@/components/ui/table';
 import Paginator from '@/components/custom/Paginator.vue';
 import { trans } from 'laravel-vue-i18n';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { Edit, Eye, MoreHorizontal, RotateCcw, Trash2 } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 const page = usePage<PageProps>();
 
-function del(loc: any) {
-    router.delete(destroyRoute.url(loc.id));
-}
+const deleteDialogOpen = ref(false);
+const forceDeleteDialogOpen = ref(false);
+const selectedLocation = ref<any>(null);
 
-function restoreLoc(loc: any) {
+function handleRestore(loc: any) {
     router.post(restoreRoute.url(loc.id));
 }
 
-function forceDel(loc: any) {
-    router.delete(forceDestroyRoute.url(loc.id));
+function confirmDelete(loc: any) {
+    selectedLocation.value = loc;
+    deleteDialogOpen.value = true;
 }
+
+function confirmForceDelete(loc: any) {
+    selectedLocation.value = loc;
+    forceDeleteDialogOpen.value = true;
+}
+
+function handleDelete() {
+    if (selectedLocation.value) {
+        router.delete(destroyRoute.url(selectedLocation.value.id), {
+            onFinish: () => {
+                deleteDialogOpen.value = false;
+                selectedLocation.value = null;
+            },
+        });
+    }
+}
+
+function handleForceDelete() {
+    if (selectedLocation.value) {
+        router.delete(forceDestroyRoute.url(selectedLocation.value.id), {
+            onFinish: () => {
+                forceDeleteDialogOpen.value = false;
+                selectedLocation.value = null;
+            },
+        });
+    }
+}
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.locations.title'),
+        href: '/admin/locations',
+    },
+]);
 </script>
 
 <template>
-    <SidebarLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <div class="mb-4 flex items-center justify-between">
             <h1 class="text-xl font-semibold">{{ trans('pages.settings.locations.title') }}</h1>
             <Button @click.prevent="router.visit(createRoute.url())">{{ trans('pages.settings.locations.actions.create') }}</Button>
@@ -53,51 +82,46 @@ function forceDel(loc: any) {
             <TableBody>
                 <TableEmpty v-if="!page.props.locations || page.props.locations.data.length === 0" :colspan="4"> {{ trans('pages.settings.locations.none') }} </TableEmpty>
                 <template v-else>
-                    <TableRow v-for="loc in page.props.locations.data" :key="loc.id">
-                        <TableCell>{{ loc.name }}</TableCell>
-                        <TableCell>{{ loc.postal }}</TableCell>
-                        <TableCell>
+                    <TableRow v-for="loc in page.props.locations.data" :key="loc.id" class="group" :class="{ 'opacity-50': loc.deleted_at }">
+                        <TableCell class="cursor-pointer" @click="router.visit(showRoute.url(loc.id))">{{ loc.name }}</TableCell>
+                        <TableCell class="cursor-pointer" @click="router.visit(showRoute.url(loc.id))">{{ loc.postal }}</TableCell>
+                        <TableCell class="cursor-pointer" @click="router.visit(showRoute.url(loc.id))">
                             <span :class="loc.active ? 'text-green-600' : 'text-gray-500'">{{ loc.active ? trans('pages.settings.locations.fields.yes') : trans('pages.settings.locations.fields.no') }}</span>
                         </TableCell>
-                        <TableCell class="flex gap-2 text-right">
-                            <Button v-if="!loc.deleted_at" size="sm" @click.prevent="router.visit(showRoute.url(loc.id))">{{ trans('pages.settings.locations.actions.view') }}</Button>
-                            <AlertDialog v-if="!loc.deleted_at">
-                                <AlertDialogTrigger as-child>
-                                    <Button size="sm" variant="destructive">{{ trans('pages.settings.locations.actions.delete') }}</Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>{{ trans('pages.settings.locations.delete.title', { name: loc.name }) }}</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            {{ trans('pages.settings.locations.delete.description') }}
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
-                                        <AlertDialogAction @click="del(loc)">{{ trans('pages.settings.locations.actions.delete') }}</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                            <div v-else class="inline-flex gap-2">
-                                <Button size="sm" variant="secondary" @click="restoreLoc(loc)">{{ trans('pages.settings.locations.actions.restore') }}</Button>
-                                <AlertDialog>
-                                    <AlertDialogTrigger as-child>
-                                        <Button size="sm" variant="destructive">{{ trans('pages.settings.locations.actions.force_delete') }}</Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>{{ trans('pages.settings.locations.force_delete.title', { name: loc.name }) }}</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                {{ trans('pages.settings.locations.force_delete.description') }}
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>{{ trans('pages.settings.locations.actions.cancel') }}</AlertDialogCancel>
-                                            <AlertDialogAction @click="forceDel(loc)">{{ trans('pages.settings.locations.actions.delete_permanently') }}</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
+                        <TableCell class="text-right">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <Button variant="ghost" size="icon">
+                                        <MoreHorizontal class="h-4 w-4" />
+                                        <span class="sr-only">Open menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem @click="router.visit(showRoute.url(loc.id))">
+                                        <Eye class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.locations.actions.view') }}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem @click="router.visit(editRoute.url(loc.id))">
+                                        <Edit class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.locations.actions.edit') }}
+                                    </DropdownMenuItem>
+
+                                    <template v-if="loc.deleted_at">
+                                        <DropdownMenuItem class="text-green-600 focus:text-green-600" @click="handleRestore(loc)">
+                                            <RotateCcw class="mr-2 h-4 w-4" />
+                                            {{ trans('pages.settings.locations.actions.restore') }}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem class="text-destructive focus:text-destructive" @click="confirmForceDelete(loc)">
+                                            <Trash2 class="mr-2 h-4 w-4" />
+                                            {{ trans('pages.settings.locations.actions.force_delete') }}
+                                        </DropdownMenuItem>
+                                    </template>
+                                    <DropdownMenuItem v-else class="text-destructive focus:text-destructive" @click="confirmDelete(loc)">
+                                        <Trash2 class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.locations.actions.delete') }}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </TableCell>
                     </TableRow>
                 </template>
@@ -110,5 +134,19 @@ function forceDel(loc: any) {
                 </TableRow>
             </TableFooter>
         </Table>
+
+        <DeleteConfirmationDialog
+            v-model:open="deleteDialogOpen"
+            :title="trans('pages.settings.locations.delete.title', { name: selectedLocation?.name })"
+            :description="trans('pages.settings.locations.delete.description')"
+            @confirm="handleDelete"
+        />
+
+        <DeleteConfirmationDialog
+            v-model:open="forceDeleteDialogOpen"
+            :title="trans('pages.settings.locations.force_delete.title', { name: selectedLocation?.name })"
+            :description="trans('pages.settings.locations.force_delete.description')"
+            @confirm="handleForceDelete"
+        />
     </SidebarLayout>
 </template>

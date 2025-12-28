@@ -30,6 +30,6 @@ class LocationSeeder extends Seeder
             'street_number' => '5',
         ]);
 
-        //Location::factory(6)->create();
+        // Location::factory(6)->create();
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('postal_codes', function (Blueprint $table) {
             $table->unsignedBigInteger('postal_code')->unique()->primary();
-            $table->string('city');;
+            $table->string('city');
             $table->string('state')->nullable();
             $table->string('country')->nullable();
             $table->string('county')->nullable();

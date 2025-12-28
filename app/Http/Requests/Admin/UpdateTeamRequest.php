@@ -30,7 +30,7 @@ class UpdateTeamRequest extends FormRequest
                 Rule::unique('teams', 'slug')->ignore($teamId),
             ],
             'description' => ['nullable', 'string'],
-            'logo' => ['nullable', 'string', 'max:2048'],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'active' => ['boolean'],
             'users' => ['sometimes', 'array'],
             'users.*' => ['integer', 'exists:users,id'],

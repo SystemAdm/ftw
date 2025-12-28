@@ -38,6 +38,9 @@ Route::get('/cookie', [LegalController::class, 'cookie'])->name('cookie');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
+// Public Profile
+Route::get('/profile/{user?}', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+
 // Public Events
 Route::get('/events', [\App\Http\Controllers\EventsController::class, 'index'])->name('events.index');
 Route::get('/events/{event}', [\App\Http\Controllers\EventsController::class, 'show'])->name('events.show');

@@ -46,7 +46,7 @@ class PermissionsController extends Controller
 
         $permission = Permission::query()->create($data);
 
-        return redirect()->route('admin.permissions.show', $permission)->with('success', 'Permission created.');
+        return redirect()->route('admin.permissions.show', $permission)->with('success', __('pages.settings.permissions.messages.created'));
     }
 
     /**
@@ -80,7 +80,7 @@ class PermissionsController extends Controller
 
         $permission->update($data);
 
-        return redirect()->route('admin.permissions.show', $permission)->with('success', 'Permission updated.');
+        return redirect()->route('admin.permissions.show', $permission)->with('success', __('pages.settings.permissions.messages.updated'));
     }
 
     /**
@@ -90,6 +90,6 @@ class PermissionsController extends Controller
     {
         $permission->delete();
 
-        return redirect()->route('admin.permissions.index')->with('success', 'Permission deleted.');
+        return redirect()->route('admin.permissions.index')->with('success', __('pages.settings.permissions.messages.deleted'));
     }
 }

@@ -72,12 +72,12 @@ class UserSeeder extends Seeder
             'verified_at' => now(),
         ]);
 
-        $i->assignRole(['owner','admin','guest']);
-        $j->assignRole(['admin','guest']);
-        $k->assignRole(['guest','guest']);
-        $l->assignRole(['guardian','guest']);
-        $m->assignRole(['member','guest']);
-        $n->assignRole(['crew','member','guest']);
-        $o->assignRole(['admin','crew','member','guest']);
+        $i->assignRole(['owner', 'admin', 'guest']);
+        $j->assignRole(['admin', 'guest']);
+        $k->assignRole(['guest', 'guest']);
+        $l->assignRole(['guardian', 'guest']);
+        $m->assignRole(['member', 'guest']);
+        $n->assignRole(['crew', 'member', 'guest']);
+        $o->assignRole(['admin', 'crew', 'member', 'guest']);
     }
 }

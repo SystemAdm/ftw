@@ -20,7 +20,7 @@ class StoreTeamRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'alpha_dash:ascii', 'unique:teams,slug'],
             'description' => ['nullable', 'string'],
-            'logo' => ['nullable', 'string', 'max:2048'],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'active' => ['boolean'],
             'users' => ['sometimes', 'array'],
             'users.*' => ['integer', 'exists:users,id'],

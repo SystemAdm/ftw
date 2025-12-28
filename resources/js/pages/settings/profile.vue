@@ -1,21 +1,31 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { BreadcrumbItemType } from '@/types';
 import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { trans } from 'laravel-vue-i18n';
+import { useAppearance } from '@/composables/useAppearance';
 
 type UserProps = {
   name: string;
+  name_public: boolean;
   email: string;
   avatar?: string | null;
+  header_image?: string | null;
   birthday?: string | null;
+  birthday_visibility: 'birthdate' | 'birthyear' | 'age' | 'off';
   postal_code?: number | null;
+  postal_code_visibility: 'postalcode' | 'city' | 'municipality' | 'county' | 'country' | 'off';
+  about?: string | null;
   appearance?: 'light' | 'dark' | 'system';
+  phone_public: boolean;
+  email_public: boolean;
 };
 
 type SubscriptionProps = {
@@ -30,19 +40,31 @@ const page = usePage<{ user: UserProps; subscription: SubscriptionProps }>();
 const user = computed(() => page.props.user);
 const subscription = computed(() => page.props.subscription);
 
+const { updateAppearance: updateClientTheme } = useAppearance();
+
 // Appearance form
 const appearanceForm = useForm({
   appearance: user.value.appearance ?? 'system',
 });
 
 function submitAppearance() {
-  appearanceForm.patch('/settings/appearance');
+  appearanceForm.patch('/settings/appearance', {
+    onSuccess: () => {
+      updateClientTheme(appearanceForm.appearance as any);
+    }
+  });
 }
 
-// Profile form (birthdate, postal code)
+// Profile form (birthdate, postal code, about, visibility)
 const profileForm = useForm({
   birthday: user.value.birthday ?? '',
+  birthday_visibility: user.value.birthday_visibility ?? 'off',
   postal_code: user.value.postal_code ?? '',
+  postal_code_visibility: user.value.postal_code_visibility ?? 'off',
+  about: user.value.about ?? '',
+  name_public: user.value.name_public ?? true,
+  phone_public: user.value.phone_public ?? false,
+  email_public: user.value.email_public ?? false,
 });
 
 function submitProfile() {
@@ -60,6 +82,29 @@ function submitPassword() {
   passwordForm.patch('/settings/password', {
     onSuccess: () => {
       passwordForm.reset('current_password', 'password', 'password_confirmation');
+    },
+  });
+}
+
+// Header image form
+const headerInput = ref<HTMLInputElement | null>(null);
+const headerForm = useForm<{ header_image: File | null }>({ header_image: null });
+
+function onPickHeader(e: Event) {
+  const t = e.target as HTMLInputElement;
+  if (t?.files && t.files.length > 0) {
+    headerForm.header_image = t.files[0];
+  }
+}
+
+function submitHeader() {
+  headerForm.post('/settings/header-image', {
+    forceFormData: true,
+    onSuccess: () => {
+      if (headerInput.value) {
+        headerInput.value.value = '';
+      }
+      headerForm.reset('header_image');
     },
   });
 }
@@ -86,94 +131,189 @@ function submitAvatar() {
     },
   });
 }
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.profile.title'),
+        href: '/settings/profile',
+    },
+]);
 </script>
 
 <template>
-  <SidebarLayout>
-    <Head title="Settings" />
+  <SidebarLayout :breadcrumbs="breadcrumbs">
+    <Head :title="trans('pages.settings.profile.title')" />
     <div class="space-y-6">
-      <h1 class="text-2xl font-bold tracking-tight">Settings</h1>
+      <h1 class="text-2xl font-bold tracking-tight">{{ trans('pages.settings.profile.title') }}</h1>
 
-      <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 xl:grid-cols-4">
         <!-- Appearance -->
         <Card class="p-6 space-y-4">
-          <h2 class="text-lg font-semibold">Appearance</h2>
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.appearance.title') }}</h2>
           <form @submit.prevent="submitAppearance" class="space-y-4">
             <div class="space-y-2">
-              <Label for="appearance">Theme</Label>
+              <Label for="appearance">{{ trans('pages.settings.profile.appearance.theme') }}</Label>
               <Select v-model="appearanceForm.appearance">
                 <SelectTrigger id="appearance">
-                  <SelectValue placeholder="Select theme" />
+                  <SelectValue :placeholder="trans('pages.settings.profile.appearance.select_theme')" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="system">System</SelectItem>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="system">{{ trans('pages.settings.profile.appearance.system') }}</SelectItem>
+                  <SelectItem value="light">{{ trans('pages.settings.profile.appearance.light') }}</SelectItem>
+                  <SelectItem value="dark">{{ trans('pages.settings.profile.appearance.dark') }}</SelectItem>
                 </SelectContent>
               </Select>
               <div v-if="appearanceForm.errors.appearance" class="text-sm text-red-600">{{ appearanceForm.errors.appearance }}</div>
             </div>
             <Button type="submit" :disabled="appearanceForm.processing">
-              {{ appearanceForm.processing ? 'Saving…' : 'Save' }}
+              {{ appearanceForm.processing ? trans('pages.settings.profile.actions.saving') : trans('pages.settings.profile.actions.save') }}
             </Button>
           </form>
         </Card>
 
         <!-- Password -->
         <Card class="p-6 space-y-4">
-          <h2 class="text-lg font-semibold">Password</h2>
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.password.title') }}</h2>
           <form @submit.prevent="submitPassword" class="space-y-4">
             <div class="space-y-2">
-              <Label for="current_password">Current password</Label>
+              <Label for="current_password">{{ trans('pages.settings.profile.password.current_password') }}</Label>
               <Input id="current_password" v-model="passwordForm.current_password" type="password" autocomplete="current-password" />
               <div v-if="passwordForm.errors.current_password" class="text-sm text-red-600">{{ passwordForm.errors.current_password }}</div>
             </div>
             <div class="space-y-2">
-              <Label for="password">New password</Label>
+              <Label for="password">{{ trans('pages.settings.profile.password.new_password') }}</Label>
               <Input id="password" v-model="passwordForm.password" type="password" autocomplete="new-password" />
               <div v-if="passwordForm.errors.password" class="text-sm text-red-600">{{ passwordForm.errors.password }}</div>
             </div>
             <div class="space-y-2">
-              <Label for="password_confirmation">Confirm password</Label>
+              <Label for="password_confirmation">{{ trans('pages.settings.profile.password.confirm_password') }}</Label>
               <Input id="password_confirmation" v-model="passwordForm.password_confirmation" type="password" autocomplete="new-password" />
             </div>
             <Button type="submit" :disabled="passwordForm.processing">
-              {{ passwordForm.processing ? 'Updating…' : 'Update password' }}
+              {{ passwordForm.processing ? trans('pages.settings.profile.password.updating') : trans('pages.settings.profile.password.update_button') }}
             </Button>
           </form>
         </Card>
 
         <!-- Profile basics -->
         <Card class="p-6 space-y-4">
-          <h2 class="text-lg font-semibold">Profile</h2>
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.title') }}</h2>
           <form @submit.prevent="submitProfile" class="space-y-4">
             <div class="space-y-2">
-              <Label for="birthday">Birthdate</Label>
+              <Label for="birthday">{{ trans('pages.auth.login.birthday_label') }}</Label>
               <Input id="birthday" type="date" v-model="profileForm.birthday" />
               <div v-if="profileForm.errors.birthday" class="text-sm text-red-600">{{ profileForm.errors.birthday }}</div>
             </div>
             <div class="space-y-2">
-              <Label for="postal_code">Postal code</Label>
+              <Label for="postal_code">{{ trans('pages.auth.login.postal_code_label') }}</Label>
               <Input id="postal_code" type="number" v-model="profileForm.postal_code" />
               <div v-if="profileForm.errors.postal_code" class="text-sm text-red-600">{{ profileForm.errors.postal_code }}</div>
             </div>
+            <div class="space-y-2">
+              <Label for="about">{{ trans('pages.settings.profile.about') }}</Label>
+              <textarea
+                id="about"
+                v-model="profileForm.about"
+                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              ></textarea>
+              <div v-if="profileForm.errors.about" class="text-sm text-red-600">{{ profileForm.errors.about }}</div>
+            </div>
+
+            <div class="space-y-4 pt-2">
+              <h3 class="text-sm font-medium">{{ trans('pages.settings.profile.visibility.title') }}</h3>
+              <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                  <Checkbox
+                    id="name_public"
+                    :checked="profileForm.name_public"
+                    @update:checked="(v) => profileForm.name_public = v"
+                  />
+                  <Label for="name_public" class="text-sm font-normal">{{ trans('pages.settings.profile.visibility.show_full_name') }}</Label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Checkbox
+                    id="email_public"
+                    :checked="profileForm.email_public"
+                    @update:checked="(v) => profileForm.email_public = v"
+                  />
+                  <Label for="email_public" class="text-sm font-normal">{{ trans('pages.settings.profile.visibility.show_email') }}</Label>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Checkbox
+                    id="phone_public"
+                    :checked="profileForm.phone_public"
+                    @update:checked="(v) => profileForm.phone_public = v"
+                  />
+                  <Label for="phone_public" class="text-sm font-normal">{{ trans('pages.settings.profile.visibility.show_phone') }}</Label>
+                </div>
+                <div class="space-y-2">
+                  <Label for="birthday_visibility" class="text-sm font-normal">{{ trans('pages.settings.profile.visibility.birthday_visibility') }}</Label>
+                  <Select v-model="profileForm.birthday_visibility">
+                    <SelectTrigger id="birthday_visibility">
+                      <SelectValue :placeholder="trans('pages.settings.profile.visibility.select_visibility')" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="birthdate">{{ trans('pages.settings.profile.visibility.birthdate') }}</SelectItem>
+                      <SelectItem value="birthyear">{{ trans('pages.settings.profile.visibility.birthyear') }}</SelectItem>
+                      <SelectItem value="age">{{ trans('pages.settings.profile.visibility.age') }}</SelectItem>
+                      <SelectItem value="off">{{ trans('pages.settings.profile.visibility.off') }}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div class="space-y-2">
+                  <Label for="postal_code_visibility" class="text-sm font-normal">{{ trans('pages.settings.profile.visibility.postal_code_visibility') }}</Label>
+                  <Select v-model="profileForm.postal_code_visibility">
+                    <SelectTrigger id="postal_code_visibility">
+                      <SelectValue :placeholder="trans('pages.settings.profile.visibility.select_visibility')" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="postalcode">{{ trans('pages.settings.profile.visibility.postalcode') }}</SelectItem>
+                      <SelectItem value="city">{{ trans('pages.settings.profile.visibility.city') }}</SelectItem>
+                      <SelectItem value="municipality">{{ trans('pages.settings.profile.visibility.municipality') }}</SelectItem>
+                      <SelectItem value="county">{{ trans('pages.settings.profile.visibility.county') }}</SelectItem>
+                      <SelectItem value="country">{{ trans('pages.settings.profile.visibility.country') }}</SelectItem>
+                      <SelectItem value="off">{{ trans('pages.settings.profile.visibility.off') }}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <p class="text-xs text-muted-foreground">
+                <Link href="/profile" class="underline hover:text-foreground">{{ trans('pages.settings.profile.view_public') }}</Link>
+              </p>
+            </div>
+
             <Button type="submit" :disabled="profileForm.processing">
-              {{ profileForm.processing ? 'Saving…' : 'Save' }}
+              {{ profileForm.processing ? trans('pages.settings.profile.actions.saving') : trans('pages.settings.profile.actions.save') }}
+            </Button>
+          </form>
+        </Card>
+
+        <!-- Header Image -->
+        <Card class="p-6 space-y-4">
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.header_image.title') }}</h2>
+          <form @submit.prevent="submitHeader" class="space-y-4">
+            <div class="space-y-2">
+              <Label for="header_image">{{ trans('pages.settings.profile.header_image.upload') }}</Label>
+              <Input id="header_image" ref="headerInput" type="file" accept="image/*" @change="onPickHeader" />
+              <div v-if="headerForm.errors.header_image" class="text-sm text-red-600">{{ headerForm.errors.header_image }}</div>
+            </div>
+            <Button type="submit" :disabled="headerForm.processing || !headerForm.header_image">
+              {{ headerForm.processing ? trans('pages.settings.profile.actions.uploading') : trans('pages.settings.profile.actions.upload') }}
             </Button>
           </form>
         </Card>
 
         <!-- Avatar -->
         <Card class="p-6 space-y-4">
-          <h2 class="text-lg font-semibold">Avatar</h2>
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.avatar.title') }}</h2>
           <form @submit.prevent="submitAvatar" class="space-y-4">
             <div class="space-y-2">
-              <Label for="avatar">Upload image</Label>
+              <Label for="avatar">{{ trans('pages.settings.profile.avatar.upload') }}</Label>
               <Input id="avatar" ref="avatarInput" type="file" accept="image/*" @change="onPickAvatar" />
               <div v-if="avatarForm.errors.avatar" class="text-sm text-red-600">{{ avatarForm.errors.avatar }}</div>
             </div>
             <Button type="submit" :disabled="avatarForm.processing || !avatarForm.avatar">
-              {{ avatarForm.processing ? 'Uploading…' : 'Upload' }}
+              {{ avatarForm.processing ? trans('pages.settings.profile.actions.uploading') : trans('pages.settings.profile.actions.upload') }}
             </Button>
           </form>
         </Card>

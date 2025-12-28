@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Head, usePage, router } from '@inertiajs/vue3';
+import { dashboard } from '@/actions/App/Http/Controllers/Auth/UsersController';
+import { BreadcrumbItemType } from '@/types';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,14 +32,21 @@ const page = usePage<{ days: Day[]; week?: number }>();
 const days = computed<Day[]>(() => (page.props.days as Day[]) ?? []);
 const week = computed<number>(() => ((page.props.week as number | undefined) ?? 0));
 
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.dashboard.title'),
+        href: dashboard.url(),
+    },
+]);
+
 function goToWeek(nextWeek: number) {
     if (nextWeek < 0) nextWeek = 0;
-    router.get('/dashboard', { week: nextWeek }, { preserveScroll: true });
+    router.get(dashboard.url({ query: { week: nextWeek } }), {}, { preserveScroll: true });
 }
 </script>
 
 <template>
-    <SidebarLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <Head :title="trans('pages.dashboard.title')" />
         <div class="space-y-4">
             <div class="flex items-center justify-between gap-3">

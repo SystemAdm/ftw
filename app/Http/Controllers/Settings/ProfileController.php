@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\UpdateAppearanceRequest;
 use App\Http\Requests\Settings\UpdateAvatarRequest;
+use App\Http\Requests\Settings\UpdateHeaderImageRequest;
 use App\Http\Requests\Settings\UpdatePasswordRequest;
 use App\Http\Requests\Settings\UpdateProfileRequest;
 use Illuminate\Http\RedirectResponse;
@@ -25,16 +26,23 @@ class ProfileController extends Controller
         return Inertia::render('settings/profile', [
             'user' => [
                 'name' => $user->name,
+                'name_public' => $user->name_public,
                 'email' => $user->email,
                 'avatar' => $user->avatar,
+                'header_image' => $user->header_image,
                 'birthday' => optional($user->birthday)?->toDateString(),
+                'birthday_visibility' => $user->birthday_visibility,
                 'postal_code' => $user->postal_code,
+                'postal_code_visibility' => $user->postal_code_visibility,
+                'about' => $user->about,
                 'postal' => $user->postalCode ? [
                     'postal_code' => $user->postalCode->postal_code,
                     'city' => $user->postalCode->city,
                     'country' => $user->postalCode->country,
                 ] : null,
                 'appearance' => $user->appearance ?? 'system',
+                'phone_public' => $user->phone_public,
+                'email_public' => $user->email_public,
             ],
             'subscription' => [
                 'active' => $user->subscribed('default'),
@@ -53,10 +61,16 @@ class ProfileController extends Controller
         $data = $request->validated();
 
         $user->birthday = $data['birthday'];
+        $user->birthday_visibility = $data['birthday_visibility'];
         $user->postal_code = $data['postal_code'];
+        $user->postal_code_visibility = $data['postal_code_visibility'];
+        $user->phone_public = $request->boolean('phone_public');
+        $user->email_public = $request->boolean('email_public');
+        $user->name_public = $request->boolean('name_public');
+        $user->about = $data['about'];
         $user->save();
 
-        return back()->with('success', 'Profile updated');
+        return back()->with('success', __('pages.settings.profile.messages.updated'));
     }
 
     public function updateAppearance(UpdateAppearanceRequest $request): RedirectResponse
@@ -65,7 +79,7 @@ class ProfileController extends Controller
         $user->appearance = $request->validated('appearance');
         $user->save();
 
-        return back()->with('success', 'Appearance updated');
+        return back()->with('success', __('pages.settings.profile.messages.appearance_updated'));
     }
 
     public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
@@ -77,7 +91,7 @@ class ProfileController extends Controller
 
         Auth::logoutOtherDevices($request->validated('password'));
 
-        return back()->with('success', 'Password updated');
+        return back()->with('success', __('pages.settings.profile.messages.password_updated'));
     }
 
     public function updateAvatar(UpdateAvatarRequest $request): RedirectResponse
@@ -98,6 +112,26 @@ class ProfileController extends Controller
             $user->save();
         }
 
-        return back()->with('success', 'Avatar updated');
+        return back()->with('success', __('pages.settings.profile.messages.avatar_updated'));
+    }
+
+    public function updateHeaderImage(UpdateHeaderImageRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($request->hasFile('header_image')) {
+            if (! empty($user->header_image)) {
+                if (str_starts_with((string) $user->header_image, 'storage/')) {
+                    $relative = str_replace('storage/', '', (string) $user->header_image);
+                    Storage::disk('public')->delete($relative);
+                }
+            }
+
+            $path = $request->file('header_image')->store('header_images', ['disk' => 'public']);
+            $user->header_image = Storage::url($path);
+            $user->save();
+        }
+
+        return back()->with('success', __('pages.settings.profile.messages.header_image_updated'));
     }
 }

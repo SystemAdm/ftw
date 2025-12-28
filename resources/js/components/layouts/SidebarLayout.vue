@@ -2,15 +2,29 @@
 import AppSidebar from '@/components/custom/AppSidebar.vue';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layouts/Footer.vue';
 import { Toaster } from '@/components/ui/sonner'
 import { usePage } from '@inertiajs/vue3'
 import { useFlashToasts } from '@/composables/useFlashToasts'
+import BannedUserDialog from '@/components/custom/BannedUserDialog.vue'
+import { computed, ref, watch } from 'vue'
 
 // Bridge Laravel flash messages -> Sonner toasts with dedupe
+defineProps<{
+    breadcrumbs?: BreadcrumbItemType[];
+}>();
+
 const page = usePage()
 useFlashToasts(page)
+
+const banMessage = computed(() => (page.props as any).ban_message as string | null);
+const showBanDialog = ref(false);
+
+watch(banMessage, (val) => {
+    if (val) showBanDialog.value = true;
+}, { immediate: true });
 </script>
 
 <template>
@@ -25,6 +39,10 @@ useFlashToasts(page)
           offset="64px"
           :duration="4000"
         />
+
+        <!-- Banned User Dialog -->
+        <BannedUserDialog v-if="showBanDialog" :message="banMessage" @close="showBanDialog = false" />
+
         <AppSidebar />
         <SidebarInset>
             <header
@@ -33,15 +51,22 @@ useFlashToasts(page)
                 <div class="flex items-center gap-2 px-4">
                     <SidebarTrigger class="-ml-1" />
                     <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
-                    <Breadcrumb>
+                    <Breadcrumb v-if="breadcrumbs && breadcrumbs.length > 0">
                         <BreadcrumbList>
-                            <BreadcrumbItem class="hidden md:block">
-                                <BreadcrumbLink href="#"> Building Your Application </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator class="hidden md:block" />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                            </BreadcrumbItem>
+                            <template v-for="(item, index) in breadcrumbs" :key="item.href">
+                                <BreadcrumbItem :class="{ 'hidden md:block': index < breadcrumbs.length - 1 }">
+                                    <BreadcrumbLink v-if="index < breadcrumbs.length - 1" :href="item.href">
+                                        {{ item.title }}
+                                    </BreadcrumbLink>
+                                    <BreadcrumbPage v-else>
+                                        {{ item.title }}
+                                    </BreadcrumbPage>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator
+                                    v-if="index < breadcrumbs.length - 1"
+                                    class="hidden md:block"
+                                />
+                            </template>
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>

@@ -27,6 +27,10 @@ Route::middleware('auth')->group(function () {
     Route::post('settings/avatar', [ProfileController::class, 'updateAvatar'])
         ->name('settings.avatar.update');
 
+    // Update Header Image
+    Route::post('settings/header-image', [ProfileController::class, 'updateHeaderImage'])
+        ->name('settings.header-image.update');
+
     // Settings: Billing
     Route::get('settings/billing', [BillingController::class, 'index'])->name('settings.billing');
     Route::post('settings/billing/checkout', [BillingController::class, 'checkout'])->name('settings.billing.checkout');

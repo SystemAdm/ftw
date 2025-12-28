@@ -49,53 +49,53 @@ class EventsController extends Controller
 
         // 1. Check if signup is needed
         if (! $event->signup_needed) {
-            return back()->with('error', 'Signup is not required for this event.');
+            return back()->with('error', __('pages.events.signup.messages.signup_not_required'));
         }
 
         // 2. Check if already signed up
         if ($event->reservations()->where('user_id', $user->id)->exists()) {
-            return back()->with('error', 'You are already signed up for this event.');
+            return back()->with('error', __('pages.events.signup.messages.already_signed_up'));
         }
 
         // 3. Check time limits
         $now = now();
         if ($event->signup_start && $now->lt($event->signup_start)) {
-            return back()->with('error', 'Signup has not started yet.');
+            return back()->with('error', __('pages.events.signup.messages.not_started'));
         }
         if ($event->signup_end && $now->gt($event->signup_end)) {
-            return back()->with('error', 'Signup has ended.');
+            return back()->with('error', __('pages.events.signup.messages.ended'));
         }
 
         // 4. Check seats
         if ($event->number_of_seats === 0) {
-            return back()->with('error', 'Signup is not required for this event.');
+            return back()->with('error', __('pages.events.signup.messages.signup_not_required'));
         }
 
         if ($event->number_of_seats !== null && $event->number_of_seats !== -1) {
             $reservedCount = $event->reservations()->count();
             if ($reservedCount >= $event->number_of_seats) {
-                return back()->with('error', 'This event is full.');
+                return back()->with('error', __('pages.events.signup.messages.full'));
             }
         }
 
         // 5. Check age limits
         if ($event->age_min !== null || $event->age_max !== null) {
             if (! $user->birthday) {
-                return back()->with('error', 'Please set your birthdate in profile to signup for age-restricted events.');
+                return back()->with('error', __('pages.events.signup.messages.age_restricted'));
             }
 
             $age = $user->birthday->age;
             if ($event->age_min !== null && $age < $event->age_min) {
-                return back()->with('error', "You must be at least {$event->age_min} years old.");
+                return back()->with('error', __('pages.events.signup.messages.too_young', ['age' => $event->age_min]));
             }
             if ($event->age_max !== null && $age > $event->age_max) {
-                return back()->with('error', "This event is for users up to {$event->age_max} years old.");
+                return back()->with('error', __('pages.events.signup.messages.too_old', ['age' => $event->age_max]));
             }
         }
 
         $event->reservations()->attach($user->id);
 
-        return back()->with('success', 'You have successfully signed up for the event!');
+        return back()->with('success', __('pages.events.signup.messages.success'));
     }
 
     public function cancelSignup(Event $event): RedirectResponse
@@ -104,11 +104,11 @@ class EventsController extends Controller
         $user = auth()->user();
 
         if (! $event->reservations()->where('user_id', $user->id)->exists()) {
-            return back()->with('error', 'You are not signed up for this event.');
+            return back()->with('error', __('pages.events.signup.messages.not_signed_up'));
         }
 
         $event->reservations()->detach($user->id);
 
-        return back()->with('success', 'You have successfully removed your signup for the event.');
+        return back()->with('success', __('pages.events.signup.messages.cancelled'));
     }
 }

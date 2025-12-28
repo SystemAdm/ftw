@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronsUpDown, Settings, Bell, LogOut, LayoutDashboard } from 'lucide-vue-next';
+import { ChevronsUpDown, Settings, Bell, LogOut, LayoutDashboard, User as UserIcon } from 'lucide-vue-next';
 import { Link } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { profile as profileSettingsRoute } from '@/routes/settings';
@@ -73,6 +73,12 @@ const initials = computed(() => {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
+                        <DropdownMenuItem as-child>
+                            <Link href="/profile" class="flex w-full items-center gap-2">
+                                <UserIcon />
+                                {{ trans('pages.ui.navigation.profile') }}
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem as-child>
                             <Link :href="dashboardRoute.url()" class="flex w-full items-center gap-2">
                                 <LayoutDashboard />

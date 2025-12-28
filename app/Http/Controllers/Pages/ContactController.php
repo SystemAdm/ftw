@@ -35,7 +35,7 @@ class ContactController extends Controller
                 )
             );
 
-            return redirect()->route('contact.show')->with('status', 'Message sent. We will get back to you soon.');
+            return redirect()->route('contact.show')->with('status', __('pages.contact.messages.success'));
         } catch (\Throwable $e) {
             report($e);
 

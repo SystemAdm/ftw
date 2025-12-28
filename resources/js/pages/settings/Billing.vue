@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue'
+import { BreadcrumbItemType } from '@/types'
 import { Head, useForm, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import { Card } from '@/components/ui/card'
@@ -39,14 +40,21 @@ const formattedBillingDate = computed(() => {
     day: '2-digit',
   })
 })
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.billing.membership'),
+        href: '/settings/billing',
+    },
+]);
 </script>
 
 <template>
-  <SidebarLayout>
-    <Head title="Billing" />
+  <SidebarLayout :breadcrumbs="breadcrumbs">
+    <Head :title="trans('pages.settings.billing.membership')" />
 
     <div class="space-y-6">
-      <h1 class="text-2xl font-bold tracking-tight">{{ trans('ui.menu.settings') }}</h1>
+      <h1 class="text-2xl font-bold tracking-tight">{{ trans('pages.settings.profile.title') }}</h1>
 
       <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Card class="p-6 space-y-4">

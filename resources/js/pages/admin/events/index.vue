@@ -2,6 +2,7 @@
 import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 import Paginator from '@/components/custom/Paginator.vue';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { BreadcrumbItemType } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -10,13 +11,20 @@ import { create as createRoute, destroy, forceDestroy, restore, show } from '@/r
 import { router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { Edit, Eye, MoreHorizontal, RotateCcw, Trash2 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const page = usePage<PageProps>();
 
 const deleteDialogOpen = ref(false);
 const forceDeleteDialogOpen = ref(false);
 const selectedEventId = ref<number | null>(null);
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.events.title'),
+        href: '/admin/events',
+    },
+]);
 
 function goCreate() {
     router.visit(createRoute.url());
@@ -78,7 +86,7 @@ function handleForceDelete() {
 </script>
 
 <template>
-    <SidebarLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <div class="mb-4 flex items-center justify-between">
             <h1 class="text-xl font-semibold">{{ trans('pages.settings.events.title') }}</h1>
             <Button @click="goCreate">{{ trans('pages.settings.events.new') }}</Button>

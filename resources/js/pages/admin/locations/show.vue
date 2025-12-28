@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { BreadcrumbItemType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { router, usePage } from '@inertiajs/vue3';
 import { edit as editRoute, destroy as destroyRoute, index as indexRoute } from '@/routes/admin/locations';
@@ -17,8 +18,21 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
+import { computed } from 'vue';
+
 const page = usePage();
 const location = (page.props as any).location as any;
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.locations.title'),
+        href: indexRoute.url(),
+    },
+    {
+        title: location.name,
+        href: router.page.url,
+    },
+]);
 
 function del() {
   router.delete(destroyRoute.url(location.id), {
@@ -40,7 +54,7 @@ function forceDel() {
 </script>
 
 <template>
-  <SidebarLayout>
+  <SidebarLayout :breadcrumbs="breadcrumbs">
     <div class="mb-4 flex items-center justify-between">
       <h1 class="text-xl font-semibold">{{ trans('pages.settings.locations.fields.name') }} {{ location.name }}</h1>
       <div class="flex gap-2">

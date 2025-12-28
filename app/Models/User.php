@@ -28,19 +28,30 @@ class User extends Authenticatable implements ReactsInterface
      */
     protected $fillable = [
         'name',
+        'name_public',
         'email',
         'password',
         'username',
         'avatar',
+        'header_image',
         'birthday',
+        'birthday_visibility',
         'postal_code',
+        'postal_code_visibility',
+        'about',
         'appearance',
         'phone_public',
+        'email_public',
         'email_verified_at',
+        'email_verification_code',
         'google_id',
         'discord_id',
-        'ban_reason',
+        'verified_at',
+        'verified_by',
+        'banned_at',
+        'banned_to',
         'banned_by',
+        'ban_reason',
     ];
 
     /**
@@ -90,6 +101,8 @@ class User extends Authenticatable implements ReactsInterface
             'birthday' => 'date',
             'password' => 'hashed',
             'phone_public' => 'boolean',
+            'email_public' => 'boolean',
+            'name_public' => 'boolean',
         ];
     }
 

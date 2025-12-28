@@ -1,44 +1,74 @@
 <script setup lang="ts">
+import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { router, usePage } from '@inertiajs/vue3';
-import { create, show as showRoute, destroy as destroyRoute } from '@/routes/admin/postcodes';
+import { create, show as showRoute, edit as editRoute, destroy as destroyRoute } from '@/routes/admin/postcodes';
 import { restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/postcodes';
 import { Table, TableBody, TableEmpty, TableHead, TableHeader, TableRow, TableCell, TableFooter } from '@/components/ui/table';
 import Paginator from '@/components/custom/Paginator.vue';
 import { trans } from 'laravel-vue-i18n';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { Edit, Eye, MoreHorizontal, RotateCcw, Trash2 } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
 
 
+
+import { BreadcrumbItemType } from '@/types';
 
 const page = usePage();
-const postcodes = (page.props as any).postcodes;
+const postcodes = computed(() => (page.props as any).postcodes);
 
-function del(pc: any) {
-  router.delete(destroyRoute.url(pc.postal_code));
-}
+const deleteDialogOpen = ref(false);
+const forceDeleteDialogOpen = ref(false);
+const selectedPostcode = ref<any>(null);
 
-function restorePc(pc: any) {
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+  {
+    title: trans('pages.settings.postcodes.title'),
+    href: '/admin/postcodes',
+  },
+]);
+
+function handleRestore(pc: any) {
   router.post(restoreRoute.url(pc.postal_code));
 }
 
-function forceDel(pc: any) {
-  router.delete(forceDestroyRoute.url(pc.postal_code));
+function confirmDelete(pc: any) {
+  selectedPostcode.value = pc;
+  deleteDialogOpen.value = true;
+}
+
+function confirmForceDelete(pc: any) {
+  selectedPostcode.value = pc;
+  forceDeleteDialogOpen.value = true;
+}
+
+function handleDelete() {
+  if (selectedPostcode.value) {
+    router.delete(destroyRoute.url(selectedPostcode.value.postal_code), {
+      onFinish: () => {
+        deleteDialogOpen.value = false;
+        selectedPostcode.value = null;
+      },
+    });
+  }
+}
+
+function handleForceDelete() {
+  if (selectedPostcode.value) {
+    router.delete(forceDestroyRoute.url(selectedPostcode.value.postal_code), {
+      onFinish: () => {
+        forceDeleteDialogOpen.value = false;
+        selectedPostcode.value = null;
+      },
+    });
+  }
 }
 </script>
 
 <template>
-  <SidebarLayout>
+  <SidebarLayout :breadcrumbs="breadcrumbs">
     <div class="mb-4 flex items-center justify-between">
       <h1 class="text-xl font-semibold">{{ trans('pages.settings.postcodes.title') }}</h1>
       <Button @click.prevent="router.visit(create.url())">{{ trans('pages.settings.postcodes.actions.create') }}</Button>
@@ -64,45 +94,40 @@ function forceDel(pc: any) {
             <TableCell>{{ pc.city }}</TableCell>
             <TableCell>{{ pc.state }}</TableCell>
             <TableCell>{{ pc.country }}</TableCell>
-            <TableCell class="text-right flex gap-2">
-              <Button size="sm" @click.prevent="router.visit(showRoute.url(pc.postal_code))">{{ trans('pages.settings.postcodes.actions.view') }}</Button>
-              <AlertDialog v-if="!pc.deleted_at">
-                <AlertDialogTrigger as-child>
-                  <Button size="sm" variant="destructive">{{ trans('pages.settings.postcodes.actions.delete') }}</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{{ trans('pages.settings.postcodes.delete.title', { code: pc.postal_code }) }}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {{ trans('pages.settings.postcodes.delete.description') }}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{{ trans('pages.settings.postcodes.actions.cancel') }}</AlertDialogCancel>
-                    <AlertDialogAction @click="del(pc)">{{ trans('pages.settings.postcodes.actions.delete') }}</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <div v-else class="inline-flex gap-2">
-                <Button size="sm" variant="secondary" @click="restorePc(pc)">{{ trans('pages.settings.postcodes.actions.restore') }}</Button>
-                <AlertDialog>
-                  <AlertDialogTrigger as-child>
-                    <Button size="sm" variant="destructive">{{ trans('pages.settings.postcodes.actions.force_delete') }}</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{{ trans('pages.settings.postcodes.force_delete.title', { code: pc.postal_code }) }}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {{ trans('pages.settings.postcodes.force_delete.description') }}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{{ trans('pages.settings.postcodes.actions.cancel') }}</AlertDialogCancel>
-                      <AlertDialogAction @click="forceDel(pc)">{{ trans('pages.settings.postcodes.actions.delete_permanently') }}</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+            <TableCell class="text-right">
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button variant="ghost" size="icon">
+                    <MoreHorizontal class="h-4 w-4" />
+                    <span class="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem @click="router.visit(showRoute.url(pc.postal_code))">
+                    <Eye class="mr-2 h-4 w-4" />
+                    {{ trans('pages.settings.postcodes.actions.view') }}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem @click="router.visit(editRoute.url(pc.postal_code))">
+                    <Edit class="mr-2 h-4 w-4" />
+                    {{ trans('pages.settings.postcodes.actions.edit') }}
+                  </DropdownMenuItem>
+
+                  <template v-if="pc.deleted_at">
+                    <DropdownMenuItem class="text-green-600 focus:text-green-600" @click="handleRestore(pc)">
+                      <RotateCcw class="mr-2 h-4 w-4" />
+                      {{ trans('pages.settings.postcodes.actions.restore') }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem class="text-destructive focus:text-destructive" @click="confirmForceDelete(pc)">
+                      <Trash2 class="mr-2 h-4 w-4" />
+                      {{ trans('pages.settings.postcodes.actions.force_delete') }}
+                    </DropdownMenuItem>
+                  </template>
+                  <DropdownMenuItem v-else class="text-destructive focus:text-destructive" @click="confirmDelete(pc)">
+                    <Trash2 class="mr-2 h-4 w-4" />
+                    {{ trans('pages.settings.postcodes.actions.delete') }}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </TableCell>
           </TableRow>
         </template>
@@ -115,6 +140,20 @@ function forceDel(pc: any) {
             </TableRow>
         </TableFooter>
     </Table>
+
+    <DeleteConfirmationDialog
+      v-model:open="deleteDialogOpen"
+      :title="trans('pages.settings.postcodes.delete.title', { code: selectedPostcode?.postal_code })"
+      :description="trans('pages.settings.postcodes.delete.description')"
+      @confirm="handleDelete"
+    />
+
+    <DeleteConfirmationDialog
+      v-model:open="forceDeleteDialogOpen"
+      :title="trans('pages.settings.postcodes.force_delete.title', { code: selectedPostcode?.postal_code })"
+      :description="trans('pages.settings.postcodes.force_delete.description')"
+      @confirm="handleForceDelete"
+    />
 
   </SidebarLayout>
 </template>

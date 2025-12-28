@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateTeamRequest;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -42,6 +43,11 @@ class TeamsController extends Controller
         $data = $request->validated();
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
+        }
+
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('teams/logos', 'public');
+            $data['logo'] = Storage::url($path);
         }
 
         $userIds = $data['users'] ?? [];
@@ -84,6 +90,16 @@ class TeamsController extends Controller
         $data = $request->validated();
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
+        }
+
+        if ($request->hasFile('logo')) {
+            if ($team->logo && str_contains($team->logo, 'storage/teams/logos')) {
+                $oldPath = str_replace(Storage::url(''), '', $team->logo);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            $path = $request->file('logo')->store('teams/logos', 'public');
+            $data['logo'] = Storage::url($path);
         }
 
         $userIds = $data['users'] ?? null;

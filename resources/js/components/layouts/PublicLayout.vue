@@ -4,16 +4,18 @@ import { Link } from '@inertiajs/vue3';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { usePage } from '@inertiajs/vue3';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { Toaster } from '@/components/ui/sonner';
-import 'vue-sonner/style.css';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSun, faMoon, faDesktop } from '@fortawesome/free-solid-svg-icons';
 import { useFlashToasts } from '@/composables/useFlashToasts';
+import BannedUserDialog from '@/components/custom/BannedUserDialog.vue';
 
 library.add(faSun, faMoon, faDesktop);
+
+import { useAppearance } from '@/composables/useAppearance';
 
 type I18n = {
     i18n: {
@@ -28,8 +30,15 @@ type I18n = {
 const page = usePage<I18n>();
 const ui = computed(() => page.props.i18n?.trans?.ui ?? {});
 
-const appearance = ref<'light' | 'dark' | 'system'>((page.props as any).appearance ?? 'system');
+const { appearance, updateAppearance } = useAppearance();
 const systemIsDark = ref(false);
+
+const banMessage = computed(() => (page.props as any).ban_message as string | null);
+const showBanDialog = ref(false);
+
+watch(banMessage, (val) => {
+    if (val) showBanDialog.value = true;
+}, { immediate: true });
 
 const logoUrl = computed(() => {
     if (appearance.value === 'dark') {
@@ -43,23 +52,8 @@ const logoUrl = computed(() => {
     return systemIsDark.value ? '/images/Spillhuset_roof_light.png' : '/images/Spillhuset_roof_dark.png';
 });
 
-function setCookie(name: string, value: string, days = 365) {
-    const d = new Date();
-    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
-}
-
-function applyAppearance(mode: 'light' | 'dark' | 'system') {
-    const root = document.documentElement;
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = mode === 'dark' || (mode === 'system' && prefersDark);
-    root.classList.toggle('dark', isDark);
-}
-
 function onAppearanceChange(mode: 'light' | 'dark' | 'system') {
-    appearance.value = mode;
-    setCookie('appearance', mode);
-    applyAppearance(mode);
+    updateAppearance(mode);
     toast.success(ui.value?.appearance?.changed ?? 'Theme updated');
 }
 
@@ -67,14 +61,9 @@ onMounted(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     systemIsDark.value = mq.matches;
 
-    applyAppearance(appearance.value);
-
-    // If user set System, react to OS changes
+    // React to OS changes
     const handler = () => {
         systemIsDark.value = mq.matches;
-        if (appearance.value === 'system') {
-            applyAppearance('system');
-        }
     };
     if (mq?.addEventListener) {
         mq.addEventListener('change', handler);
@@ -87,8 +76,13 @@ onMounted(() => {
 useFlashToasts(page);
 </script>
 
-<template><!-- Global toast provider (Sonner) -->
+<template>
+    <!-- Global toast provider (Sonner) -->
     <Toaster />
+
+    <!-- Banned User Dialog -->
+    <BannedUserDialog v-if="showBanDialog" :message="banMessage" @close="showBanDialog = false" />
+
     <div class="min-h-screen bg-background text-foreground selection:bg-green-500/40 dark:bg-black">
 
         <!-- Top nav -->

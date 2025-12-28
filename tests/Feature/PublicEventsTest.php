@@ -93,7 +93,7 @@ it('cannot signup if event is full', function () {
     $this->actingAs($this->user)
         ->post(route('events.signup', $event))
         ->assertRedirect()
-        ->assertSessionHas('error', 'This event is full.');
+        ->assertSessionHas('error', trans('pages.events.signup.messages.full'));
 
     expect($event->reservations()->where('user_id', $this->user->id)->exists())->toBeFalse();
 });
@@ -127,7 +127,7 @@ it('cannot signup if seats is 0 (not required)', function () {
     $this->actingAs($this->user)
         ->post(route('events.signup', $event))
         ->assertRedirect()
-        ->assertSessionHas('error', 'Signup is not required for this event.');
+        ->assertSessionHas('error', trans('pages.events.signup.messages.signup_not_required'));
 
     expect($event->reservations()->where('user_id', $this->user->id)->exists())->toBeFalse();
 });
@@ -142,7 +142,7 @@ it('cannot signup if signup has not started', function () {
     $this->actingAs($this->user)
         ->post(route('events.signup', $event))
         ->assertRedirect()
-        ->assertSessionHas('error', 'Signup has not started yet.');
+        ->assertSessionHas('error', trans('pages.events.signup.messages.not_started'));
 });
 
 it('cannot signup if signup has ended', function () {
@@ -156,7 +156,7 @@ it('cannot signup if signup has ended', function () {
     $this->actingAs($this->user)
         ->post(route('events.signup', $event))
         ->assertRedirect()
-        ->assertSessionHas('error', 'Signup has ended.');
+        ->assertSessionHas('error', trans('pages.events.signup.messages.ended'));
 });
 
 it('cannot signup if user is too young', function () {
@@ -172,5 +172,5 @@ it('cannot signup if user is too young', function () {
     $this->actingAs($youngUser)
         ->post(route('events.signup', $event))
         ->assertRedirect()
-        ->assertSessionHas('error', 'You must be at least 18 years old.');
+        ->assertSessionHas('error', trans('pages.events.signup.messages.too_young', ['age' => 18]));
 });

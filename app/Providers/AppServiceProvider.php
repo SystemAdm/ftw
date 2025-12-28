@@ -4,9 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
-use SocialiteProviders\Discord\DiscordExtendSocialite;
-use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('twitch', \SocialiteProviders\Twitch\Provider::class);
             $event->extendSocialite('battlenet', \SocialiteProviders\Battlenet\Provider::class);
             $event->extendSocialite('discord', \SocialiteProviders\Discord\Provider::class);
-            $event->extendSocialite('steam',\SocialiteProviders\Steam\Provider::class);
+            $event->extendSocialite('steam', \SocialiteProviders\Steam\Provider::class);
             $event->extendSocialite('google', \SocialiteProviders\Google\Provider::class);
             $event->extendSocialite('facebook', \SocialiteProviders\Facebook\Provider::class);
             $event->extendSocialite('github', \SocialiteProviders\GitHub\Provider::class);

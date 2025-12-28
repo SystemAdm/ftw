@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { usePage, router } from '@inertiajs/vue3';
+import { usePage, useForm, router } from '@inertiajs/vue3';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { reactive } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { trans } from 'laravel-vue-i18n';
@@ -14,22 +13,28 @@ const page = usePage<PageProps>();
 const team = page.props.team as any;
 const usersList = (page.props as any).users ?? [];
 
-const form = reactive({
+const form = useForm({
+  _method: 'PUT',
   name: team.name ?? '',
   slug: team.slug ?? '',
   description: team.description ?? '',
-  logo: team.logo ?? '',
+  logo: null as File | null,
   active: Boolean(team.active),
   users: (team.users ?? []).map((u: any) => u.id) as number[],
 });
 
-const errors = reactive<Record<string, string[]>>({});
-
 function submit() {
-  router.put(`/admin/teams/${team.id}`, form, {
-    onError: (err) => Object.assign(errors, err as any),
+  form.post(`/admin/teams/${team.id}`, {
+    forceFormData: true,
     onSuccess: () => router.visit(`/admin/teams/${team.id}`),
   });
+}
+
+function onFileChange(e: Event) {
+  const target = e.target as HTMLInputElement;
+  if (target.files?.length) {
+    form.logo = target.files[0];
+  }
 }
 
 function cancel() {
@@ -45,25 +50,28 @@ function cancel() {
       <Field>
         <FieldLabel>{{ trans('pages.settings.teams.fields.name') }}</FieldLabel>
         <Input v-model="form.name" type="text" />
-        <FieldError v-if="errors.name">{{ errors.name[0] }}</FieldError>
+        <FieldError v-if="form.errors.name">{{ form.errors.name }}</FieldError>
       </Field>
 
       <Field>
         <FieldLabel>{{ trans('pages.settings.teams.fields.slug') }}</FieldLabel>
         <Input v-model="form.slug" type="text" />
-        <FieldError v-if="errors.slug">{{ errors.slug[0] }}</FieldError>
+        <FieldError v-if="form.errors.slug">{{ form.errors.slug }}</FieldError>
       </Field>
 
       <Field>
         <FieldLabel>{{ trans('pages.settings.teams.fields.description') }}</FieldLabel>
         <Textarea v-model="form.description" />
-        <FieldError v-if="errors.description">{{ errors.description[0] }}</FieldError>
+        <FieldError v-if="form.errors.description">{{ form.errors.description }}</FieldError>
       </Field>
 
       <Field>
-        <FieldLabel>{{ trans('pages.settings.teams.fields.logo_url') }}</FieldLabel>
-        <Input v-model="form.logo" type="text" />
-        <FieldError v-if="errors.logo">{{ errors.logo[0] }}</FieldError>
+        <FieldLabel>{{ trans('pages.settings.teams.fields.logo') }}</FieldLabel>
+        <div v-if="team.logo" class="mb-2">
+            <img :src="team.logo" class="h-16 w-16 object-cover rounded border" alt="Current logo" />
+        </div>
+        <Input type="file" accept="image/*" @change="onFileChange" />
+        <FieldError v-if="form.errors.logo">{{ form.errors.logo }}</FieldError>
       </Field>
 
       <div>
@@ -78,7 +86,7 @@ function cancel() {
             <span class="text-sm">{{ u.name }}</span>
           </label>
         </div>
-        <div v-if="errors.users" class="text-red-600 text-sm mt-1">{{ errors.users[0] }}</div>
+        <div v-if="form.errors.users" class="text-red-600 text-sm mt-1">{{ form.errors.users }}</div>
       </div>
 
       <div class="flex items-center gap-2">

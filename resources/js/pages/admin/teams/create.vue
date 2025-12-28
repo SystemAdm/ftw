@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { usePage, router } from '@inertiajs/vue3';
+import { usePage, useForm, router } from '@inertiajs/vue3';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
-import { reactive } from 'vue';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,21 +13,26 @@ import { trans } from 'laravel-vue-i18n';
 const page = usePage<PageProps>();
 const usersList = (page.props as any).users ?? [];
 
-const form = reactive({
+const form = useForm({
     name: '',
     slug: '',
     description: '',
-    logo: '',
+    logo: null as File | null,
     active: true,
     users: [] as number[],
 });
 
-const errors = reactive<Record<string, string[]>>({});
-
 function submit() {
-    router.post('/admin/teams', form, {
-        onError: (err) => Object.assign(errors, err as any),
+    form.post('/admin/teams', {
+        forceFormData: true,
     });
+}
+
+function onFileChange(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (target.files?.length) {
+        form.logo = target.files[0];
+    }
 }
 
 function toggleUser(userId: number, checked: boolean | 'indeterminate') {
@@ -49,10 +53,8 @@ function toggleUser(userId: number, checked: boolean | 'indeterminate') {
                 <Input
                     v-model="form.name"
                     type="text"
-                    :class="{ 'border-red-500': errors.name }"
-                    @input="errors.name = ''"
                 />
-                <FieldError v-if="errors.name">{{ errors.name[0] }}</FieldError>
+                <FieldError v-if="form.errors.name">{{ form.errors.name }}</FieldError>
             </Field>
 
             <Field>
@@ -60,31 +62,26 @@ function toggleUser(userId: number, checked: boolean | 'indeterminate') {
                 <Input
                     v-model="form.slug"
                     type="text"
-                    :class="{ 'border-red-500': errors.slug }"
-                    @input="errors.slug = ''"
                 />
-                <FieldError v-if="errors.slug">{{ errors.slug[0] }}</FieldError>
+                <FieldError v-if="form.errors.slug">{{ form.errors.slug }}</FieldError>
             </Field>
 
             <Field>
                 <FieldLabel>{{ trans('pages.settings.teams.fields.description') }}</FieldLabel>
                 <Textarea
                     v-model="form.description"
-                    :class="{ 'border-red-500': errors.description }"
-                    @input="errors.description = ''"
                 ></Textarea>
-                <FieldError v-if="errors.description">{{ errors.description[0] }}</FieldError>
+                <FieldError v-if="form.errors.description">{{ form.errors.description }}</FieldError>
             </Field>
 
             <Field>
-                <FieldLabel>{{ trans('pages.settings.teams.fields.logo_url') }}</FieldLabel>
+                <FieldLabel>{{ trans('pages.settings.teams.fields.logo') }}</FieldLabel>
                 <Input
-                    v-model="form.logo"
-                    type="url"
-                    :class="{ 'border-red-500': errors.logo }"
-                    @input="errors.logo = ''"
+                    type="file"
+                    accept="image/*"
+                    @change="onFileChange"
                 />
-                <FieldError v-if="errors.logo">{{ errors.logo[0] }}</FieldError>
+                <FieldError v-if="form.errors.logo">{{ form.errors.logo }}</FieldError>
             </Field>
 
             <div>
@@ -99,7 +96,7 @@ function toggleUser(userId: number, checked: boolean | 'indeterminate') {
                         <span class="text-sm">{{ u.name }}</span>
                     </label>
                 </div>
-                <div v-if="errors.users" class="mt-1 text-sm text-red-600">{{ errors.users[0] }}</div>
+                <div v-if="form.errors.users" class="mt-1 text-sm text-red-600">{{ form.errors.users }}</div>
             </div>
 
             <div class="flex items-center gap-2">

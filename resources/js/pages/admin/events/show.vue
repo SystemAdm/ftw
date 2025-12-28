@@ -1,19 +1,31 @@
 <script setup lang="ts">
 import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { BreadcrumbItemType } from '@/types';
 import { usePage, router, Link } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { trans } from 'laravel-vue-i18n';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Users, Trash2, RotateCcw, Edit } from 'lucide-vue-next';
 import { edit, index, destroy, restore, forceDestroy } from '@/routes/admin/events';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const page = usePage<PageProps>();
 const event = (page.props as any).event;
 
 const deleteDialogOpen = ref(false);
 const forceDeleteDialogOpen = ref(false);
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.events.title'),
+        href: index.url(),
+    },
+    {
+        title: event.title,
+        href: router.page.url,
+    },
+]);
 
 function formatDate(date: string) {
     return new Date(date).toLocaleString(page.props.i18n.locale, {
@@ -51,7 +63,7 @@ function handleForceDelete() {
 </script>
 
 <template>
-    <SidebarLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <div class="mb-6 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <Link :href="index.url()" class="text-sm text-muted-foreground hover:underline">

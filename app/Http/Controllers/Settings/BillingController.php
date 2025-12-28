@@ -105,7 +105,7 @@ class BillingController extends Controller
             }
         }
 
-        return redirect()->route('settings.billing')->with('status', 'Subscription successful!');
+        return redirect()->route('settings.billing')->with('status', __('pages.settings.billing.messages.success'));
     }
 
     public function cancel(): RedirectResponse

@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import { usePage, router } from '@inertiajs/vue3';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { BreadcrumbItemType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const role = (page.props as any).role;
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.roles.title'),
+        href: '/admin/roles',
+    },
+    {
+        title: role.name,
+        href: router.page.url,
+    },
+]);
 const searchTerm = ref('');
 const results = ref<Array<{ id: number; name: string; email: string }>>([]);
 const searching = ref(false);
@@ -60,7 +72,7 @@ function removeUser(id: number) {
 </script>
 
 <template>
-    <SidebarLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <div class="mb-4 flex items-center justify-between">
             <h1 class="text-xl font-semibold">{{ trans('pages.settings.roles.fields.role') }}: {{ role.name }}</h1>
             <div class="flex gap-2">

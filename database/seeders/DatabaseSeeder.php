@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Blog;
+use App\Models\PhoneNumber;
 use App\Models\Team;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -55,5 +56,11 @@ class DatabaseSeeder extends Seeder
             'start_time' => '15:00:00',
             'end_time' => '21:00:00',
         ]);
+        /*$ph = PhoneNumber::create([
+            'raw' => '98218519','e164' => '+4798218519',
+        ]);
+
+        $user = User::where('email', 'jovang@gmail.com')->first();
+        $user->phoneNumbers()->attach($ph, ['primary' => true,'verified_at' => now(), 'verified_by' => 1]);*/
     }
 }

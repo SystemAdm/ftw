@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('relationship');
             $table->boolean('confirmed_guardian')->default(false);
             $table->boolean('confirmed_admin')->default(false);
-            $table->foreignIdFor(User::class,'confirmed_by')->nullable()->constrained('users')->cascadeOnDelete()->nullOnDelete();
+            $table->foreignIdFor(User::class, 'confirmed_by')->nullable()->constrained('users')->cascadeOnDelete()->nullOnDelete();
             $table->dateTime('confirmed_at')->nullable();
             $table->timestamps();
         });

@@ -66,10 +66,12 @@ class HandleInertiaRequests extends Middleware
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'status' => fn () => $request->session()->get('status'),
             'error' => fn () => $request->session()->get('error'),
+            'ban_message' => fn () => $request->session()->get('ban_message'),
             // Expose environment flag so we can hide experimental UI in production
             'isProduction' => app()->isProduction(),
             // Current appearance preference from cookie (light | dark | system)
             'appearance' => $appearance,
+            'custom' => config('custom'),
             // Minimal i18n payload for public + settings UI
             'i18n' => [
                 'locale' => app()->getLocale(),
