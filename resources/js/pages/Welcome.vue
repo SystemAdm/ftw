@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
+
+const page = usePage()
+const appName = page.props.name || 'FTW'
 </script>
 
 <template>
-    <Head title="FTW • Play. Compete. Win.">
+    <Head :title="`${appName} • Play. Compete. Win.`">
         <meta
             name="description"
-            content="FTW is where gamers squad up, climb leaderboards, and win rewards. Join matches, track stats, and show your skills."
+            :content="`${appName} is where gamers squad up, climb leaderboards, and win rewards. Join matches, track stats, and show your skills.`"
         />
     </Head>
 
