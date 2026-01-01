@@ -6,6 +6,7 @@ import { defineConfig } from 'vite';
 import i18n from 'laravel-vue-i18n/vite';
 
 export default defineConfig({
+    build: {emptyOutDir:true,},
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],
