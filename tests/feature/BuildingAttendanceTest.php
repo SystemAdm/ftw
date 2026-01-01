@@ -1,9 +1,9 @@
 <?php
 
-use App\Enums\RolesEnum;
-use App\Models\BuildingInside;
-use App\Models\BuildingLog;
-use App\Models\User;
+use App\enums\RolesEnum;
+use App\models\BuildingInside;
+use App\models\BuildingLog;
+use App\models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Spatie\Permission\Models\Role;

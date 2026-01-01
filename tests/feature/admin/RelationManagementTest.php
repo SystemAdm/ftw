@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Feature\Admin;
+namespace Tests\feature\admin;
 
-use App\Models\User;
+use App\models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Feature\Admin;
+namespace Tests\feature\admin;
 
-use App\Models\User;
-use Database\Seeders\RoleSeeder;
+use App\models\User;
+use Database\seeders\RoleSeeder;
 use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {

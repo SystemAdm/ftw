@@ -3,7 +3,7 @@
 namespace App\http\requests\auth;
 
 use Illuminate\Auth\Events\Lockout;
-use Illuminate\Foundation\http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;

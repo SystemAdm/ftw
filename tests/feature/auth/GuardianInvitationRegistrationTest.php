@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\User;
-use App\Notifications\Auth\GuardianInvitation;
+use App\models\User;
+use App\notifications\auth\GuardianInvitation;
 use Illuminate\Support\Facades\Notification;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\models\User;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 

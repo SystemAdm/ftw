@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Settings\BillingController;
+use App\http\controllers\settings\BillingController;
 use Tests\TestCase;
 
 uses(TestCase::class);

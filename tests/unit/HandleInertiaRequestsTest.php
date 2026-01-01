@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\HandleInertiaRequests;
+use App\http\middleware\HandleInertiaRequests;
 use Illuminate\Http\Request;
 
 uses(Tests\TestCase::class);

@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Location;
-use App\Models\PostalCode;
-use App\Models\User;
+use App\models\Location;
+use App\models\PostalCode;
+use App\models\User;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 

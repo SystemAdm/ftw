@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Team;
-use App\Models\User;
+use App\models\Team;
+use App\models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 

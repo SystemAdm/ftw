@@ -2,7 +2,7 @@
 
 namespace App\http\requests;
 
-use Illuminate\Foundation\http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Validator;
 

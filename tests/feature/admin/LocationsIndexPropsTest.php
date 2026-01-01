@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Location;
-use App\Models\PostalCode;
-use App\Models\User;
+use App\models\Location;
+use App\models\PostalCode;
+use App\models\User;
 
 // Note: Using simple content assertions to avoid coupling to Inertia's test helpers
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\seeders;
 
-use App\Models\PostalCode;
+use App\models\PostalCode;
 use Illuminate\Database\Seeder;
 
 class PostalCodeSeeder extends Seeder

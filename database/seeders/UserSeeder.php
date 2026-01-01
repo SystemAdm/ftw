@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\seeders;
 
-use App\Enums\RolesEnum;
-use App\Models\User;
+use App\enums\RolesEnum;
+use App\models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

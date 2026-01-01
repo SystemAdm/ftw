@@ -4,7 +4,7 @@ namespace App\http\requests\settings;
 
 use App\enums\BirthdayVisibility;
 use App\enums\PostalCodeVisibility;
-use Illuminate\Foundation\http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class UpdateProfileRequest extends FormRequest

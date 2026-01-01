@@ -2,7 +2,7 @@
 
 namespace App\http\requests\admin;
 
-use Illuminate\Foundation\http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEventRequest extends FormRequest
 {

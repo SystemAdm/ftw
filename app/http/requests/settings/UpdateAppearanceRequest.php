@@ -2,7 +2,7 @@
 
 namespace App\http\requests\settings;
 
-use Illuminate\Foundation\http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateAppearanceRequest extends FormRequest
 {

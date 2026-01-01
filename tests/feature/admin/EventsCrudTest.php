@@ -1,10 +1,10 @@
 <?php
 
-use App\Enums\RolesEnum;
-use App\Models\Event;
-use App\Models\Location;
-use App\Models\PostalCode;
-use App\Models\User;
+use App\enums\RolesEnum;
+use App\models\Event;
+use App\models\Location;
+use App\models\PostalCode;
+use App\models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 

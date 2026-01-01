@@ -1,9 +1,9 @@
 <?php
 
-use App\Enums\RolesEnum;
-use App\Models\BuildingInside;
-use App\Models\User;
-use Database\Seeders\RoleSeeder;
+use App\enums\RolesEnum;
+use App\models\BuildingInside;
+use App\models\User;
+use Database\seeders\RoleSeeder;
 use Illuminate\Support\Facades\Crypt;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
