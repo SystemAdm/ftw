@@ -9,11 +9,11 @@ use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookControll
 
 Route::get('/', [UsersController::class, 'welcome'])->name('home');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
-require __DIR__.'/admin.php';
-require __DIR__.'/crew.php';
-require __DIR__.'/mod.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/admin.php';
+require __DIR__ . '/crew.php';
+require __DIR__ . '/mod.php';
 
 // Stripe Webhook (Cashier) - exclude CSRF so Stripe can POST
 Route::post('stripe/webhook', [CashierWebhookController::class, 'handleWebhook'])
@@ -23,9 +23,9 @@ Route::post('stripe/webhook', [CashierWebhookController::class, 'handleWebhook']
 if (app()->isLocal()) {
     Route::get('stripe/debug', function () {
         return response()->json([
-            'stripe_key_set' => ! empty(config('cashier.key')),
-            'stripe_secret_set' => ! empty(config('cashier.secret')),
-            'webhook_secret_set' => ! empty(config('cashier.webhook.secret')),
+            'stripe_key_set' => !empty(config('cashier.key')),
+            'stripe_secret_set' => !empty(config('cashier.secret')),
+            'webhook_secret_set' => !empty(config('cashier.webhook.secret')),
             'app_url' => config('app.url'),
         ]);
     });
