@@ -15,8 +15,8 @@ class RoleSeeder extends Seeder
             Role::firstOrCreate(['name' => $role->value]);
         }
 
-        $role = Role::findByName(RolesEnum::ADMIN->value);
+        $role = Role::findByName(RolesEnum::ADMIN->value)->first();
         $user = User::where('email','odd-erik@spillhuset.com')->first();
-        $user->assignRole($role);
+        if ($user && $role) $user->assignRole($role);
     }
 }
