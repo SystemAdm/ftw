@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Mod\OpenController;
+use App\http\controllers\mod\OpenController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('mod.')->prefix('mod')->middleware(['auth', 'role:Moderator|Admin'])->group(function () {

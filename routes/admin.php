@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\Admin\EventsController;
-use App\Http\Controllers\Admin\LocationController;
-use App\Http\Controllers\Admin\OpenController;
-use App\Http\Controllers\Admin\PermissionsController;
-use App\Http\Controllers\Admin\PostCodeController;
-use App\Http\Controllers\Admin\RelationController;
-use App\Http\Controllers\Admin\RolesController;
-use App\Http\Controllers\Admin\TeamsController;
-use App\Http\Controllers\Admin\UsersController;
-use App\Http\Controllers\Admin\WeekdaysController;
+use App\http\controllers\admin\EventsController;
+use App\http\controllers\admin\LocationController;
+use App\http\controllers\admin\OpenController;
+use App\http\controllers\admin\PermissionsController;
+use App\http\controllers\admin\PostCodeController;
+use App\http\controllers\admin\RelationController;
+use App\http\controllers\admin\RolesController;
+use App\http\controllers\admin\TeamsController;
+use App\http\controllers\admin\UsersController;
+use App\http\controllers\admin\WeekdaysController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {

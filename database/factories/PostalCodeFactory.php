@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\factories;
 
-use App\Models\PostalCode;
+use App\models\PostalCode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostalCodeFactory extends Factory

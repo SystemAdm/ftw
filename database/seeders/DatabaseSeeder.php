@@ -1,13 +1,13 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\seeders;
 
-use App\Models\Blog;
-use App\Models\PhoneNumber;
-use App\Models\Team;
-use App\Models\User;
+use App\models\Blog;
+use App\models\PhoneNumber;
+use App\models\Team;
+use App\models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\Weekday;
+use App\models\Weekday;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

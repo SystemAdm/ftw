@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\factories;
 
-use App\Models\Blog;
+use App\models\Blog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BlogFactory extends Factory

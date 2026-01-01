@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\factories;
 
-use App\Models\Location;
+use App\models\Location;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LocationFactory extends Factory

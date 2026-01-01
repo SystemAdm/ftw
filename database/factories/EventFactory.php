@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\factories;
 
-use App\Models\Event;
-use App\Models\Location;
+use App\models\Event;
+use App\models\Location;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

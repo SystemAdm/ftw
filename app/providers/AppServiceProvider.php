@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Providers;
+namespace App\providers;
 
-use App\Listeners\SyncMemberRole;
+use App\listeners\SyncMemberRole;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Events\WebhookHandled;

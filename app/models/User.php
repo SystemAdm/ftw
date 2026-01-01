@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\BirthdayVisibility;
-use App\Enums\PostalCodeVisibility;
-use App\Enums\RolesEnum;
-use Database\Factories\UserFactory;
+use App\enums\BirthdayVisibility;
+use App\enums\PostalCodeVisibility;
+use App\enums\RolesEnum;
+use Database\factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

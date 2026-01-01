@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Auth;
+namespace App\notifications\auth;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;

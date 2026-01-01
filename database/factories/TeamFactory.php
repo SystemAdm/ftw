@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\factories;
 
-use App\Models\Team;
+use App\models\Team;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TeamFactory extends Factory
