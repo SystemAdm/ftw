@@ -44,7 +44,7 @@ const user = computed(() => {
         </SidebarHeader>
         <SidebarContent>
             <NavAdmin
-                v-if="page.props.auth.roles.includes('admin')"
+                v-if="page.props.auth.roles.includes('Admin')"
                 :items="[
                     { title: trans('pages.ui.navigation.users'), icon: UserIcon, url: adminUsersRoute.url() },
                     { title: trans('pages.ui.navigation.roles'), icon: ShieldAlert, url: adminRolesRoute.url() },
@@ -59,11 +59,11 @@ const user = computed(() => {
                 ]"
             ></NavAdmin>
             <NavCrew
-                v-if="page.props.auth.roles.includes('crew') || page.props.auth.roles.includes('admin')"
+                v-if="page.props.auth.roles.includes('Crew') || page.props.auth.roles.includes('Admin')"
                 :items="[{ title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: crewEventsRoute.url() }]"
             ></NavCrew>
             <NavMod
-                v-if="page.props.auth.roles.includes('mod') || page.props.auth.roles.includes('admin')"
+                v-if="page.props.auth.roles.includes('Moderator') || page.props.auth.roles.includes('Admin')"
                 :items="[{ title: trans('pages.ui.navigation.mod_open'), icon: History, url: modOpenRoute.url() }]"
             ></NavMod>
             <NavDefault

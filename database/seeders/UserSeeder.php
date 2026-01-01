@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RolesEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -72,12 +73,12 @@ class UserSeeder extends Seeder
             'verified_at' => now(),
         ]);
 
-        $i->assignRole(['owner', 'admin', 'guest']);
-        $j->assignRole(['admin', 'guest']);
-        $k->assignRole(['guest', 'guest']);
-        $l->assignRole(['guardian', 'guest']);
-        $m->assignRole(['member', 'guest']);
-        $n->assignRole(['crew', 'member', 'guest']);
-        $o->assignRole(['admin', 'crew', 'member', 'guest']);
+        $i->assignRole([RolesEnum::OWNER->value, RolesEnum::ADMIN->value, RolesEnum::GUEST->value]);
+        $j->assignRole([RolesEnum::ADMIN->value, RolesEnum::GUEST->value]);
+        $k->assignRole([RolesEnum::GUEST->value]);
+        $l->assignRole([RolesEnum::GUARDIAN->value, RolesEnum::GUEST->value]);
+        $m->assignRole([RolesEnum::MEMBER->value, RolesEnum::GUEST->value]);
+        $n->assignRole([RolesEnum::CREW->value, RolesEnum::MEMBER->value, RolesEnum::GUEST->value]);
+        $o->assignRole([RolesEnum::ADMIN->value, RolesEnum::CREW->value, RolesEnum::MEMBER->value, RolesEnum::GUEST->value]);
     }
 }

@@ -13,6 +13,9 @@ enum RolesEnum: string
     // Administrators, site managers
     case ADMIN = 'Admin';
 
+    // Moderators
+    case MODERATOR = 'Moderator';
+
     // Crew, staff members
     case CREW = 'Crew';
 
@@ -21,6 +24,9 @@ enum RolesEnum: string
 
     // Guests, participating at events
     case GUEST = 'Guest';
+
+    // Guardians, parents of minors
+    case GUARDIAN = 'Guardian';
 
     // Visitors, just visiting the site
     case VISITOR = 'Visitor';
@@ -31,9 +37,11 @@ enum RolesEnum: string
             self::OWNER => 'Site Owner',
             self::BOARD_MEMBER => 'Board members, site leaders',
             self::ADMIN => 'Administrators, site managers',
+            self::MODERATOR => 'Moderators',
             self::CREW => 'Crew, staff members',
             self::MEMBER => 'Members, paid users',
             self::GUEST => 'Guests, participating at events',
+            self::GUARDIAN => 'Guardians, parents of minors',
             default => 'Visitors, just visiting the site',
         };
     }
@@ -43,9 +51,11 @@ enum RolesEnum: string
         return match ($this) {
             self::OWNER, self::BOARD_MEMBER => 'red',
             self::ADMIN => 'orange',
+            self::MODERATOR => 'amber',
             self::CREW => 'yellow',
             self::MEMBER => 'blue',
             self::GUEST => 'green',
+            self::GUARDIAN => 'cyan',
             default => 'white',
         };
     }

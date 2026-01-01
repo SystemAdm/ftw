@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\BuildingInside;
 use App\Models\BuildingLog;
 use App\Models\User;
@@ -10,13 +11,13 @@ use Spatie\Permission\Models\Role;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    Role::create(['name' => 'admin']);
-    Role::create(['name' => 'mod']);
+    Role::firstOrCreate(['name' => RolesEnum::ADMIN->value]);
+    Role::firstOrCreate(['name' => RolesEnum::MODERATOR->value]);
 });
 
 it('allows admin to access open page', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $response = $this->actingAs($admin)->get('/admin/open');
 
@@ -34,7 +35,7 @@ it('denies non-admin access to admin open page', function () {
 
 it('registers user entry with valid QR code', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $user = User::factory()->create(['name' => 'John Doe']);
     $code = Crypt::encryptString((string) $user->id);
@@ -58,7 +59,7 @@ it('registers user entry with valid QR code', function () {
 
 it('registers user exit when already inside', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $user = User::factory()->create(['name' => 'John Doe']);
     BuildingInside::create(['user_id' => $user->id, 'entered_at' => now()]);
@@ -84,7 +85,7 @@ it('registers user exit when already inside', function () {
 
 it('returns error for invalid QR code', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $response = $this->actingAs($admin)->post('/admin/open', [
         'code' => 'invalid-code',
@@ -95,14 +96,14 @@ it('returns error for invalid QR code', function () {
 
 it('allows mod and admin to access mod overview', function () {
     $mod = User::factory()->create();
-    $mod->assignRole('mod');
+    $mod->assignRole(RolesEnum::MODERATOR->value);
 
     $response = $this->actingAs($mod)->get('/mod/open');
     $response->assertOk();
     $response->assertSee('mod/Open');
 
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $response = $this->actingAs($admin)->get('/mod/open');
     $response->assertOk();
@@ -118,7 +119,7 @@ it('denies regular user access to mod overview', function () {
 
 it('shows currently inside users and history on mod page', function () {
     $mod = User::factory()->create();
-    $mod->assignRole('mod');
+    $mod->assignRole(RolesEnum::MODERATOR->value);
 
     $user1 = User::factory()->create(['name' => 'User One']);
     $user2 = User::factory()->create(['name' => 'User Two']);

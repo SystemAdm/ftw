@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\BuildingInside;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
@@ -17,14 +18,14 @@ test('guests cannot access open page', function () {
 
 test('admin can access open page', function () {
     $user = User::factory()->create();
-    $user->assignRole('admin'); // Assuming spatie/laravel-permission is used
+    $user->assignRole(RolesEnum::ADMIN->value); // Assuming spatie/laravel-permission is used
 
     $this->actingAs($user)->get('/admin/open')->assertOk();
 });
 
 test('it can check in a user with valid QR code', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $user = User::factory()->create(['name' => 'John Doe']);
     $encryptedId = Crypt::encryptString((string) $user->id);
@@ -47,7 +48,7 @@ test('it can check in a user with valid QR code', function () {
 
 test('it can check out a user with valid QR code', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $user = User::factory()->create(['name' => 'Jane Doe']);
     BuildingInside::create(['user_id' => $user->id, 'entered_at' => now()]);
@@ -72,7 +73,7 @@ test('it can check out a user with valid QR code', function () {
 
 test('it returns error for invalid QR code', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
 
     $this->actingAs($admin)
         ->from('/admin/open')

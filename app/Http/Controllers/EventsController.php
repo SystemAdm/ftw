@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RolesEnum;
 use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -30,7 +31,7 @@ class EventsController extends Controller
 
     public function show(Event $event): Response
     {
-        if ($event->status !== 'published' && ! auth()->user()?->hasRole('admin')) {
+        if ($event->status !== 'published' && ! auth()->user()?->hasRole(RolesEnum::ADMIN->value)) {
             abort(404);
         }
 

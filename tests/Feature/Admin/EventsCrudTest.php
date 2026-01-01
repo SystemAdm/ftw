@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\Event;
 use App\Models\Location;
 use App\Models\PostalCode;
@@ -12,8 +13,8 @@ use function Pest\Laravel\actingAs;
 beforeEach(function () {
     Storage::fake('public');
     $this->admin = User::factory()->create();
-    \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']);
-    $this->admin->assignRole('admin');
+    \Spatie\Permission\Models\Role::firstOrCreate(['name' => RolesEnum::ADMIN->value]);
+    $this->admin->assignRole(RolesEnum::ADMIN->value);
 
     // Create default postal codes for locations
     PostalCode::firstOrCreate(['postal_code' => 1353], ['city' => 'Bærums Verk']);

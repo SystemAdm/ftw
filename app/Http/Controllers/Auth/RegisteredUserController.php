@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\RolesEnum;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\Auth\VerifyEmailWithPin;
@@ -72,7 +73,7 @@ class RegisteredUserController extends Controller
         ]);
 
         // Assign default guest role
-        $user->assignRole('guest');
+        $user->assignRole(RolesEnum::GUEST->value);
 
         // Check for pending guardian invitations
         $pendingContacts = [$user->email];
@@ -100,7 +101,7 @@ class RegisteredUserController extends Controller
                 return back()->withErrors(['birthday' => trans('validation.min.numeric', ['attribute' => 'age', 'min' => $minGuardianAge])]);
             }
 
-            $user->assignRole('guardian');
+            $user->assignRole(RolesEnum::GUARDIAN->value);
 
             foreach ($pendingInvitations as $invitation) {
                 \DB::table('guardian_user')
@@ -115,7 +116,7 @@ class RegisteredUserController extends Controller
 
         // Assign crew role if email is @spillhuset.com
         if (str_ends_with(strtolower($user->email), '@spillhuset.com')) {
-            $user->assignRole('crew');
+            $user->assignRole(RolesEnum::CREW->value);
         }
 
         if ($needGuardian) {
