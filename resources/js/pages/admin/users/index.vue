@@ -46,7 +46,6 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
         href: '/admin/users',
     },
 ]);
-
 function formatDate(date: string) {
     return new Date(date).toLocaleString(inertiaPage.props.i18n.locale, {
         year: 'numeric',
