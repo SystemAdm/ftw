@@ -3,6 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { trans } from 'laravel-vue-i18n';
 
 type Team = { id: number; name: string; slug?: string | null } | null;
 type Upcoming = {
@@ -54,30 +55,30 @@ function googleMapEmbedUrl(loc: LocationDetails): string | null {
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight">{{ location.name }}</h1>
-        <Link href="/locations" class="text-primary hover:underline">Back to all locations</Link>
+        <Link href="/locations" class="text-primary hover:underline">{{ trans('pages.locations.back_to_all') }}</Link>
       </div>
 
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2 space-y-4">
           <Card class="p-4">
-            <h2 class="text-lg font-semibold">Details</h2>
+            <h2 class="text-lg font-semibold">{{ trans('pages.locations.details') }}</h2>
             <div class="mt-2 text-sm text-muted-foreground space-y-1">
               <div v-if="location.description" class="text-foreground">{{ location.description }}</div>
               <div v-if="location.postal">{{ location.postal }}</div>
               <div v-if="location.street_address">{{ location.street_address }} <span v-if="location.street_number">{{ location.street_number }}</span></div>
-              <div v-if="location.link"><a :href="location.link" target="_blank" class="text-primary hover:underline">Website</a></div>
+              <div v-if="location.link"><a :href="location.link" target="_blank" class="text-primary hover:underline">{{ trans('pages.locations.website') }}</a></div>
             </div>
           </Card>
 
           <Card class="p-4">
-            <h2 class="text-lg font-semibold">Upcoming weekdays</h2>
-            <div v-if="upcoming.length === 0" class="mt-2 text-sm text-muted-foreground">No upcoming schedules for the next two weeks.</div>
+            <h2 class="text-lg font-semibold">{{ trans('pages.locations.upcoming_weekdays') }}</h2>
+            <div v-if="upcoming.length === 0" class="mt-2 text-sm text-muted-foreground">{{ trans('pages.locations.no_upcoming') }}</div>
             <ul v-else class="mt-2 divide-y">
               <li v-for="day in upcoming" :key="day.date" class="py-3">
                 <div class="flex items-center justify-between">
                   <div>
                     <div class="text-sm text-muted-foreground">{{ day.weekday_label }} • {{ day.label }}</div>
-                    <div class="text-sm"><span class="font-medium">{{ day.name ?? 'Unnamed assignment' }}</span> <span v-if="day.start_time && day.end_time" class="text-muted-foreground">— {{ day.start_time }}–{{ day.end_time }}</span></div>
+                    <div class="text-sm"><span class="font-medium">{{ day.name ?? trans('pages.locations.unnamed_assignment') }}</span> <span v-if="day.start_time && day.end_time" class="text-muted-foreground">— {{ day.start_time }}–{{ day.end_time }}</span></div>
                     <div v-if="day.description" class="text-xs text-muted-foreground mt-1">{{ day.description }}</div>
                   </div>
                   <Badge v-if="day.team">{{ day.team?.slug ?? day.team?.name }}</Badge>
@@ -92,7 +93,7 @@ function googleMapEmbedUrl(loc: LocationDetails): string | null {
             <div v-if="googleMapEmbedUrl(location)" class="aspect-video">
               <iframe :src="googleMapEmbedUrl(location)!" class="h-full w-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
             </div>
-            <div v-else class="p-4 text-sm text-muted-foreground">No map available for this location.</div>
+            <div v-else class="p-4 text-sm text-muted-foreground">{{ trans('pages.locations.no_map') }}</div>
           </Card>
         </div>
       </div>

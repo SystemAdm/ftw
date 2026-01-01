@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Settings\BillingController;
+use App\Http\Controllers\Settings\GuardianController;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,12 @@ Route::middleware('auth')->group(function () {
     // Settings: Profile page
     Route::get('settings/profile', [ProfileController::class, 'show'])
         ->name('settings.profile');
+
+    // Guardians
+    Route::post('settings/guardians', [GuardianController::class, 'addGuardian'])->name('settings.guardians.add');
+    Route::delete('settings/guardians/{guardian}', [GuardianController::class, 'removeGuardian'])->name('settings.guardians.remove');
+    Route::post('settings/minors/{minor}/verify', [GuardianController::class, 'verifyMinor'])->name('settings.minors.verify');
+    Route::delete('settings/minors/{minor}', [GuardianController::class, 'removeMinor'])->name('settings.minors.remove');
 
     // Update Profile basics (birthdate, postal code)
     Route::patch('settings/profile', [ProfileController::class, 'updateProfile'])

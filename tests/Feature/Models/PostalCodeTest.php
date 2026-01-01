@@ -13,7 +13,7 @@ it('creates a postal code and relates to users via custom key', function (): voi
         'city' => 'Test City',
         'state' => 'TS',
         'country' => 'TC',
-        'county' => 'Test County',
+        'municipality' => 'Test Municipality',
     ]);
 
     $user = User::factory()->create([

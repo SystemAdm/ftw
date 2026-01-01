@@ -44,8 +44,9 @@ test('email is not verified with invalid hash', function () {
         ['id' => $user->id, 'hash' => sha1('wrong-email')]
     );
 
-    $this->actingAs($user)->get($verificationUrl);
+    $response = $this->actingAs($user)->get($verificationUrl);
 
+    $response->assertForbidden();
     Event::assertNotDispatched(Verified::class);
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });
@@ -58,11 +59,12 @@ test('email is not verified with invalid user id', function () {
     $verificationUrl = URL::temporarySignedRoute(
         'verification.verify',
         now()->addMinutes(60),
-        ['id' => 123, 'hash' => sha1($user->email)]
+        ['id' => 99999, 'hash' => sha1($user->email)]
     );
 
-    $this->actingAs($user)->get($verificationUrl);
+    $response = $this->actingAs($user)->get($verificationUrl);
 
+    $response->assertForbidden();
     Event::assertNotDispatched(Verified::class);
     expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
 });

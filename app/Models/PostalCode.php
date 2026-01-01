@@ -36,7 +36,7 @@ class PostalCode extends Model
         'city',
         'state',
         'country',
-        'county',
+        'municipality',
     ];
 
     public function getRouteKeyName(): string

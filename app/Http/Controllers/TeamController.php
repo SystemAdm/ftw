@@ -28,7 +28,7 @@ class TeamController extends Controller
                 ];
             });
 
-        return Inertia::render('teams/index', [
+        return Inertia::render('teams/Index', [
             'teams' => $teams,
         ]);
     }
@@ -112,7 +112,7 @@ class TeamController extends Controller
             'active' => (bool) $team->active,
         ];
 
-        return Inertia::render('teams/show', [
+        return Inertia::render('teams/Show', [
             'team' => $t,
             'upcoming' => $upcoming,
         ]);

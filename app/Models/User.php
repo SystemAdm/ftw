@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\BirthdayVisibility;
+use App\Enums\PostalCodeVisibility;
+use App\Enums\RolesEnum;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -81,6 +84,22 @@ class User extends Authenticatable implements ReactsInterface
         return $this->isBanned();
     }
 
+    /**
+     * Sync the member role based on the user's subscription status.
+     */
+    public function syncMemberRole(): void
+    {
+        if ($this->subscribed('default')) {
+            if (! $this->hasRole(RolesEnum::MEMBER->value)) {
+                $this->assignRole(RolesEnum::MEMBER->value);
+            }
+        } else {
+            if ($this->hasRole(RolesEnum::MEMBER->value)) {
+                $this->removeRole(RolesEnum::MEMBER->value);
+            }
+        }
+    }
+
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
@@ -103,6 +122,10 @@ class User extends Authenticatable implements ReactsInterface
             'phone_public' => 'boolean',
             'email_public' => 'boolean',
             'name_public' => 'boolean',
+            'birthday_visibility' => BirthdayVisibility::class,
+            'postal_code_visibility' => PostalCodeVisibility::class,
+            'confirmed_guardian' => 'boolean',
+            'confirmed_admin' => 'boolean',
         ];
     }
 
@@ -122,14 +145,14 @@ class User extends Authenticatable implements ReactsInterface
     public function guardians(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'guardian_user', 'minor_id', 'guardian_id')
-            ->withPivot(['relationship', 'confirmed_guardian', 'confirmed_admin'])
+            ->withPivot(['relationship', 'pending_contact', 'confirmed_guardian', 'confirmed_admin', 'verified_user_at', 'verified_guardian_at', 'verified_at', 'verified_by'])
             ->withTimestamps();
     }
 
     public function minors(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'guardian_user', 'guardian_id', 'minor_id')
-            ->withPivot(['relationship', 'confirmed_guardian', 'confirmed_admin'])
+            ->withPivot(['relationship', 'pending_contact', 'confirmed_guardian', 'confirmed_admin', 'verified_user_at', 'verified_guardian_at', 'verified_at', 'verified_by'])
             ->withTimestamps();
     }
 
@@ -143,6 +166,12 @@ class User extends Authenticatable implements ReactsInterface
     public function bans(): HasMany
     {
         return $this->hasMany(UserBan::class);
+    }
+
+    /** @return HasMany<BuildingLog> */
+    public function buildingLogs(): HasMany
+    {
+        return $this->hasMany(BuildingLog::class);
     }
 
     public function isBanned(): bool

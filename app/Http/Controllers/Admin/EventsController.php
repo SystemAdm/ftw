@@ -24,7 +24,7 @@ class EventsController extends Controller
             ->withTrashed()
             ->paginate(15);
 
-        return Inertia::render('admin/events/index', compact('events'));
+        return Inertia::render('admin/events/Index', compact('events'));
     }
 
     public function images(): JsonResponse
@@ -58,7 +58,7 @@ class EventsController extends Controller
     {
         $locations = Location::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/events/create', compact('locations'));
+        return Inertia::render('admin/events/Create', compact('locations'));
     }
 
     public function store(StoreEventRequest $request): RedirectResponse
@@ -80,14 +80,14 @@ class EventsController extends Controller
     {
         $event->load(['location:id,name']);
 
-        return Inertia::render('admin/events/show', compact('event'));
+        return Inertia::render('admin/events/Show', compact('event'));
     }
 
     public function edit(Event $event): Response
     {
         $locations = Location::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/events/edit', compact('event', 'locations'));
+        return Inertia::render('admin/events/Edit', compact('event', 'locations'));
     }
 
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse

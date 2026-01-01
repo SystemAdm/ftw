@@ -25,7 +25,7 @@ it('can create, update, soft delete, restore and force delete a postal code', fu
         'city' => 'Sample City',
         'state' => 'SC',
         'country' => 'US',
-        'county' => 'Sample County',
+        'municipality' => 'Sample Municipality',
         '_token' => 'test',
     ]);
     $store->assertRedirect();
@@ -40,7 +40,7 @@ it('can create, update, soft delete, restore and force delete a postal code', fu
         'city' => 'Updated City',
         'state' => 'USC',
         'country' => 'USA',
-        'county' => 'Updated County',
+        'municipality' => 'Updated Municipality',
         '_token' => 'test',
     ]);
     $update->assertRedirect();

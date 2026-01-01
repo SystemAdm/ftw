@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\BirthdayVisibility;
+use App\Enums\PostalCodeVisibility;
 use App\Models\PhoneNumber;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -79,9 +81,9 @@ test('user can update their profile visibility settings', function () {
 
     $response = $this->actingAs($user)->patch('/settings/profile', [
         'birthday' => '1990-01-01',
-        'birthday_visibility' => 'birthdate',
+        'birthday_visibility' => BirthdayVisibility::Birthdate->value,
         'postal_code' => 1337,
-        'postal_code_visibility' => 'postalcode',
+        'postal_code_visibility' => PostalCodeVisibility::PostalCode->value,
         'email_public' => true,
         'phone_public' => true,
         'name_public' => false,
@@ -95,7 +97,7 @@ test('user can update their profile visibility settings', function () {
     expect($user->email_public)->toBeTrue();
     expect($user->phone_public)->toBeTrue();
     expect($user->name_public)->toBeFalse();
-    expect($user->birthday_visibility)->toBe('birthdate');
+    expect($user->birthday_visibility)->toBe(BirthdayVisibility::Birthdate);
     expect($user->about)->toBe('My bio');
 });
 
@@ -115,7 +117,7 @@ test('public profile respects name visibility', function () {
 test('public profile respects birthday visibility', function () {
     $user = User::factory()->create([
         'birthday' => '1990-05-28', // Use 28 to avoid common numbers like 15 (found in icons)
-        'birthday_visibility' => 'birthyear',
+        'birthday_visibility' => BirthdayVisibility::Birthyear,
     ]);
 
     $response = $this->get(route('profile.show', $user));
@@ -124,12 +126,12 @@ test('public profile respects birthday visibility', function () {
     $response->assertSee('1990');
     $response->assertDontSee('28');
 
-    $user->update(['birthday_visibility' => 'age']);
+    $user->update(['birthday_visibility' => BirthdayVisibility::Age]);
     $response = $this->get(route('profile.show', $user));
     // The localized version of 'years' might be used
     $response->assertSee($user->birthday->age);
 
-    $user->update(['birthday_visibility' => 'off']);
+    $user->update(['birthday_visibility' => BirthdayVisibility::Off]);
     $response = $this->get(route('profile.show', $user));
     $response->assertDontSee('1990');
 });

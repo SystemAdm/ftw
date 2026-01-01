@@ -25,7 +25,7 @@ class EventsController extends Controller
 
         $events = $query->paginate(12);
 
-        return Inertia::render('events/index', compact('events'));
+        return Inertia::render('events/Index', compact('events'));
     }
 
     public function show(Event $event): Response
@@ -39,7 +39,7 @@ class EventsController extends Controller
 
         $isSignedUp = auth()->check() ? $event->reservations()->where('user_id', auth()->id())->exists() : false;
 
-        return Inertia::render('events/show', compact('event', 'isSignedUp'));
+        return Inertia::render('events/Show', compact('event', 'isSignedUp'));
     }
 
     public function signup(Event $event): RedirectResponse

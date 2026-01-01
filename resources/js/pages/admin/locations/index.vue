@@ -137,14 +137,14 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
 
         <DeleteConfirmationDialog
             v-model:open="deleteDialogOpen"
-            :title="trans('pages.settings.locations.delete.title', { name: selectedLocation?.name })"
+            :title="trans('pages.settings.locations.delete.title', { name: selectedLocation?.name ?? '' })"
             :description="trans('pages.settings.locations.delete.description')"
             @confirm="handleDelete"
         />
 
         <DeleteConfirmationDialog
             v-model:open="forceDeleteDialogOpen"
-            :title="trans('pages.settings.locations.force_delete.title', { name: selectedLocation?.name })"
+            :title="trans('pages.settings.locations.force_delete.title', { name: selectedLocation?.name ?? '' })"
             :description="trans('pages.settings.locations.force_delete.description')"
             @confirm="handleForceDelete"
         />

@@ -40,7 +40,7 @@ onMounted(() => {
                     </div>
                     <div class="flex flex-col gap-0.5 leading-none">
                         <span class="font-medium">Spillhuset</span>
-                        <span class="">v1.0.0</span>
+                        <span class="">v1.6.7</span>
                     </div>
                 </a>
             </SidebarMenuButton>

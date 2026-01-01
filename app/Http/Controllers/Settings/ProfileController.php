@@ -20,10 +20,10 @@ class ProfileController extends Controller
 {
     public function show(Request $request): Response
     {
-        $user = $request->user()->loadMissing('postalCode');
+        $user = $request->user()->loadMissing(['postalCode', 'guardians', 'minors']);
         $subscription = $user->subscription('default');
 
-        return Inertia::render('settings/profile', [
+        return Inertia::render('settings/Profile', [
             'user' => [
                 'name' => $user->name,
                 'name_public' => $user->name_public,
@@ -44,6 +44,24 @@ class ProfileController extends Controller
                 'phone_public' => $user->phone_public,
                 'email_public' => $user->email_public,
             ],
+            'guardians' => $user->guardians->map(fn ($g) => [
+                'id' => $g->id,
+                'name' => $g->name,
+                'email' => $g->email,
+                'relationship' => $g->pivot->relationship,
+                'verified_user_at' => $g->pivot->verified_user_at,
+                'verified_guardian_at' => $g->pivot->verified_guardian_at,
+                'verified_at' => $g->pivot->verified_at,
+            ]),
+            'minors' => $user->minors->map(fn ($m) => [
+                'id' => $m->id,
+                'name' => $m->name,
+                'email' => $m->email,
+                'relationship' => $m->pivot->relationship,
+                'verified_user_at' => $m->pivot->verified_user_at,
+                'verified_guardian_at' => $m->pivot->verified_guardian_at,
+                'verified_at' => $m->pivot->verified_at,
+            ]),
             'subscription' => [
                 'active' => $user->subscribed('default'),
                 'ends_at' => $subscription?->ends_at?->toIso8601String(),
@@ -67,7 +85,7 @@ class ProfileController extends Controller
         $user->phone_public = $request->boolean('phone_public');
         $user->email_public = $request->boolean('email_public');
         $user->name_public = $request->boolean('name_public');
-        $user->about = $data['about'];
+        $user->about = $data['about'] ?? null;
         $user->save();
 
         return back()->with('success', __('pages.settings.profile.messages.updated'));

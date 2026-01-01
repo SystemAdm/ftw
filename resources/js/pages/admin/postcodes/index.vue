@@ -143,14 +143,14 @@ function handleForceDelete() {
 
     <DeleteConfirmationDialog
       v-model:open="deleteDialogOpen"
-      :title="trans('pages.settings.postcodes.delete.title', { code: selectedPostcode?.postal_code })"
+      :title="trans('pages.settings.postcodes.delete.title', { code: selectedPostcode?.postal_code ?? '' })"
       :description="trans('pages.settings.postcodes.delete.description')"
       @confirm="handleDelete"
     />
 
     <DeleteConfirmationDialog
       v-model:open="forceDeleteDialogOpen"
-      :title="trans('pages.settings.postcodes.force_delete.title', { code: selectedPostcode?.postal_code })"
+      :title="trans('pages.settings.postcodes.force_delete.title', { code: selectedPostcode?.postal_code ?? '' })"
       :description="trans('pages.settings.postcodes.force_delete.description')"
       @confirm="handleForceDelete"
     />

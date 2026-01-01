@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Listeners\SyncMemberRole;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Events\WebhookHandled;
+use Laravel\Cashier\Events\WebhookReceived;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +34,8 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('github', \SocialiteProviders\GitHub\Provider::class);
             $event->extendSocialite('linkedin', \SocialiteProviders\LinkedIn\Provider::class);
         });
+
+        Event::listen(WebhookReceived::class, SyncMemberRole::class);
+        Event::listen(WebhookHandled::class, SyncMemberRole::class);
     }
 }

@@ -21,7 +21,7 @@ type UserProps = {
   birthday?: string | null;
   birthday_visibility: 'birthdate' | 'birthyear' | 'age' | 'off';
   postal_code?: number | null;
-  postal_code_visibility: 'postalcode' | 'city' | 'municipality' | 'county' | 'country' | 'off';
+  postal_code_visibility: 'postalcode' | 'city' | 'municipality' | 'country' | 'off';
   about?: string | null;
   appearance?: 'light' | 'dark' | 'system';
   phone_public: boolean;
@@ -36,9 +36,21 @@ type SubscriptionProps = {
   time_left: string | null;
 };
 
-const page = usePage<{ user: UserProps; subscription: SubscriptionProps }>();
+type GuardianProps = {
+  id: number;
+  name: string;
+  email: string;
+  relationship: string;
+  verified_user_at: string | null;
+  verified_guardian_at: string | null;
+  verified_at: string | null;
+};
+
+const page = usePage<{ user: UserProps; subscription: SubscriptionProps; guardians: GuardianProps[]; minors: GuardianProps[] }>();
 const user = computed(() => page.props.user);
 const subscription = computed(() => page.props.subscription);
+const guardians = computed(() => page.props.guardians);
+const minors = computed(() => page.props.minors);
 
 const { updateAppearance: updateClientTheme } = useAppearance();
 
@@ -130,6 +142,34 @@ function submitAvatar() {
       avatarForm.reset('avatar');
     },
   });
+}
+
+// Guardian management
+const guardianForm = useForm({
+  email: '',
+  relationship: '',
+});
+
+function addGuardian() {
+  guardianForm.post('/settings/guardians', {
+    onSuccess: () => guardianForm.reset(),
+  });
+}
+
+function removeGuardian(id: number) {
+  if (confirm('Are you sure you want to remove this guardian?')) {
+    useForm({}).delete(`/settings/guardians/${id}`);
+  }
+}
+
+function verifyMinor(id: number) {
+  useForm({}).post(`/settings/minors/${id}/verify`);
+}
+
+function removeMinor(id: number) {
+  if (confirm('Are you sure you want to remove this minor?')) {
+    useForm({}).delete(`/settings/minors/${id}`);
+  }
 }
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
@@ -270,7 +310,6 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
                       <SelectItem value="postalcode">{{ trans('pages.settings.profile.visibility.postalcode') }}</SelectItem>
                       <SelectItem value="city">{{ trans('pages.settings.profile.visibility.city') }}</SelectItem>
                       <SelectItem value="municipality">{{ trans('pages.settings.profile.visibility.municipality') }}</SelectItem>
-                      <SelectItem value="county">{{ trans('pages.settings.profile.visibility.county') }}</SelectItem>
                       <SelectItem value="country">{{ trans('pages.settings.profile.visibility.country') }}</SelectItem>
                       <SelectItem value="off">{{ trans('pages.settings.profile.visibility.off') }}</SelectItem>
                     </SelectContent>
@@ -318,6 +357,72 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
           </form>
         </Card>
 
+        <!-- Guardians -->
+        <Card class="p-6 space-y-4">
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.guardians.title') }}</h2>
+          <div v-if="guardians.length > 0" class="space-y-4">
+            <div v-for="guardian in guardians" :key="guardian.id" class="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <p class="font-medium">{{ guardian.name }}</p>
+                <p class="text-xs text-muted-foreground">{{ guardian.email }} ({{ guardian.relationship }})</p>
+                <div class="flex gap-2 mt-1">
+                  <span v-if="guardian.verified_guardian_at" class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">{{ trans('pages.settings.profile.guardians.verified_by_guardian') }}</span>
+                  <span v-else class="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded">{{ trans('pages.settings.profile.guardians.pending_verification') }}</span>
+                  <span v-if="guardian.verified_at" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">{{ trans('pages.settings.profile.guardians.verified_by_admin') }}</span>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" @click="removeGuardian(guardian.id)">{{ trans('pages.settings.profile.actions.remove') }}</Button>
+            </div>
+          </div>
+          <div v-else class="text-sm text-muted-foreground italic">
+            {{ trans('pages.settings.profile.guardians.none') }}
+          </div>
+
+          <form @submit.prevent="addGuardian" class="space-y-4 pt-4 border-t">
+            <h3 class="text-sm font-medium">{{ trans('pages.settings.profile.guardians.add') }}</h3>
+            <div class="space-y-2">
+              <Label for="guardian_email">{{ trans('pages.settings.profile.fields.email') }}</Label>
+              <Input id="guardian_email" v-model="guardianForm.email" type="email" required />
+              <div v-if="guardianForm.errors.email" class="text-sm text-red-600">{{ guardianForm.errors.email }}</div>
+            </div>
+            <div class="space-y-2">
+              <Label for="guardian_relationship">{{ trans('pages.settings.profile.fields.relationship') }}</Label>
+              <Input id="guardian_relationship" v-model="guardianForm.relationship" required />
+              <div v-if="guardianForm.errors.relationship" class="text-sm text-red-600">{{ guardianForm.errors.relationship }}</div>
+            </div>
+            <Button type="submit" :disabled="guardianForm.processing">{{ trans('pages.settings.profile.guardians.add_button') }}</Button>
+          </form>
+        </Card>
+
+        <!-- Minors -->
+        <Card class="p-6 space-y-4" v-if="minors.length > 0 || user.birthday">
+          <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.minors.title') }}</h2>
+          <div v-if="minors.length > 0" class="space-y-4">
+            <div v-for="minor in minors" :key="minor.id" class="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <p class="font-medium">{{ minor.name }}</p>
+                <p class="text-xs text-muted-foreground">{{ minor.email }} ({{ minor.relationship }})</p>
+                <div class="flex gap-2 mt-1">
+                  <span v-if="minor.verified_user_at" class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">{{ trans('pages.settings.profile.minors.verified_by_minor') }}</span>
+                  <span v-if="minor.verified_guardian_at" class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">{{ trans('pages.settings.profile.minors.verified_by_you') }}</span>
+                  <span v-else class="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded">{{ trans('pages.settings.profile.minors.verification_needed') }}</span>
+                  <span v-if="minor.verified_at" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">{{ trans('pages.settings.profile.minors.verified_by_admin') }}</span>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <Button v-if="!minor.verified_guardian_at" variant="outline" size="sm" @click="verifyMinor(minor.id)">{{ trans('pages.settings.profile.actions.verify') }}</Button>
+                <Button variant="ghost" size="sm" @click="removeMinor(minor.id)">{{ trans('pages.settings.profile.actions.remove') }}</Button>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-sm text-muted-foreground italic">
+            {{ trans('pages.settings.profile.minors.none') }}
+          </div>
+          <p class="text-xs text-muted-foreground">
+            {{ trans('pages.settings.profile.minors.help') }}
+          </p>
+        </Card>
+
         <!-- Subscription -->
         <Card class="p-6 space-y-4">
           <h2 class="text-lg font-semibold">{{ trans('pages.settings.billing.membership') }}</h2>
@@ -327,11 +432,11 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
                 {{ trans('pages.settings.billing.status') }}:
                 <span :class="subscription.on_grace_period ? 'text-yellow-600' : 'text-green-600'">
                   {{ subscription.on_grace_period ? trans('pages.settings.billing.cancelling') : trans('pages.settings.billing.active') }}
-                  <span v-if="subscription.time_left" class="text-gray-500 font-normal ml-1">
-                    ({{ subscription.time_left }})
-                  </span>
                 </span>
               </p>
+              <div v-if="subscription.time_left" class="text-xs font-medium text-gray-900 dark:text-gray-100">
+                {{ trans('pages.settings.billing.time_left') }}: {{ subscription.time_left }}
+              </div>
               <p v-if="subscription.next_billing_date" class="text-sm text-gray-500">
                 {{ subscription.on_grace_period ? trans('pages.settings.billing.ends') : trans('pages.settings.billing.renews') }}:
                 {{ new Date(subscription.next_billing_date).toLocaleDateString((page.props as any).i18n.locale, {

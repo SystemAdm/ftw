@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Admin\EventsController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\OpenController;
 use App\Http\Controllers\Admin\PermissionsController;
 use App\Http\Controllers\Admin\PostCodeController;
+use App\Http\Controllers\Admin\RelationController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\TeamsController;
 use App\Http\Controllers\Admin\UsersController;
@@ -11,6 +13,12 @@ use App\Http\Controllers\Admin\WeekdaysController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+
+    // Admin Relations
+    Route::get('relations/search-users', [RelationController::class, 'searchUsers'])->name('relations.search-users');
+    Route::post('relations/{guardian}/{minor}/verify', [RelationController::class, 'verify'])->name('relations.verify');
+    Route::delete('relations/{guardian}/{minor}', [RelationController::class, 'destroy'])->name('relations.destroy');
+    Route::resource('relations', RelationController::class)->except(['destroy', 'show', 'edit', 'update']);
 
     // Admin Users
     Route::post('users/{user}/verify', [UsersController::class, 'verify'])->name('users.verify');
@@ -52,5 +60,9 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(
     Route::resource('events', EventsController::class);
     Route::post('events/{id}/restore', [EventsController::class, 'restore'])->name('events.restore');
     Route::delete('events/{id}/force', [EventsController::class, 'forceDestroy'])->name('events.force-destroy');
+
+    // Admin Open
+    Route::get('open', [OpenController::class, 'index'])->middleware('role:admin')->name('open.index');
+    Route::post('open', [OpenController::class, 'store'])->middleware('role:admin')->name('open.store');
 
 });

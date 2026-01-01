@@ -43,6 +43,7 @@ class RegisteredUserController extends Controller
             'birthday' => 'required|date',
             'postal_code' => 'required|string|max:20',
             'guardian_contact' => 'nullable|string|max:255',
+            'relationship' => 'nullable|string|max:255',
         ]);
 
         if (session('registration_otp_verified') !== true) {
@@ -73,13 +74,52 @@ class RegisteredUserController extends Controller
         // Assign default guest role
         $user->assignRole('guest');
 
+        // Check for pending guardian invitations
+        $pendingContacts = [$user->email];
+        if ($request->filled('phone')) {
+            try {
+                $phone = phone($request->phone, array_merge(['AUTO'], config('custom.phone_fallback_countries', ['NO'])));
+                if ($phone->isValid()) {
+                    $pendingContacts[] = $phone->formatE164();
+                }
+            } catch (\Exception $e) {
+            }
+        }
+
+        $pendingInvitations = \DB::table('guardian_user')
+            ->whereNull('guardian_id')
+            ->whereIn('pending_contact', $pendingContacts)
+            ->get();
+
+        if ($pendingInvitations->isNotEmpty()) {
+            // Enforce minimum age for guardians
+            $minGuardianAge = config('custom.guardian_user_must_be_older_than', 25);
+            if ($user->birthday->age < $minGuardianAge) {
+                $user->forceDelete();
+
+                return back()->withErrors(['birthday' => trans('validation.min.numeric', ['attribute' => 'age', 'min' => $minGuardianAge])]);
+            }
+
+            $user->assignRole('guardian');
+
+            foreach ($pendingInvitations as $invitation) {
+                \DB::table('guardian_user')
+                    ->where('id', $invitation->id)
+                    ->update([
+                        'guardian_id' => $user->id,
+                        'pending_contact' => null,
+                        'relationship' => $request->relationship ?: 'Parent/Guardian',
+                    ]);
+            }
+        }
+
         // Assign crew role if email is @spillhuset.com
         if (str_ends_with(strtolower($user->email), '@spillhuset.com')) {
             $user->assignRole('crew');
         }
 
         if ($needGuardian) {
-            $this->handleGuardian($user, $request->guardian_contact);
+            $this->handleGuardian($user, $request->guardian_contact, $request->relationship);
         }
 
         if ($request->filled('phone')) {
@@ -116,7 +156,7 @@ class RegisteredUserController extends Controller
     /**
      * Handle guardian relation.
      */
-    protected function handleGuardian(User $user, string $contact): void
+    protected function handleGuardian(User $user, string $contact, ?string $relationship): void
     {
         $guardian = null;
 
@@ -144,7 +184,7 @@ class RegisteredUserController extends Controller
 
             if ($guardianBirthday && $guardianBirthday->age >= $minGuardianAge) {
                 $user->guardians()->attach($guardian->id, [
-                    'relationship' => 'Parent/Guardian',
+                    'relationship' => $relationship ?: 'Parent/Guardian',
                     'confirmed_guardian' => false,
                 ]);
 
@@ -156,9 +196,36 @@ class RegisteredUserController extends Controller
             }
         } else {
             // Guardian does not exist
-            \Illuminate\Support\Facades\Notification::route('mail', str_contains($contact, '@') ? $contact : null)
+            if (str_contains($contact, '@')) {
+                \DB::table('guardian_user')->insert([
+                    'minor_id' => $user->id,
+                    'relationship' => $relationship ?: 'Invitation',
+                    'pending_contact' => $contact,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                \Illuminate\Support\Facades\Notification::route('mail', $contact)
+                    ->notify(new \App\Notifications\Auth\GuardianInvitation($user, $contact));
+            } else {
                 // If it's a phone, we'd need SMS, but for now we follow email instructions
-                ->notify(new \App\Notifications\Auth\GuardianInvitation($user, $contact));
+                try {
+                    $phone = phone($contact, array_merge(['AUTO'], config('custom.phone_fallback_countries', ['NO'])));
+                    if ($phone->isValid()) {
+                        $e164 = $phone->formatE164();
+                        \DB::table('guardian_user')->insert([
+                            'minor_id' => $user->id,
+                            'relationship' => $relationship ?: 'Invitation',
+                            'pending_contact' => $e164,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                }
+
+                \Illuminate\Support\Facades\Log::info('Guardian invitation email skipped for phone contact: '.$contact.' for minor: '.$user->id);
+            }
         }
     }
 }

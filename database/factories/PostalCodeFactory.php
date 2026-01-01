@@ -16,7 +16,7 @@ class PostalCodeFactory extends Factory
             'city' => fake()->city(),
             'state' => fake()->firstName(),
             'country' => fake()->country(),
-            'county' => fake()->firstName(),
+            'municipality' => fake()->firstName(),
         ];
     }
 }

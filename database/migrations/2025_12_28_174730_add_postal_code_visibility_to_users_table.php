@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('postal_code_visibility')->default('off')->after('postal_code');
+            $table->string('postal_code_visibility')->default('city')->after('postal_code');
         });
     }
 

@@ -21,7 +21,7 @@ class UsersController extends Controller
             ->latest()
             ->paginate(15);
 
-        return Inertia::render('admin/users/index', compact('users'));
+        return Inertia::render('admin/users/Index', compact('users'));
     }
 
     /**
@@ -116,7 +116,21 @@ class UsersController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::withTrashed()
+            ->with([
+                'bans.bannedBy',
+                'verifier:id,name',
+                'teams',
+                'postalCode',
+                'phoneNumbers',
+                'guardians',
+                'minors',
+                'logs' => fn ($query) => $query->with('event')->latest()->limit(50),
+                'buildingLogs' => fn ($query) => $query->latest()->limit(50),
+            ])
+            ->findOrFail($id);
+
+        return Inertia::render('admin/users/Show', compact('user'));
     }
 
     /**

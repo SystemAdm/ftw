@@ -25,7 +25,7 @@ class GuardianRelationConfirmation extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -49,7 +49,11 @@ class GuardianRelationConfirmation extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'minor_id' => $this->minor->id,
+            'minor_name' => $this->minor->name,
+            'message' => $this->minor->name.' has registered and listed you as their guardian.',
+            'action_url' => '/settings/profile',
+            'type' => 'guardian_confirmation',
         ];
     }
 }

@@ -19,6 +19,7 @@ it('returns a single user for exact email match with flags', function () {
             ->has('users', 1)
             ->where('matchType', 'email')
             ->where('formattedPhone', null)
+            ->where('invitedBy', null)
             ->has('users.0', fn ($user) => $user
                 ->where('id', $u->id)
                 ->where('name', $u->name)
@@ -48,6 +49,7 @@ it('returns multiple users for matching phone and sets flags correctly', functio
             ->has('users', 2)
             ->where('matchType', 'phone')
             ->where('formattedPhone', '+4799999999')
+            ->where('invitedBy', null)
             ->has('users', fn ($users) => $users
                 ->each(fn ($user) => $user->hasAll(['id', 'name', 'email', 'hasGoogle', 'hasPassword']))
             )
@@ -75,6 +77,7 @@ it('finds users by local norwegian phone number format', function () {
             ->has('users', 1)
             ->where('matchType', 'phone')
             ->where('formattedPhone', '+4799999999')
+            ->where('invitedBy', null)
             ->where('users.0.id', $u->id)
         );
 });
@@ -95,6 +98,7 @@ it('finds users by international phone number format', function () {
             ->has('users', 1)
             ->where('matchType', 'phone')
             ->where('formattedPhone', '+491701234567')
+            ->where('invitedBy', null)
             ->where('users.0.id', $u->id)
         );
 });
@@ -110,6 +114,7 @@ it('falls back to username if phone number is invalid', function () {
             ->has('users', 1)
             ->where('matchType', 'username')
             ->where('formattedPhone', null)
+            ->where('invitedBy', null)
             ->where('users.0.id', $u->id)
         );
 });

@@ -70,3 +70,104 @@ test('new users cannot register if allow_new_users is false', function () {
     $response->assertForbidden();
     $this->assertGuest();
 });
+
+test('minor registration requires guardian', function () {
+    session(['registration_otp_verified' => true]);
+    session(['registration_email' => 'minor@example.com']);
+
+    $response = $this->post(route('register.store'), [
+        'name' => 'Minor User',
+        'birthday' => now()->subYears(10)->toDateString(), // 10 years old
+        'postal_code' => '12345',
+        'email' => 'minor@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        // 'guardian_contact' is missing
+    ]);
+
+    $response->assertSessionHasErrors(['guardian_contact']);
+
+    $response = $this->post(route('register.store'), [
+        'name' => 'Minor User',
+        'birthday' => now()->subYears(10)->toDateString(),
+        'postal_code' => '12345',
+        'email' => 'minor@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'guardian_contact' => 'parent@example.com',
+        'relationship' => 'Parent',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $this->assertAuthenticated();
+
+    $user = \App\Models\User::where('email', 'minor@example.com')->first();
+    // In handleGuardian, if guardian not found, it inserts into guardian_user table with pending_contact
+    $pending = \DB::table('guardian_user')->where('minor_id', $user->id)->first();
+    expect($pending)->not->toBeNull();
+    expect($pending->pending_contact)->toBe('parent@example.com');
+});
+
+test('minor registration with existing guardian user', function () {
+    $guardian = \App\Models\User::factory()->create([
+        'email' => 'existing-parent@example.com',
+        'birthday' => now()->subYears(30)->toDateString(),
+    ]);
+
+    session(['registration_otp_verified' => true]);
+    session(['registration_email' => 'minor-with-parent@example.com']);
+
+    $response = $this->post(route('register.store'), [
+        'name' => 'Minor User 2',
+        'birthday' => now()->subYears(10)->toDateString(),
+        'postal_code' => '12345',
+        'email' => 'minor-with-parent@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'guardian_contact' => 'existing-parent@example.com',
+        'relationship' => 'Parent',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $this->assertAuthenticated();
+
+    $user = \App\Models\User::where('email', 'minor-with-parent@example.com')->first();
+    expect($user->guardians)->toHaveCount(1);
+    expect($user->guardians->first()->id)->toBe($guardian->id);
+});
+
+test('guardian registration fulfills pending invitation', function () {
+    $minor = \App\Models\User::factory()->create([
+        'name' => 'Minor child',
+        'birthday' => now()->subYears(10)->toDateString(),
+    ]);
+
+    \DB::table('guardian_user')->insert([
+        'minor_id' => $minor->id,
+        'relationship' => 'Pending',
+        'pending_contact' => 'guardian@example.com',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    session(['registration_otp_verified' => true]);
+    session(['registration_email' => 'guardian@example.com']);
+
+    $response = $this->post(route('register.store'), [
+        'name' => 'Guardian User',
+        'birthday' => now()->subYears(30)->toDateString(),
+        'postal_code' => '12345',
+        'email' => 'guardian@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'relationship' => 'Father',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $this->assertAuthenticated();
+
+    $user = \App\Models\User::where('email', 'guardian@example.com')->first();
+    expect($user->hasRole('guardian'))->toBeTrue();
+    expect($user->minors)->toHaveCount(1);
+    expect($user->minors->first()->id)->toBe($minor->id);
+});

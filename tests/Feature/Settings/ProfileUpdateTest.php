@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\BirthdayVisibility;
+use App\Enums\PostalCodeVisibility;
 use App\Models\PostalCode;
 use App\Models\User;
 
@@ -23,7 +25,9 @@ test('profile information can be updated', function () {
         ->actingAs($user)
         ->patch(route('settings.profile.update'), [
             'birthday' => '1990-01-01',
+            'birthday_visibility' => BirthdayVisibility::Birthdate->value,
             'postal_code' => $postalCode->postal_code,
+            'postal_code_visibility' => PostalCodeVisibility::PostalCode->value,
         ]);
 
     $response
@@ -34,6 +38,8 @@ test('profile information can be updated', function () {
 
     expect($user->birthday->toDateString())->toBe('1990-01-01');
     expect($user->postal_code)->toBe(1234);
+    expect($user->birthday_visibility)->toBe(BirthdayVisibility::Birthdate);
+    expect($user->postal_code_visibility)->toBe(PostalCodeVisibility::PostalCode);
 });
 
 test('profile page includes subscription information', function () {

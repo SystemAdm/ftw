@@ -22,7 +22,7 @@ class WeekdaysController extends Controller
             ->orderBy('weekday')
             ->paginate(15);
 
-        return Inertia::render('admin/weekdays/index', compact('weekdays'));
+        return Inertia::render('admin/weekdays/Index', compact('weekdays'));
     }
 
     public function create(): Response
@@ -30,7 +30,7 @@ class WeekdaysController extends Controller
         $teams = Team::query()->select('id', 'name')->orderBy('name')->get();
         $locations = \App\Models\Location::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/weekdays/create', compact('teams', 'locations'));
+        return Inertia::render('admin/weekdays/Create', compact('teams', 'locations'));
     }
 
     public function store(StoreWeekdayRequest $request): RedirectResponse
@@ -49,7 +49,7 @@ class WeekdaysController extends Controller
             $q->orderBy('excluded_date');
         }]);
 
-        return Inertia::render('admin/weekdays/show', compact('weekday'));
+        return Inertia::render('admin/weekdays/Show', compact('weekday'));
     }
 
     public function edit(Weekday $weekday): Response
@@ -60,7 +60,7 @@ class WeekdaysController extends Controller
             $q->orderByDesc('excluded_date');
         }]);
 
-        return Inertia::render('admin/weekdays/edit', compact('weekday', 'teams', 'locations'));
+        return Inertia::render('admin/weekdays/Edit', compact('weekday', 'teams', 'locations'));
     }
 
     public function update(UpdateWeekdayRequest $request, Weekday $weekday): RedirectResponse

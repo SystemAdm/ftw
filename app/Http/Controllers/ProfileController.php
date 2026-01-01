@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BirthdayVisibility;
+use App\Enums\PostalCodeVisibility;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,13 +28,13 @@ class ProfileController extends Controller
         $isOwnProfile = $request->user() && $request->user()->id === $user->id;
 
         $birthday = null;
-        if ($isOwnProfile || $user->birthday_visibility !== 'off') {
+        if ($isOwnProfile || $user->birthday_visibility !== BirthdayVisibility::Off) {
             if ($user->birthday) {
-                if ($user->birthday_visibility === 'birthdate' || $isOwnProfile) {
+                if ($user->birthday_visibility === BirthdayVisibility::Birthdate || $isOwnProfile) {
                     $birthday = $user->birthday->toDateString();
-                } elseif ($user->birthday_visibility === 'birthyear') {
+                } elseif ($user->birthday_visibility === BirthdayVisibility::Birthyear) {
                     $birthday = $user->birthday->format('Y');
-                } elseif ($user->birthday_visibility === 'age') {
+                } elseif ($user->birthday_visibility === BirthdayVisibility::Age) {
                     $birthday = $user->birthday->age;
                 }
             }
@@ -47,33 +49,26 @@ class ProfileController extends Controller
         $postalCode = null;
         $city = null;
         $municipality = null;
-        $county = null;
         $country = null;
 
-        if ($isOwnProfile || $user->postal_code_visibility !== 'off') {
+        if ($isOwnProfile || $user->postal_code_visibility !== PostalCodeVisibility::Off) {
             if ($user->postalCode) {
-                if ($isOwnProfile || $user->postal_code_visibility === 'postalcode') {
+                if ($isOwnProfile || $user->postal_code_visibility === PostalCodeVisibility::PostalCode) {
                     $postalCode = $user->postalCode->postal_code;
                 }
-                if ($isOwnProfile || in_array($user->postal_code_visibility, ['postalcode', 'city'])) {
+                if ($isOwnProfile || in_array($user->postal_code_visibility, [PostalCodeVisibility::PostalCode, PostalCodeVisibility::City])) {
                     $city = $user->postalCode->city;
                 }
-                if ($isOwnProfile || in_array($user->postal_code_visibility, ['postalcode', 'city', 'municipality'])) {
-                    // Using 'state' as 'municipality' for now if it's the closest thing we have,
-                    // but the requirement explicitly says 'municipality'.
-                    // If 'municipality' is not in the DB, we might just skip it or map it to something else.
-                    $municipality = $user->postalCode->state;
+                if ($isOwnProfile || in_array($user->postal_code_visibility, [PostalCodeVisibility::PostalCode, PostalCodeVisibility::City, PostalCodeVisibility::Municipality])) {
+                    $municipality = $user->postalCode->municipality;
                 }
-                if ($isOwnProfile || in_array($user->postal_code_visibility, ['postalcode', 'city', 'municipality', 'county'])) {
-                    $county = $user->postalCode->county;
-                }
-                if ($isOwnProfile || in_array($user->postal_code_visibility, ['postalcode', 'city', 'municipality', 'county', 'country'])) {
+                if ($isOwnProfile || in_array($user->postal_code_visibility, [PostalCodeVisibility::PostalCode, PostalCodeVisibility::City, PostalCodeVisibility::Municipality, PostalCodeVisibility::Country])) {
                     $country = $user->postalCode->country;
                 }
             }
         }
 
-        return Inertia::render('Profile/Show', [
+        return Inertia::render('profile/Show', [
             'user' => [
                 'id' => $user->id,
                 'name' => $displayName,
@@ -88,7 +83,6 @@ class ProfileController extends Controller
                 'postal_code' => $postalCode,
                 'city' => $city,
                 'municipality' => $municipality,
-                'county' => $county,
                 'country' => $country,
                 'postal_code_visibility' => $user->postal_code_visibility,
                 'email_public' => $user->email_public,

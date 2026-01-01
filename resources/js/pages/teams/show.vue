@@ -3,6 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue'
 import { Head, Link, usePage } from '@inertiajs/vue3'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { trans } from 'laravel-vue-i18n'
 
 type LocationMini = {
   id: number
@@ -49,8 +50,8 @@ const upcoming = page.props.upcoming ?? []
       </div>
 
       <div>
-        <h2 class="mb-3 text-lg font-semibold">Upcoming weekdays</h2>
-        <div v-if="upcoming.length === 0" class="text-sm text-muted-foreground">No upcoming assignments found.</div>
+        <h2 class="mb-3 text-lg font-semibold">{{ trans('pages.teams.upcoming_weekdays') }}</h2>
+        <div v-if="upcoming.length === 0" class="text-sm text-muted-foreground">{{ trans('pages.teams.no_upcoming') }}</div>
         <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <Card v-for="u in upcoming" :key="u.date + '-' + u.weekday" class="p-4">
             <div class="flex items-center justify-between">
@@ -62,13 +63,13 @@ const upcoming = page.props.upcoming ?? []
             </div>
 
             <div class="mt-3 space-y-1">
-              <div class="text-sm font-medium">{{ u.name ?? 'Unnamed assignment' }}</div>
+              <div class="text-sm font-medium">{{ u.name ?? trans('pages.teams.unnamed_assignment') }}</div>
               <div class="text-xs text-muted-foreground" v-if="u.start_time || u.end_time">
                 {{ u.start_time }} — {{ u.end_time }}
               </div>
               <div v-if="u.description" class="mt-1 text-sm text-muted-foreground">{{ u.description }}</div>
               <div v-if="u.location" class="mt-2 text-xs">
-                <Link :href="`/locations/${u.location.id}`" class="text-primary hover:underline">View location</Link>
+                <Link :href="`/locations/${u.location.id}`" class="text-primary hover:underline">{{ trans('pages.teams.view_location') }}</Link>
               </div>
             </div>
           </Card>

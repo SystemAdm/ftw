@@ -23,7 +23,7 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     },
     {
         title: event.title,
-        href: router.page.url,
+        href: page.url,
     },
 ]);
 

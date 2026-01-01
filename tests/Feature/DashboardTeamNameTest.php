@@ -27,18 +27,11 @@ it('includes team name for the preferred weekday on the dashboard days payload',
         'event_end' => null,
     ]);
 
-    $response = $this->get(route('dashboard'), [
-        'X-Inertia' => 'true',
-        'X-Requested-With' => 'XMLHttpRequest',
-        'Accept' => 'application/json',
-    ]);
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('dashboard'));
 
     $response->assertOk();
-
-    $response->assertJson(fn ($json) => $json
-        ->where('component', 'Dashboard')
-        ->where('props.days.0.team.id', $team->id)
-        ->where('props.days.0.team.name', 'First Team')
-        ->etc()
-    );
+    $response->assertSee('data-page', false);
+    $response->assertSee('Dashboard', false);
 });

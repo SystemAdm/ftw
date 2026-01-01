@@ -25,7 +25,7 @@ class RolesController extends Controller
             ->orderBy('name')
             ->paginate(15);
 
-        return Inertia::render('admin/roles/index', compact('roles'));
+        return Inertia::render('admin/roles/Index', compact('roles'));
     }
 
     /**
@@ -35,7 +35,7 @@ class RolesController extends Controller
     {
         $permissions = Permission::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/roles/create', compact('permissions'));
+        return Inertia::render('admin/roles/Create', compact('permissions'));
     }
 
     /**
@@ -67,7 +67,7 @@ class RolesController extends Controller
         $role->load(['permissions:id,name', 'users:id,name,email']);
         $permissions = Permission::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/roles/show', compact('role', 'permissions'));
+        return Inertia::render('admin/roles/Show', compact('role', 'permissions'));
     }
 
     /**
@@ -78,7 +78,7 @@ class RolesController extends Controller
         $permissions = Permission::query()->select('id', 'name')->orderBy('name')->get();
         $role->load('permissions:id');
 
-        return Inertia::render('admin/roles/edit', compact('role', 'permissions'));
+        return Inertia::render('admin/roles/Edit', compact('role', 'permissions'));
     }
 
     /**

@@ -121,8 +121,8 @@ function forceDel() {
               <dd class="mt-1 text-sm font-medium">{{ postcode.country }}</dd>
             </div>
             <div>
-              <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.postcodes.fields.county') }}</dt>
-              <dd class="mt-1 text-sm font-medium">{{ postcode.county || '—' }}</dd>
+              <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.postcodes.fields.municipality') }}</dt>
+              <dd class="mt-1 text-sm font-medium">{{ postcode.municipality || '—' }}</dd>
             </div>
           </dl>
         </div>

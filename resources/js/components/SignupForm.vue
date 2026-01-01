@@ -42,6 +42,11 @@ const pin = ref('');
 const birthday = ref('');
 const postalCode = ref('');
 const guardianContact = ref('');
+const guardianFound = ref<any>(null);
+const isSearchingGuardian = ref(false);
+const guardianError = ref('');
+const invitedBy = ref<any>(null);
+const relationship = ref('');
 
 const isSendingOtp = ref(false);
 const isVerifyingOtp = ref(false);
@@ -74,11 +79,33 @@ const needsGuardian = computed(() => {
     return age < (custom?.user_younger_than_need_guardian ?? 16);
 });
 
+const isGuardian = computed(() => {
+    if (!invitedBy.value || !birthday.value) return false;
+    const birthDate = new Date(birthday.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age >= (custom?.guardian_user_must_be_older_than ?? 25);
+});
+
 function next(i = 1): void {
-    if (step.value === 6 && needsGuardian.value) {
-        // From birthday step, if needs guardian, go to a new guardian step
+    if (step.value === 6) {
+        if (needsGuardian.value) {
+            history.value.push(step.value);
+            step.value = 11; // Go to guardian contact step
+            return;
+        } else if (isGuardian.value) {
+            history.value.push(step.value);
+            step.value = 12; // Go to relationship confirmation step
+            return;
+        }
+    }
+    if (step.value === 11 || step.value === 12) {
         history.value.push(step.value);
-        step.value = 11; // New step for guardian contact
+        step.value = 7; // Both lead to Postal Code
         return;
     }
     history.value.push(step.value);
@@ -103,6 +130,7 @@ async function search(): Promise<void> {
         users.value = response.data.users;
         matchType.value = response.data.matchType;
         formattedPhone.value = response.data.formattedPhone;
+        invitedBy.value = response.data.invitedBy;
 
         if (users.value.length === 1 && (matchType.value !== 'phone' || !multipleUsersPerPhone.value)) {
             selectUser(users.value[0]);
@@ -160,6 +188,7 @@ const registrationForm = useForm({
     birthday: '',
     postal_code: '',
     guardian_contact: '',
+    relationship: '',
 });
 
 function goToRegister(): void {
@@ -201,6 +230,32 @@ async function verifyRegistrationOtp(): Promise<void> {
     }
 }
 
+async function searchGuardian(): Promise<void> {
+    if (!guardianContact.value) return;
+
+    isSearchingGuardian.value = true;
+    guardianError.value = '';
+    guardianFound.value = null;
+    try {
+        const response = await axios.get(lookup.url(), {
+            params: { q: guardianContact.value },
+        });
+        const users = response.data.users;
+        if (users.length > 0) {
+            guardianFound.value = users[0];
+        }
+        next();
+    } catch (error: any) {
+        if (error.response?.status === 422) {
+            guardianError.value = error.response.data.errors?.q?.[0] || error.response.data.message;
+        } else {
+            console.error('Guardian search failed', error);
+        }
+    } finally {
+        isSearchingGuardian.value = false;
+    }
+}
+
 function register(): void {
     registrationForm.name = name.value;
     registrationForm.email = email.value;
@@ -210,6 +265,7 @@ function register(): void {
     registrationForm.birthday = birthday.value;
     registrationForm.postal_code = postalCode.value;
     registrationForm.guardian_contact = guardianContact.value;
+    registrationForm.relationship = relationship.value;
 
     registrationForm.post(registerStore.url(), {
         onFinish: () => {
@@ -235,7 +291,7 @@ function verifyPin(): void {
 
 function goToSocialiteGoogle(): void {
     // Use a full page redirect instead of an XHR visit to avoid CORS/preflight issues
-    window.location.href = redirectTo.url('google');
+    window.location.href = redirectTo['/auth/{provider}'].url('google');
 }
 </script>
 
@@ -463,7 +519,19 @@ function goToSocialiteGoogle(): void {
                         </div>
                         <div v-if="guardianContact" class="flex justify-between">
                             <span class="font-semibold">{{ trans('pages.auth.login.guardian_label') }}:</span>
-                            <span>{{ guardianContact }}</span>
+                            <div class="text-right">
+                                <div>{{ guardianContact }}</div>
+                                <div v-if="guardianFound" class="text-xs text-muted-foreground">{{ guardianFound.name }}</div>
+                                <div v-else class="text-xs text-muted-foreground">{{ trans('pages.auth.login.guardian_not_found_note') }}</div>
+                            </div>
+                        </div>
+                        <div v-if="relationship" class="flex justify-between">
+                            <span class="font-semibold">{{ trans('pages.auth.login.relationship_label') }}:</span>
+                            <span>{{ relationship }}</span>
+                        </div>
+                        <div v-if="invitedBy" class="flex justify-between">
+                            <span class="font-semibold">{{ trans('pages.auth.login.guardian_for_label') }}:</span>
+                            <span>{{ invitedBy.name }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="font-semibold">{{ trans('pages.auth.login.birthday_label') }}:</span>
@@ -557,7 +625,7 @@ function goToSocialiteGoogle(): void {
                         <h1 class="text-2xl font-bold">{{ trans('pages.auth.login.set_guardian') }}</h1>
                         <p class="text-sm text-muted-foreground">{{ trans('pages.auth.login.guardian_desc') }}</p>
                     </div>
-                    <form class="space-y-4" @submit.prevent="next()">
+                    <form class="space-y-4" @submit.prevent="searchGuardian">
                         <Field>
                             <FieldLabel for="guardian_contact">{{ trans('pages.auth.login.guardian_label') }}</FieldLabel>
                             <Input
@@ -567,6 +635,46 @@ function goToSocialiteGoogle(): void {
                                 :placeholder="trans('pages.auth.login.guardian_placeholder')"
                                 required
                             />
+                            <div v-if="guardianError" class="mt-1 text-sm text-red-600">{{ guardianError }}</div>
+                        </Field>
+                        <Field>
+                            <FieldLabel for="minor_relationship">{{ trans('pages.auth.login.relationship_label') }}</FieldLabel>
+                            <Input
+                                id="minor_relationship"
+                                type="text"
+                                v-model="relationship"
+                                :placeholder="trans('pages.auth.login.relationship_placeholder')"
+                                required
+                            />
+                        </Field>
+                        <Button type="submit" class="w-full" :disabled="isSearchingGuardian">
+                            {{ isSearchingGuardian ? trans('pages.auth.login.messages.searching') : trans('pages.auth.login.next_button') }}
+                        </Button>
+                    </form>
+                    <Button variant="ghost" class="w-full" @click="back">{{ trans('pages.auth.login.back_button') }}</Button>
+                </div>
+            </CardContent>
+
+            <!-- Step 12: Relationship Confirmation -->
+            <CardContent class="grid p-0" v-if="step === 12">
+                <div class="space-y-4 p-6 md:p-8">
+                    <div class="flex flex-col items-center gap-2 text-center">
+                        <h1 class="text-2xl font-bold">{{ trans('pages.auth.login.confirm_relationship_title') }}</h1>
+                        <p class="text-sm text-muted-foreground">
+                            {{ trans('pages.auth.login.confirm_relationship_desc', { name: invitedBy?.name || guardianFound?.name }) }}
+                        </p>
+                    </div>
+                    <form class="space-y-4" @submit.prevent="next()">
+                        <Field>
+                            <FieldLabel for="relationship">{{ trans('pages.auth.login.relationship_label') }}</FieldLabel>
+                            <Input
+                                id="relationship"
+                                type="text"
+                                v-model="relationship"
+                                :placeholder="trans('pages.auth.login.relationship_placeholder')"
+                                required
+                            />
+                            <div v-if="registrationForm.errors.relationship" class="text-sm text-red-600">{{ registrationForm.errors.relationship }}</div>
                         </Field>
                         <Button type="submit" class="w-full">{{ trans('pages.auth.login.next_button') }}</Button>
                     </form>

@@ -18,7 +18,7 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     },
     {
         title: role.name,
-        href: router.page.url,
+        href: page.url,
     },
 ]);
 const searchTerm = ref('');

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('name_public')->default(true)->after('name');
-            $table->string('birthday_visibility')->default('off')->after('birthday');
+            $table->string('birthday_visibility')->default('age')->after('birthday');
             $table->text('about')->nullable()->after('postal_code');
             $table->string('header_image')->nullable()->after('avatar');
         });

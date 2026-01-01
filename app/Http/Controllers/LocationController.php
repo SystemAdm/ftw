@@ -35,7 +35,7 @@ class LocationController extends Controller
                 ];
             });
 
-        return Inertia::render('locations/index', [
+        return Inertia::render('locations/Index', [
             'locations' => $locations,
         ]);
     }
@@ -141,7 +141,7 @@ class LocationController extends Controller
             'link' => $location->link,
         ];
 
-        return Inertia::render('locations/show', [
+        return Inertia::render('locations/Show', [
             'location' => $loc,
             'upcoming' => $upcoming,
         ]);

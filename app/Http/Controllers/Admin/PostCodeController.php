@@ -19,12 +19,12 @@ class PostCodeController extends Controller
             ->orderBy('postal_code')
             ->paginate(15);
 
-        return Inertia::render('admin/postcodes/index', compact('postcodes'));
+        return Inertia::render('admin/postcodes/Index', compact('postcodes'));
     }
 
     public function create(): Response
     {
-        return Inertia::render('admin/postcodes/create');
+        return Inertia::render('admin/postcodes/Create');
     }
 
     public function store(StorePostCodeRequest $request): RedirectResponse
@@ -39,14 +39,14 @@ class PostCodeController extends Controller
 
     public function show(PostalCode $postcode): Response
     {
-        return Inertia::render('admin/postcodes/show', [
+        return Inertia::render('admin/postcodes/Show', [
             'postcode' => $postcode,
         ]);
     }
 
     public function edit(PostalCode $postcode): Response
     {
-        return Inertia::render('admin/postcodes/edit', [
+        return Inertia::render('admin/postcodes/Edit', [
             'postcode' => $postcode,
         ]);
     }

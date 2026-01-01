@@ -13,7 +13,7 @@ const form = reactive({
   city: '' as string,
   state: '' as string,
   country: '' as string,
-  county: '' as string,
+  municipality: '' as string,
 });
 
 const errors = reactive<Record<string, string[]>>({});
@@ -61,9 +61,9 @@ function cancel() {
             <FieldError v-if="errors.country">{{ errors.country[0] }}</FieldError>
           </Field>
           <Field>
-            <FieldLabel>{{ trans('pages.settings.postcodes.fields.county') }}</FieldLabel>
-            <Input v-model="form.county" class="mt-1 w-full" />
-            <FieldError v-if="errors.county">{{ errors.county[0] }}</FieldError>
+            <FieldLabel>{{ trans('pages.settings.postcodes.fields.municipality') }}</FieldLabel>
+            <Input v-model="form.municipality" class="mt-1 w-full" />
+            <FieldError v-if="errors.municipality">{{ errors.municipality[0] }}</FieldError>
           </Field>
         </div>
         <div class="flex gap-2">

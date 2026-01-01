@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class UsersController extends Controller
 {
@@ -101,15 +102,25 @@ class UsersController extends Controller
             ];
         }
 
+        $encryptedId = \Illuminate\Support\Facades\Crypt::encryptString((string) $request->user()->id);
+        $qrCode = QrCode::size(200)->generate($encryptedId)->toHtml();
+
         return Inertia::render('Dashboard', [
             'days' => $days,
             'week' => $week,
+            'qr_code' => $qrCode,
+            'qr_code_value' => app()->isLocal() ? $encryptedId : null,
         ]);
     }
 
     public function welcome(): Response
     {
         return Inertia::render('Welcome');
+    }
+
+    public function confirmPasswordForm(): Response
+    {
+        return Inertia::render('auth/ConfirmPassword');
     }
 
     public function logout(Request $request): RedirectResponse

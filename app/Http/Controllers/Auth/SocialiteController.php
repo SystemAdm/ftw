@@ -33,8 +33,8 @@ class SocialiteController extends Controller
                 return Socialite::driver('github')->stateless()->redirect();
 
             case 'google':
-
-                return Socialite::driver('google')->stateless()->redirect();
+                return Socialite::driver('google')->stateless()
+                    ->redirect();
 
             case 'steam':
 
@@ -74,7 +74,9 @@ class SocialiteController extends Controller
             if (! $user) {
                 $user = User::where('email', $discordUser->getEmail())->first();
                 if (! $user) {
-                    dd('no user');
+                    return redirect()->route('login')->withErrors([
+                        'email' => __('pages.auth.login.messages.social_error', ['provider' => 'Discord']),
+                    ]);
                 }
                 $user->forceFill(['discord_id' => $discordUser->getId()])->save();
             }
@@ -104,7 +106,9 @@ class SocialiteController extends Controller
             if (! $user) {
                 $user = User::where('email', $googleUser->getEmail())->first();
                 if (! $user) {
-                    dd('no user');
+                    return redirect()->route('login')->withErrors([
+                        'email' => __('pages.auth.login.messages.social_error', ['provider' => 'Google']),
+                    ]);
                 }
                 $user->forceFill(['google_id' => $googleUser->getId()])->save();
             }
@@ -116,7 +120,7 @@ class SocialiteController extends Controller
         } elseif ($provider == 'steam') {
         } elseif ($provider == 'twitch') {
         } else {
-            dd('no provider');
+            return redirect()->route('login');
         }
 
         if ($user && $user->isBanned()) {

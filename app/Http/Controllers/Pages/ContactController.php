@@ -14,7 +14,7 @@ class ContactController extends Controller
 {
     public function show(): Response
     {
-        return Inertia::render('contact', [
+        return Inertia::render('Contact', [
             'captcha' => [
                 'turnstile_site_key' => (string) (config('services.turnstile.site_key') ?? ''),
             ],

@@ -22,7 +22,7 @@ class TeamsController extends Controller
     {
         $teams = Team::query()->withTrashed()->paginate(10);
 
-        return Inertia::render('admin/teams/index', compact('teams'));
+        return Inertia::render('admin/teams/Index', compact('teams'));
     }
 
     /**
@@ -32,7 +32,7 @@ class TeamsController extends Controller
     {
         $users = User::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/teams/create', compact('users'));
+        return Inertia::render('admin/teams/Create', compact('users'));
     }
 
     /**
@@ -68,7 +68,7 @@ class TeamsController extends Controller
     {
         $team->load('users:id,name');
 
-        return Inertia::render('admin/teams/show', compact('team'));
+        return Inertia::render('admin/teams/Show', compact('team'));
     }
 
     /**
@@ -79,7 +79,7 @@ class TeamsController extends Controller
         $users = User::query()->select('id', 'name')->orderBy('name')->get();
         $team->load('users:id');
 
-        return Inertia::render('admin/teams/edit', compact('team', 'users'));
+        return Inertia::render('admin/teams/Edit', compact('team', 'users'));
     }
 
     /**

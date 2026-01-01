@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\BirthdayVisibility;
+use App\Enums\PostalCodeVisibility;
 use App\Models\PostalCode;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -32,7 +34,9 @@ it('updates profile birthdate and postal code', function (): void {
 
     $payload = [
         'birthday' => '2000-01-02',
+        'birthday_visibility' => BirthdayVisibility::Birthdate->value,
         'postal_code' => $postal->postal_code,
+        'postal_code_visibility' => PostalCodeVisibility::PostalCode->value,
     ];
 
     $response = $this->actingAs($user)->patch('/settings/profile', $payload);
@@ -48,7 +52,9 @@ it('validates postal code exists', function (): void {
 
     $response = $this->actingAs($user)->patch('/settings/profile', [
         'birthday' => '2000-01-02',
+        'birthday_visibility' => BirthdayVisibility::Birthdate->value,
         'postal_code' => 999999,
+        'postal_code_visibility' => PostalCodeVisibility::PostalCode->value,
     ]);
 
     $response->assertSessionHasErrors(['postal_code']);

@@ -25,14 +25,14 @@ class LocationController extends Controller
         // Append computed attributes without globally adding to all queries
         $locations->getCollection()->each->append('postal');
 
-        return Inertia::render('admin/locations/index', compact('locations'));
+        return Inertia::render('admin/locations/Index', compact('locations'));
     }
 
     public function create(): Response
     {
         $postalCodes = PostalCode::query()->orderBy('postal_code')->get(['postal_code', 'city']);
 
-        return Inertia::render('admin/locations/create', compact('postalCodes'));
+        return Inertia::render('admin/locations/Create', compact('postalCodes'));
     }
 
     public function store(StoreLocationRequest $request): RedirectResponse
@@ -46,7 +46,7 @@ class LocationController extends Controller
     {
         $location->load(['postalCode:postal_code,city'])->append('postal');
 
-        return Inertia::render('admin/locations/show', compact('location'));
+        return Inertia::render('admin/locations/Show', compact('location'));
     }
 
     public function edit(Location $location): Response
@@ -54,7 +54,7 @@ class LocationController extends Controller
         $postalCodes = PostalCode::query()->orderBy('postal_code')->get(['postal_code', 'city']);
         $location->load(['postalCode:postal_code,city'])->append('postal');
 
-        return Inertia::render('admin/locations/edit', compact('location', 'postalCodes'));
+        return Inertia::render('admin/locations/Edit', compact('location', 'postalCodes'));
     }
 
     public function update(UpdateLocationRequest $request, Location $location): RedirectResponse

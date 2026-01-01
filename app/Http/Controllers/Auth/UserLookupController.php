@@ -91,10 +91,32 @@ class UserLookupController extends Controller
             ];
         });
 
+        $pendingInvitation = \DB::table('guardian_user')
+            ->whereNull('guardian_id')
+            ->where(function ($query) use ($q, $formattedPhone) {
+                $query->where('pending_contact', $q);
+                if ($formattedPhone) {
+                    $query->orWhere('pending_contact', $formattedPhone);
+                }
+            })
+            ->first();
+
+        $invitedBy = null;
+        if ($pendingInvitation) {
+            $minor = User::find($pendingInvitation->minor_id);
+            if ($minor) {
+                $invitedBy = [
+                    'id' => $minor->id,
+                    'name' => $minor->name,
+                ];
+            }
+        }
+
         return response()->json([
             'users' => $users,
             'matchType' => $matchType,
             'formattedPhone' => $formattedPhone,
+            'invitedBy' => $invitedBy,
         ]);
     }
 }

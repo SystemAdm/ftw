@@ -60,11 +60,15 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
         <Card class="p-6 space-y-4">
           <h2 class="text-lg font-semibold">{{ trans('pages.settings.billing.membership') }}</h2>
 
-          <div class="text-sm font-medium">
+          <div v-if="props.hasActiveSubscription" class="text-sm font-medium">
             {{ trans('pages.settings.billing.status') }}:
             <span :class="props.onGracePeriod ? 'text-yellow-600' : 'text-green-600'">
               {{ props.onGracePeriod ? trans('pages.settings.billing.cancelling') : trans('pages.settings.billing.active') }}
             </span>
+          </div>
+
+          <div v-else class="text-sm font-medium text-gray-500">
+            {{ trans('pages.settings.billing.not_subscribed') }}
           </div>
 
           <div v-if="props.hasActiveSubscription" class="text-sm text-gray-500">

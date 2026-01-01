@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import Paginator from '@/components/custom/Paginator.vue';
 import { Button } from '@/components/ui/button';
 import { trans } from 'laravel-vue-i18n';
+import { router, usePage } from '@inertiajs/vue3';
 import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 

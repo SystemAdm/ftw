@@ -22,7 +22,7 @@ class PermissionsController extends Controller
             ->orderBy('name')
             ->paginate(15);
 
-        return Inertia::render('admin/permissions/index', compact('permissions'));
+        return Inertia::render('admin/permissions/Index', compact('permissions'));
     }
 
     /**
@@ -30,7 +30,7 @@ class PermissionsController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('admin/permissions/create');
+        return Inertia::render('admin/permissions/Create');
     }
 
     /**
@@ -56,7 +56,7 @@ class PermissionsController extends Controller
     {
         $permission->load(['roles:id,name', 'users:id,name,email']);
 
-        return Inertia::render('admin/permissions/show', compact('permission'));
+        return Inertia::render('admin/permissions/Show', compact('permission'));
     }
 
     /**
@@ -64,7 +64,7 @@ class PermissionsController extends Controller
      */
     public function edit(Permission $permission): Response
     {
-        return Inertia::render('admin/permissions/edit', compact('permission'));
+        return Inertia::render('admin/permissions/Edit', compact('permission'));
     }
 
     /**

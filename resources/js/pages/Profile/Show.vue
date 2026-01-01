@@ -24,7 +24,6 @@ interface Props {
         postal_code?: number | null;
         city?: string | null;
         municipality?: string | null;
-        county?: string | null;
         country?: string | null;
         postal_code_visibility: string;
         email_public: boolean;
@@ -140,7 +139,6 @@ const formattedBirthday = computed(() => {
                                         <span v-if="user.postal_code">{{ user.postal_code }}</span>
                                         <span v-if="user.city">{{ user.city }}</span>
                                         <span v-if="user.municipality">({{ user.municipality }})</span>
-                                        <span v-if="user.county">{{ user.county }}</span>
                                         <span v-if="user.country">{{ user.country }}</span>
                                         <span v-if="!user.postal_code && !user.city && isOwnProfile" class="text-muted-foreground opacity-60">{{ trans('pages.settings.profile.location_private') }}</span>
                                     </div>

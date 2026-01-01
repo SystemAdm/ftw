@@ -1,9 +1,15 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Models\Role;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
+beforeEach(function () {
+    Role::firstOrCreate(['name' => RolesEnum::MEMBER->value]);
+});
 
 test('customer.subscription.created webhook updates membership', function () {
     $user = User::factory()->create([

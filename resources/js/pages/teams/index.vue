@@ -2,6 +2,7 @@
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue'
 import { Head, Link, usePage } from '@inertiajs/vue3'
 import { Card } from '@/components/ui/card'
+import { trans } from 'laravel-vue-i18n'
 
 type Team = {
   id: number
@@ -22,9 +23,9 @@ const teams = (page.props.teams?.data ?? []) as Team[]
 
 <template>
   <SidebarLayout>
-    <Head title="Teams" />
+    <Head :title="trans('pages.teams.title')" />
     <div class="space-y-4">
-      <h1 class="text-2xl font-bold tracking-tight">Teams</h1>
+      <h1 class="text-2xl font-bold tracking-tight">{{ trans('pages.teams.title') }}</h1>
 
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <Card v-for="t in teams" :key="t.id" class="p-4">
@@ -41,7 +42,7 @@ const teams = (page.props.teams?.data ?? []) as Team[]
           </p>
 
           <div class="mt-4">
-            <Link :href="`/teams/${t.id}`" class="text-sm font-medium text-primary hover:underline">View details</Link>
+            <Link :href="`/teams/${t.id}`" class="text-sm font-medium text-primary hover:underline">{{ trans('pages.teams.view_details') }}</Link>
           </div>
         </Card>
       </div>

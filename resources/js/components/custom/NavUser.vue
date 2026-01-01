@@ -91,9 +91,16 @@ const initials = computed(() => {
                                 {{ trans('pages.ui.navigation.settings') }}
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Bell />
-                            {{ trans('pages.ui.navigation.notifications') }}
+                        <DropdownMenuItem as-child>
+                            <Link href="/notifications" class="flex w-full items-center gap-2">
+                                <div class="relative">
+                                    <Bell />
+                                    <div v-if="$page.props.auth.unreadNotificationsCount > 0" class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-[8px] text-primary-foreground">
+                                        {{ $page.props.auth.unreadNotificationsCount > 9 ? '9+' : $page.props.auth.unreadNotificationsCount }}
+                                    </div>
+                                </div>
+                                {{ trans('pages.ui.navigation.notifications') }}
+                            </Link>
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
