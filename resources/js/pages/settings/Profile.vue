@@ -14,7 +14,7 @@ import { useAppearance } from '@/composables/useAppearance';
 import { show as profileRoute, updateAppearance as appearanceRoute, updatePassword as passwordRoute, updateAvatar as avatarRoute, updateHeaderImage as headerRoute } from '@/actions/App/http/controllers/Settings/ProfileController';
 import { addGuardian as addGuardianRoute, removeGuardian as removeGuardianRoute, verifyMinor as verifyMinorRoute, removeMinor as removeMinorRoute } from '@/actions/App/http/controllers/Settings/GuardianController';
 import { show as showPublicProfile } from '@/actions/App/http/controllers/ProfileController';
-import { index as billingIndex } from '@/actions/App/http/controllers/Settings/BillingController';
+import { index as billingIndex } from '@/actions/App/http/controllers/settings/BillingController';
 
 type UserProps = {
   name: string;
