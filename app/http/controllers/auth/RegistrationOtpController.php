@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\controllers\auth;
+namespace App\Http\Controllers\Auth;
 
-use App\http\controllers\Controller;
-use App\notifications\auth\VerifyEmailWithPin;
+use App\Http\Controllers\Controller;
+use App\Notifications\Auth\VerifyEmailWithPin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;

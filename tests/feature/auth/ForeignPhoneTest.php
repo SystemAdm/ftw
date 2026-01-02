@@ -47,17 +47,17 @@ test('new users can register with Swedish phone number with country code', funct
     $response->assertSessionHasNoErrors();
     $this->assertAuthenticated();
 
-    $user = \App\models\User::where('name', 'SE User')->first();
+    $user = \App\Models\User::where('name', 'SE User')->first();
     expect($user->phoneNumbers)->toHaveCount(1);
     expect($user->phoneNumbers->first()->e164)->toBe('+46701234567');
 });
 
 test('user lookup finds foreign number by E164', function () {
-    $phone = \App\models\PhoneNumber::create([
+    $phone = \App\Models\PhoneNumber::create([
         'e164' => '+46701234567',
     ]);
 
-    $user = \App\models\User::factory()->create([
+    $user = \App\Models\User::factory()->create([
         'name' => 'Swedish User',
     ]);
     $user->phoneNumbers()->attach($phone->id, ['primary' => true]);

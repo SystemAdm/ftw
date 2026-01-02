@@ -1,11 +1,11 @@
 <?php
 
-namespace App\http\controllers\admin;
+namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\http\requests\admin\StoreRoleRequest;
-use App\http\requests\admin\UpdateRoleRequest;
-use App\models\User;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreRoleRequest;
+use App\Http\Requests\Admin\UpdateRoleRequest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;

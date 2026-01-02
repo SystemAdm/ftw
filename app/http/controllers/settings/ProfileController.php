@@ -1,13 +1,13 @@
 <?php
 
-namespace App\http\controllers\settings;
+namespace App\Http\Controllers\Settings;
 
-use App\http\controllers\Controller;
-use App\http\requests\settings\UpdateAppearanceRequest;
-use App\http\requests\settings\UpdateAvatarRequest;
-use App\http\requests\settings\UpdateHeaderImageRequest;
-use App\http\requests\settings\UpdatePasswordRequest;
-use App\http\requests\settings\UpdateProfileRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Settings\UpdateAppearanceRequest;
+use App\Http\Requests\Settings\UpdateAvatarRequest;
+use App\Http\Requests\Settings\UpdateHeaderImageRequest;
+use App\Http\Requests\Settings\UpdatePasswordRequest;
+use App\Http\Requests\Settings\UpdateProfileRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

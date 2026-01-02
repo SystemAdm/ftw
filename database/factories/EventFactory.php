@@ -2,8 +2,8 @@
 
 namespace Database\factories;
 
-use App\models\Event;
-use App\models\Location;
+use App\Models\Event;
+use App\Models\Location;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

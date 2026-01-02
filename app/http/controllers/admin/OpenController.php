@@ -1,11 +1,11 @@
 <?php
 
-namespace App\http\controllers\admin;
+namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\models\BuildingInside;
-use App\models\BuildingLog;
-use App\models\User;
+use App\Http\Controllers\Controller;
+use App\Models\BuildingInside;
+use App\Models\BuildingLog;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;

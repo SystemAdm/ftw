@@ -1,12 +1,12 @@
 <?php
 
-namespace App\http\controllers\admin;
+namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\http\requests\admin\StoreLocationRequest;
-use App\http\requests\admin\UpdateLocationRequest;
-use App\models\Location;
-use App\models\PostalCode;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreLocationRequest;
+use App\Http\Requests\Admin\UpdateLocationRequest;
+use App\Models\Location;
+use App\Models\PostalCode;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -25,7 +25,7 @@ class LocationController extends Controller
         // Append computed attributes without globally adding to all queries
         $locations->getCollection()->each->append('postal');
 
-        return Inertia::render('admin/locations/Index', compact('locations'));
+        return Inertia::render('admin.locations.Index', compact('locations'));
     }
 
     public function create(): Response

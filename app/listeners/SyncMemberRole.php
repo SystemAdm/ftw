@@ -1,8 +1,8 @@
 <?php
 
-namespace App\listeners;
+namespace App\Listeners;
 
-use App\models\User;
+use App\Models\User;
 use Laravel\Cashier\Events\WebhookHandled;
 use Laravel\Cashier\Events\WebhookReceived;
 

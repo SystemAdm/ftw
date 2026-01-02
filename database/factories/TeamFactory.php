@@ -2,7 +2,7 @@
 
 namespace Database\factories;
 
-use App\models\Team;
+use App\Models\Team;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TeamFactory extends Factory

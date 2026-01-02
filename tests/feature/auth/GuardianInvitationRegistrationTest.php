@@ -1,6 +1,6 @@
 <?php
 
-use App\models\User;
+use App\Models\User;
 use App\notifications\auth\GuardianInvitation;
 use Illuminate\Support\Facades\Notification;
 

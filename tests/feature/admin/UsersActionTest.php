@@ -2,7 +2,7 @@
 
 namespace Tests\feature\admin;
 
-use App\models\User;
+use App\Models\User;
 use Database\seeders\RoleSeeder;
 use Illuminate\Support\Facades\Notification;
 

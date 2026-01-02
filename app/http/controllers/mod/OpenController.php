@@ -1,10 +1,10 @@
 <?php
 
-namespace App\http\controllers\mod;
+namespace App\Http\Controllers\Mod;
 
-use App\http\controllers\Controller;
-use App\models\BuildingInside;
-use App\models\BuildingLog;
+use App\Http\Controllers\Controller;
+use App\Models\BuildingInside;
+use App\Models\BuildingLog;
 use Inertia\Inertia;
 use Inertia\Response;
 

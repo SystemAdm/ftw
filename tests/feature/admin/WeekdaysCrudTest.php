@@ -1,9 +1,9 @@
 <?php
 
-use App\models\Team;
-use App\models\User;
-use App\models\Weekday;
-use App\models\WeekdayExcluded;
+use App\Models\Team;
+use App\Models\User;
+use App\Models\Weekday;
+use App\Models\WeekdayExcluded;
 
 it('shows weekdays index', function (): void {
     $user = User::factory()->create(['email_verified_at' => now()]);

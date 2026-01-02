@@ -1,13 +1,13 @@
 <?php
 
-namespace App\http\controllers\admin;
+namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\http\requests\admin\StoreWeekdayRequest;
-use App\http\requests\admin\UpdateWeekdayRequest;
-use App\models\Team;
-use App\models\Weekday;
-use App\models\WeekdayExcluded;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreWeekdayRequest;
+use App\Http\Requests\Admin\UpdateWeekdayRequest;
+use App\Models\Team;
+use App\Models\Weekday;
+use App\Models\WeekdayExcluded;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

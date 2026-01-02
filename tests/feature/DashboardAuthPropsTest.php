@@ -1,6 +1,6 @@
 <?php
 
-use App\models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Config;
 use Inertia\Inertia;
 use Inertia\Testing\AssertableInertia as Assert;

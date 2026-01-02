@@ -1,6 +1,6 @@
 <?php
 
-use App\models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);

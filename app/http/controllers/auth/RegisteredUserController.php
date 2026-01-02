@@ -1,10 +1,9 @@
 <?php
 
-namespace App\http\controllers\auth;
+namespace App\Http\Controllers\Auth;
 
-use App\http\controllers\Controller;
-use App\models\User;
-use App\Notifications\Auth\VerifyEmailWithPin;
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,13 +30,13 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if (! config('custom.allow_new_users')) {
+        if (!config('custom.allow_new_users')) {
             abort(403, 'New user registration is disabled.');
         }
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'phone' => 'nullable|string|max:20',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'birthday' => 'required|date',
@@ -58,7 +57,7 @@ class RegisteredUserController extends Controller
         $age = $birthday->age;
         $needGuardian = $age < config('custom.user_younger_than_need_guardian', 16);
 
-        if ($needGuardian && ! $request->filled('guardian_contact')) {
+        if ($needGuardian && !$request->filled('guardian_contact')) {
             return back()->withErrors(['guardian_contact' => 'A guardian contact is required for users under 16.']);
         }
 
@@ -224,7 +223,7 @@ class RegisteredUserController extends Controller
                 } catch (\Exception $e) {
                 }
 
-                \Illuminate\Support\Facades\Log::info('Guardian invitation email skipped for phone contact: '.$contact.' for minor: '.$user->id);
+                \Illuminate\Support\Facades\Log::info('Guardian invitation email skipped for phone contact: ' . $contact . ' for minor: ' . $user->id);
             }
         }
     }

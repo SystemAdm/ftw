@@ -1,10 +1,10 @@
 <?php
 
-use App\models\BuildingLog;
-use App\models\Event;
-use App\models\EventLog;
-use App\models\PostalCode;
-use App\models\User;
+use App\Models\BuildingLog;
+use App\Models\Event;
+use App\Models\EventLog;
+use App\Models\PostalCode;
+use App\Models\User;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 

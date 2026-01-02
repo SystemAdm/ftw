@@ -1,11 +1,11 @@
 <?php
 
-namespace App\models;
+namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\enums\BirthdayVisibility;
-use App\enums\PostalCodeVisibility;
-use App\enums\RolesEnum;
+use App\Enums\BirthdayVisibility;
+use App\Enums\PostalCodeVisibility;
+use App\Enums\RolesEnum;
 use Database\factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,7 +90,7 @@ class User extends Authenticatable implements ReactsInterface
     public function syncMemberRole(): void
     {
         if ($this->subscribed('default')) {
-            if (! $this->hasRole(RolesEnum::MEMBER->value)) {
+            if (!$this->hasRole(RolesEnum::MEMBER->value)) {
                 $this->assignRole(RolesEnum::MEMBER->value);
             }
         } else {
@@ -176,7 +176,7 @@ class User extends Authenticatable implements ReactsInterface
 
     public function isBanned(): bool
     {
-        if (! $this->banned_at) {
+        if (!$this->banned_at) {
             return false;
         }
         if ($this->banned_to === null) {
@@ -198,7 +198,7 @@ class User extends Authenticatable implements ReactsInterface
     {
         $subscription = $this->subscription('default');
 
-        if (! $subscription) {
+        if (!$subscription) {
             return null;
         }
 
@@ -209,7 +209,7 @@ class User extends Authenticatable implements ReactsInterface
         try {
             return $subscription->currentPeriodEnd()?->toIso8601String();
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed to fetch Stripe subscription for user '.$this->id.': '.$e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Failed to fetch Stripe subscription for user ' . $this->id . ': ' . $e->getMessage());
 
             return null;
         }
@@ -222,7 +222,7 @@ class User extends Authenticatable implements ReactsInterface
     {
         $subscription = $this->subscription('default');
 
-        if (! $subscription) {
+        if (!$subscription) {
             return null;
         }
 

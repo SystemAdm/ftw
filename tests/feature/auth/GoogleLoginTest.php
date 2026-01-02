@@ -1,6 +1,6 @@
 <?php
 
-use App\models\User;
+use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 
 use function Pest\Laravel\assertAuthenticatedAs;

@@ -1,6 +1,6 @@
 <?php
 
-use App\models\User;
+use App\Models\User;
 use Spatie\Permission\Models\Permission;
 
 it('shows permissions index', function (): void {

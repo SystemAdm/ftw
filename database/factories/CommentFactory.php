@@ -2,8 +2,8 @@
 
 namespace Database\factories;
 
-use App\models\Comment;
-use App\models\User;
+use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 

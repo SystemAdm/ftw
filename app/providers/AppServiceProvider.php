@@ -1,6 +1,6 @@
 <?php
 
-namespace App\providers;
+namespace App\Providers;
 
 use App\listeners\SyncMemberRole;
 use Illuminate\Support\Facades\Event;

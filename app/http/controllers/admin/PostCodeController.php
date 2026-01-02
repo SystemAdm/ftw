@@ -1,11 +1,11 @@
 <?php
 
-namespace App\http\controllers\admin;
+namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\http\requests\admin\StorePostCodeRequest;
-use App\http\requests\admin\UpdatePostCodeRequest;
-use App\models\PostalCode;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StorePostCodeRequest;
+use App\Http\Requests\Admin\UpdatePostCodeRequest;
+use App\Models\PostalCode;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;

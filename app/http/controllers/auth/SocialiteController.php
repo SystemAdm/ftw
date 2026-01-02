@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\controllers\auth;
+namespace App\Http\Controllers\Auth;
 
-use App\http\controllers\Controller;
-use App\models\User;
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -15,38 +15,17 @@ class SocialiteController extends Controller
     {
         // Use stateless to avoid SameSite/state cookie issues that can appear as CORS problems
         // Also force the callback URL to our named route to avoid any misconfigured env redirect URIs
-        switch ($provider) {
-            case 'battlenet':
-
-                return Socialite::driver('battlenet')->stateless()->redirect();
-
-            case 'discord':
-
-                return Socialite::driver('discord')->stateless()->redirect();
-
-            case 'facebook':
-
-                return Socialite::driver('facebook')->stateless()->redirect();
-
-            case 'github':
-
-                return Socialite::driver('github')->stateless()->redirect();
-
-            case 'google':
-                return Socialite::driver('google')->stateless()
-                    ->redirect();
-
-            case 'steam':
-
-                return Socialite::driver('steam')->stateless()->redirect();
-
-            case 'twitch':
-
-                return Socialite::driver('twitch')->stateless()->redirect();
-
-            default:
-                return redirect()->route('login');
-        }
+        return match ($provider) {
+            'battlenet' => Socialite::driver('battlenet')->stateless()->redirect(),
+            'discord' => Socialite::driver('discord')->stateless()->redirect(),
+            'facebook' => Socialite::driver('facebook')->stateless()->redirect(),
+            'github' => Socialite::driver('github')->stateless()->redirect(),
+            'google' => Socialite::driver('google')->stateless()
+                ->redirect(),
+            'steam' => Socialite::driver('steam')->stateless()->redirect(),
+            'twitch' => Socialite::driver('twitch')->stateless()->redirect(),
+            default => redirect()->route('login'),
+        };
     }
 
     public function handleCallback($provider): RedirectResponse

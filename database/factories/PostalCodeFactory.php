@@ -2,7 +2,7 @@
 
 namespace Database\factories;
 
-use App\models\PostalCode;
+use App\Models\PostalCode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostalCodeFactory extends Factory

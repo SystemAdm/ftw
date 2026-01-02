@@ -2,13 +2,11 @@
 
 namespace Database\seeders;
 
-use App\models\Blog;
-use App\models\PhoneNumber;
-use App\models\Team;
-use App\models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\models\Weekday;
+use App\Models\Team;
+use App\Models\Weekday;
 use Illuminate\Database\Seeder;
+
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {

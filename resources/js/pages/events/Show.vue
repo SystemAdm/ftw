@@ -62,7 +62,7 @@ const signupStatus = computed(() => {
             <div class="grid grid-cols-1 gap-12 lg:grid-cols-3">
                 <div class="lg:col-span-2 space-y-8">
                     <div v-if="event.image_path" class="overflow-hidden rounded-xl border bg-muted shadow-sm">
-                        <img :src="event.image_path.startsWith('http') ? event.image_path : `/storage/${event.image_path}`" class="h-auto w-full max-h-[500px] object-cover" alt="Event image" />
+                        <img :src="event.image_path.startsWith('Http') ? event.image_path : `/storage/${event.image_path}`" class="h-auto w-full max-h-[500px] object-cover" alt="Event image" />
                     </div>
 
                     <div class="space-y-4">

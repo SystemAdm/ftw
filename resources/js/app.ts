@@ -9,7 +9,7 @@ import { i18nVue } from 'laravel-vue-i18n';
 import { initializeTheme } from './composables/useAppearance';
 import { configureEcho } from '@laravel/echo-vue';
 
-const scheme = (import.meta.env.VITE_REVERB_SCHEME ?? (window.location.protocol === 'https:' ? 'https' : 'http')) as 'http' | 'https';
+const scheme = (import.meta.env.VITE_REVERB_SCHEME ?? (window.location.protocol === 'https:' ? 'https' : 'Http')) as 'Http' | 'https';
 const isTLS = scheme === 'https';
 
 configureEcho({

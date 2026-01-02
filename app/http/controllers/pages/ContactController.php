@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\controllers\pages;
+namespace App\Http\Controllers\Pages;
 
-use App\http\requests\ContactRequest;
-use App\mail\ContactMail;
+use App\Http\Requests\ContactRequest;
+use App\Mail\ContactMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Mail;

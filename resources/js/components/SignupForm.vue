@@ -10,13 +10,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, HTMLAttributes, ref } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import { terms as showTerms, privacy as showPrivacy } from '@/routes/index';
-import lookup from '@/actions/App/Http/Controllers/Auth/UserLookupController';
-import { store as loginStore } from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
-import { store as registerStore } from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
-import { create } from '@/actions/App/Http/Controllers/Auth/PasswordResetController';
-import { send, verify } from '@/actions/App/Http/Controllers/Auth/RegistrationOtpController';
-import { verify as verifyPinAction } from '@/actions/App/Http/Controllers/Auth/EmailVerificationController';
-import { redirectTo } from '@/actions/App/Http/Controllers/Auth/SocialiteController';
+import lookup from '@/actions/App/http/controllers/auth/UserLookupController';
+import { store as loginStore } from '@/actions/App/http/controllers/auth/AuthenticatedSessionController';
+import { store as registerStore } from '@/actions/App/http/controllers/auth/RegisteredUserController';
+import { create } from '@/actions/App/http/controllers/auth/PasswordResetController';
+import { send, verify } from '@/actions/App/http/controllers/auth/RegistrationOtpController';
+import { verify as verifyPinAction } from '@/actions/App/http/controllers/auth/EmailVerificationController';
+import { redirectTo } from '@/actions/App/http/controllers/auth/SocialiteController';
 import { useForm, usePage, router, Link } from '@inertiajs/vue3';
 import axios from 'axios';
 
@@ -674,7 +674,9 @@ function goToSocialiteGoogle(): void {
                                 :placeholder="trans('pages.auth.login.relationship_placeholder')"
                                 required
                             />
-                            <div v-if="registrationForm.errors.relationship" class="text-sm text-red-600">{{ registrationForm.errors.relationship }}</div>
+                            <div v-if="registrationForm.errors.relationship" class="text-sm text-red-600">
+                                {{ registrationForm.errors.relationship }}
+                            </div>
                         </Field>
                         <Button type="submit" class="w-full">{{ trans('pages.auth.login.next_button') }}</Button>
                     </form>

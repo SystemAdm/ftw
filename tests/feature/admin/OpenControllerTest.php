@@ -1,8 +1,8 @@
 <?php
 
-use App\enums\RolesEnum;
-use App\models\BuildingInside;
-use App\models\User;
+use App\Enums\RolesEnum;
+use App\Models\BuildingInside;
+use App\Models\User;
 use Database\seeders\RoleSeeder;
 use Illuminate\Support\Facades\Crypt;
 

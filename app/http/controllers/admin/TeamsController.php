@@ -1,12 +1,12 @@
 <?php
 
-namespace App\http\controllers\admin;
+namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\http\requests\admin\StoreTeamRequest;
-use App\http\requests\admin\UpdateTeamRequest;
-use App\models\Team;
-use App\models\User;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreTeamRequest;
+use App\Http\Requests\Admin\UpdateTeamRequest;
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;

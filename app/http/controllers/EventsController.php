@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\controllers;
+namespace App\Http\Controllers;
 
-use App\enums\RolesEnum;
-use App\models\Event;
+use App\Enums\RolesEnum;
+use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;

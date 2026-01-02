@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\controllers\crew;
+namespace App\Http\Controllers\Crew;
 
-use App\http\controllers\Controller;
-use App\models\Event;
+use App\Http\Controllers\Controller;
+use App\Models\Event;
 use Inertia\Inertia;
 use Inertia\Response;
 

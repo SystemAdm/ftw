@@ -49,7 +49,7 @@ function formatDate(date: string) {
                     <div class="aspect-video w-full overflow-hidden bg-muted">
                         <img
                             v-if="event.image_path"
-                            :src="event.image_path.startsWith('http') ? event.image_path : `/storage/${event.image_path}`"
+                            :src="event.image_path.startsWith('Http') ? event.image_path : `/storage/${event.image_path}`"
                             class="h-full w-full object-cover transition-transform group-hover:scale-105"
                             alt="Event image"
                         />

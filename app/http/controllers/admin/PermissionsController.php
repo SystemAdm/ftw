@@ -1,10 +1,10 @@
 <?php
 
-namespace App\http\controllers\admin;
+namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\http\requests\admin\StorePermissionRequest;
-use App\http\requests\admin\UpdatePermissionRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StorePermissionRequest;
+use App\Http\Requests\Admin\UpdatePermissionRequest;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;

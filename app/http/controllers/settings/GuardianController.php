@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\controllers\settings;
+namespace App\Http\Controllers\Settings;
 
-use App\http\controllers\Controller;
-use App\models\User;
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 

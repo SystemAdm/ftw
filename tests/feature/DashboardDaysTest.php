@@ -1,8 +1,8 @@
 <?php
 
-use App\models\User;
-use App\models\Weekday;
-use App\models\WeekdayExcluded;
+use App\Models\User;
+use App\Models\Weekday;
+use App\Models\WeekdayExcluded;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 // kept for consistency with other tests, unused here

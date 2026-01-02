@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\requests\settings;
+namespace App\Http\Requests\Settings;
 
-use App\enums\BirthdayVisibility;
-use App\enums\PostalCodeVisibility;
+use App\Enums\BirthdayVisibility;
+use App\Enums\PostalCodeVisibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 

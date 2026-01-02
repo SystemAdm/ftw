@@ -2,8 +2,8 @@
 
 namespace Database\factories;
 
-use App\models\Team;
-use App\models\Weekday;
+use App\Models\Team;
+use App\Models\Weekday;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class WeekdayFactory extends Factory

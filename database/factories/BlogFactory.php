@@ -2,7 +2,7 @@
 
 namespace Database\factories;
 
-use App\models\Blog;
+use App\Models\Blog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BlogFactory extends Factory

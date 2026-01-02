@@ -1,6 +1,6 @@
 <?php
 
-namespace App\http\controllers\pages;
+namespace App\Http\Controllers\Pages;
 
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;

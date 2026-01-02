@@ -2,7 +2,7 @@
 
 namespace Tests\feature\admin;
 
-use App\models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 

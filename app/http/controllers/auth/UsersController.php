@@ -1,9 +1,9 @@
 <?php
 
-namespace App\http\controllers\auth;
+namespace App\Http\Controllers\Auth;
 
-use App\http\controllers\Controller;
-use App\models\Weekday;
+use App\Http\Controllers\Controller;
+use App\Models\Weekday;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

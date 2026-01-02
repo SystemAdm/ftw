@@ -1,8 +1,8 @@
 <?php
 
-namespace App\http\controllers\settings;
+namespace App\Http\Controllers\Settings;
 
-use App\http\controllers\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

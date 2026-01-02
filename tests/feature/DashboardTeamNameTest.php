@@ -1,8 +1,8 @@
 <?php
 
-use App\models\Team;
-use App\models\User;
-use App\models\Weekday;
+use App\Models\Team;
+use App\Models\User;
+use App\Models\Weekday;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
