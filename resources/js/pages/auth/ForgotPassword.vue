@@ -5,8 +5,8 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { trans } from 'laravel-vue-i18n';
-import { store } from '@/actions/App/Http/Controllers/Auth/PasswordResetController';
-import { loginForm } from '@/actions/App/Http/Controllers/Auth/UsersController';
+import { store } from '@/actions/App/http/controllers/auth/PasswordResetController';
+import { loginForm } from '@/actions/App/http/controllers/auth/UsersController';
 import { Toaster } from '@/components/ui/sonner';
 import { useFlashToasts } from '@/composables/useFlashToasts';
 

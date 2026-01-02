@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { index, signup as signupRoute, cancelSignup as cancelSignupRoute } from '@/routes/events';
-import { login } from '@/routes/index';
+import { index, signup as signupRoute, cancelSignup as cancelSignupRoute } from '@/actions/App/http/controllers/EventsController';
+import { loginForm } from '@/actions/App/http/controllers/auth/UsersController';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/components/layouts/PublicLayout.vue';
 import { trans } from 'laravel-vue-i18n';
@@ -173,7 +173,7 @@ const signupStatus = computed(() => {
                                     {{ form.processing ? trans('pages.events.signup.signing_up') : trans('pages.events.signup.button') }}
                                 </Button>
                                 <div v-else class="text-center">
-                                    <Link :href="login.url()" class="block">
+                                    <Link :href="loginForm.url()" class="block">
                                         <Button variant="outline" class="w-full">
                                             {{ trans('pages.events.signup.login_to_signup') }}
                                         </Button>

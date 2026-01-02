@@ -3,6 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue'
 import { Head, Link, usePage } from '@inertiajs/vue3'
 import { Card } from '@/components/ui/card'
 import { trans } from 'laravel-vue-i18n'
+import { show } from '@/actions/App/http/controllers/TeamController'
 
 type Team = {
   id: number
@@ -42,7 +43,7 @@ const teams = (page.props.teams?.data ?? []) as Team[]
           </p>
 
           <div class="mt-4">
-            <Link :href="`/teams/${t.id}`" class="text-sm font-medium text-primary hover:underline">{{ trans('pages.teams.view_details') }}</Link>
+            <Link :href="show.url(t.id)" class="text-sm font-medium text-primary hover:underline">{{ trans('pages.teams.view_details') }}</Link>
           </div>
         </Card>
       </div>

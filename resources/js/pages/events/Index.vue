@@ -4,7 +4,7 @@ import PublicLayout from '@/components/layouts/PublicLayout.vue';
 import { trans } from 'laravel-vue-i18n';
 import { Calendar, MapPin, Users, CheckCircle } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
-import { show } from '@/routes/events';
+import { show } from '@/actions/App/http/controllers/EventsController';
 import { usePage } from '@inertiajs/vue3';
 import Paginator from '@/components/custom/Paginator.vue';
 

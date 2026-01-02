@@ -4,6 +4,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { trans } from 'laravel-vue-i18n'
+import { show as showLocation } from '@/actions/App/http/controllers/LocationController'
 
 type LocationMini = {
   id: number
@@ -69,7 +70,7 @@ const upcoming = page.props.upcoming ?? []
               </div>
               <div v-if="u.description" class="mt-1 text-sm text-muted-foreground">{{ u.description }}</div>
               <div v-if="u.location" class="mt-2 text-xs">
-                <Link :href="`/locations/${u.location.id}`" class="text-primary hover:underline">{{ trans('pages.teams.view_location') }}</Link>
+                <Link :href="showLocation.url(u.location.id)" class="text-primary hover:underline">{{ trans('pages.teams.view_location') }}</Link>
               </div>
             </div>
           </Card>

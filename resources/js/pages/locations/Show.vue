@@ -4,6 +4,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { trans } from 'laravel-vue-i18n';
+import { index } from '@/actions/App/http/controllers/LocationController';
 
 type Team = { id: number; name: string; slug?: string | null } | null;
 type Upcoming = {
@@ -55,7 +56,7 @@ function googleMapEmbedUrl(loc: LocationDetails): string | null {
     <div class="space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight">{{ location.name }}</h1>
-        <Link href="/locations" class="text-primary hover:underline">{{ trans('pages.locations.back_to_all') }}</Link>
+        <Link :href="index.url()" class="text-primary hover:underline">{{ trans('pages.locations.back_to_all') }}</Link>
       </div>
 
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">

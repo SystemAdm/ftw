@@ -3,6 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Card } from '@/components/ui/card';
 import { trans } from 'laravel-vue-i18n';
+import { show } from '@/actions/App/http/controllers/LocationController';
 
 type LocationItem = {
   id: number;
@@ -45,7 +46,7 @@ const locations = page.props.locations;
           </div>
 
           <div class="mt-3">
-            <Link :href="`/locations/${loc.id}`" class="text-primary hover:underline">{{ trans('pages.locations.view_details') }}</Link>
+            <Link :href="show.url(loc.id)" class="text-primary hover:underline">{{ trans('pages.locations.view_details') }}</Link>
           </div>
         </Card>
       </div>
