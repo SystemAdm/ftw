@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Head, usePage, router } from '@inertiajs/vue3';
-import { dashboard } from '@/actions/App/Http/Controllers/Auth/UsersController';
+import { dashboard } from '@/actions/App/http/controllers/auth/UsersController';
 import { BreadcrumbItemType } from '@/types';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
