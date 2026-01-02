@@ -6,7 +6,7 @@ import { computed } from 'vue'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { trans } from 'laravel-vue-i18n'
-import { index as billingRoute, checkout as checkoutRoute, portal as portalRoute } from '@/actions/App/http/controllers/settings/BillingController';
+import { index as billingRoute, checkout as checkoutRoute, portal as portalRoute } from '@/actions/App/http/controllers/Settings/BillingController';
 
 type Props = {
   hasActiveSubscription: boolean

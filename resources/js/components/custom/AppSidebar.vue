@@ -20,7 +20,7 @@ import { index as modOpenRoute } from '@/actions/App/http/controllers/mod/OpenCo
 import { index as crewEventsRoute } from '@/actions/App/http/controllers/crew/EventsController';
 import { dashboard as dashboardRoute } from '@/actions/App/http/controllers/auth/UsersController';
 import { show as profileRoute } from '@/actions/App/http/controllers/ProfileController';
-import { index as settingsRoute } from '@/actions/App/http/controllers/settings/index';
+import { show as settingsRoute } from '@/actions/App/http/controllers/settings/ProfileController';
 import { index as teamsRoute } from '@/actions/App/http/controllers/TeamController';
 import { index as locationsRoute } from '@/actions/App/http/controllers/LocationController';
 import { index as eventsRoute } from '@/actions/App/http/controllers/EventsController';

@@ -4,6 +4,7 @@ import { BreadcrumbItemType } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { index, show } from '@/actions/App/http/controllers/Crew/EventsController';
 import { usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
@@ -14,11 +15,11 @@ const event = computed(() => (page.props as any).event);
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
         title: trans('pages.ui.navigation.events'),
-        href: '/crew/events',
+        href: index.url(),
     },
     {
         title: event.value.title,
-        href: `/crew/events/${event.value.id}`,
+        href: show.url(event.value.id),
     },
 ]);
 

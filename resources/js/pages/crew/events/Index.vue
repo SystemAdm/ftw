@@ -5,7 +5,7 @@ import { BreadcrumbItemType } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { show } from '@/routes/crew/events/index';
+import { index, show } from '@/actions/App/http/controllers/Crew/EventsController';
 import { router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { Eye } from 'lucide-vue-next';
@@ -16,7 +16,7 @@ const page = usePage<PageProps>();
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
         title: trans('pages.ui.navigation.events'),
-        href: '/crew/events',
+        href: index.url(),
     },
 ]);
 

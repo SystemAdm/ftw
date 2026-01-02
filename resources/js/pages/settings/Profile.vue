@@ -11,8 +11,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { trans } from 'laravel-vue-i18n';
 import { useAppearance } from '@/composables/useAppearance';
-import { profile as profileRoute, appearance as appearanceRoute, password as passwordRoute, updateAvatar as avatarRoute, updateHeaderImage as headerRoute } from '@/actions/App/http/controllers/settings/ProfileController';
-import { addGuardian as addGuardianRoute, removeGuardian as removeGuardianRoute, verifyMinor as verifyMinorRoute, removeMinor as removeMinorRoute } from '@/actions/App/http/controllers/settings/GuardianController';
+import { show as profileRoute, updateAppearance as appearanceRoute, updatePassword as passwordRoute, updateAvatar as avatarRoute, updateHeaderImage as headerRoute } from '@/actions/App/http/controllers/Settings/ProfileController';
+import { addGuardian as addGuardianRoute, removeGuardian as removeGuardianRoute, verifyMinor as verifyMinorRoute, removeMinor as removeMinorRoute } from '@/actions/App/http/controllers/Settings/GuardianController';
+import { show as showPublicProfile } from '@/actions/App/http/controllers/ProfileController';
+import { index as billingIndex } from '@/actions/App/http/controllers/Settings/BillingController';
 
 type UserProps = {
   name: string;
@@ -180,13 +182,6 @@ function removeMinor(id: number) {
     useForm({}).delete(removeMinorRoute.url(id));
   }
 }
-
-const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
-    {
-        title: trans('pages.settings.profile.title'),
-        href: profileRoute.url(),
-    },
-]);
 </script>
 
 <template>
@@ -326,7 +321,7 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
                 </div>
               </div>
               <p class="text-xs text-muted-foreground">
-                <Link href="/profile" class="underline hover:text-foreground">{{ trans('pages.settings.profile.view_public') }}</Link>
+                <Link :href="showPublicProfile.url()" class="underline hover:text-foreground">{{ trans('pages.settings.profile.view_public') }}</Link>
               </p>
             </div>
 
@@ -464,7 +459,7 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
             </div>
           </div>
           <div class="pt-2">
-            <Link href="/settings/billing">
+            <Link :href="billingIndex.url()">
               <Button variant="secondary">{{ trans('pages.settings.billing.manage_subscription') }}</Button>
             </Link>
           </div>
