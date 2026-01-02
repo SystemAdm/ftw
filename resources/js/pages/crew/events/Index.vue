@@ -5,7 +5,7 @@ import { BreadcrumbItemType } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { index, show } from '@/actions/App/http/controllers/crew/EventsController';
+import { index, show } from '@/routes/crew/events';
 import { router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { Eye } from 'lucide-vue-next';

@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import Paginator from '@/components/custom/Paginator.vue';
 import { usePage, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { show, create as createRoute, destroy } from '@/routes/admin/weekdays/index';
+import { show, create as createRoute, destroy } from '@/routes/admin/weekdays';
 import { trans } from 'laravel-vue-i18n';
 import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';

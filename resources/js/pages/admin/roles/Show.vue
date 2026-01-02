@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { usePage, router } from '@inertiajs/vue3';
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
-import { BreadcrumbItemType } from '@/types';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { computed, ref } from 'vue';
+import { destroy as destroyRoute, edit as editRoute, index as indexRoute, show as showRoute } from '@/routes/admin/roles';
+import { assign as assignUserAction, remove as removeUserAction, search as searchUsersAction } from '@/routes/admin/roles/users';
+import { BreadcrumbItemType } from '@/types';
+import { router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
-import { index as indexRoute, show as showRoute, edit as editRoute, destroy as destroyRoute, searchUsers as searchUsersAction, assignUser as assignUserAction, removeUser as removeUserAction } from '@/actions/App/http/controllers/Admin/RolesController';
+import { computed, ref } from 'vue';
 
 const page = usePage<PageProps>();
 const role = (page.props as any).role;
@@ -97,7 +98,9 @@ function removeUser(id: number) {
                     <h2 class="mb-2 text-sm font-medium text-muted-foreground">{{ trans('pages.settings.roles.fields.users') }}</h2>
                     <div v-if="(role.users ?? []).length" class="flex flex-col gap-2">
                         <div v-for="u in role.users" :key="u.id" class="flex items-center justify-between">
-                            <div class="text-sm">{{ u.name }} <span class="text-muted-foreground">{{ u.email }}</span></div>
+                            <div class="text-sm">
+                                {{ u.name }} <span class="text-muted-foreground">{{ u.email }}</span>
+                            </div>
                             <Button size="sm" variant="outline" @click="removeUser(u.id)">{{ trans('pages.settings.roles.actions.remove') }}</Button>
                         </div>
                     </div>
@@ -107,14 +110,18 @@ function removeUser(id: number) {
 
             <aside class="space-y-4">
                 <div class="rounded-md border bg-card p-4">
-                    <h2 class="mb-2 text-sm font-medium text-muted-foreground">{{ trans('pages.settings.roles.actions.assign') }} {{ trans('pages.ui.navigation.users') }}</h2>
+                    <h2 class="mb-2 text-sm font-medium text-muted-foreground">
+                        {{ trans('pages.settings.roles.actions.assign') }} {{ trans('pages.ui.navigation.users') }}
+                    </h2>
                     <div class="flex gap-2">
                         <Input v-model="searchTerm" :placeholder="trans('pages.settings.roles.fields.users')" @keyup.enter="searchUsers" />
                         <Button :disabled="searching" @click="searchUsers">{{ trans('pages.settings.locations.actions.view') }}</Button>
                     </div>
                     <div class="mt-3 max-h-64 space-y-2 overflow-y-auto">
                         <div v-for="r in results" :key="r.id" class="flex items-center justify-between">
-                            <div class="text-sm">{{ r.name }} <span class="text-muted-foreground">{{ r.email }}</span></div>
+                            <div class="text-sm">
+                                {{ r.name }} <span class="text-muted-foreground">{{ r.email }}</span>
+                            </div>
                             <Button size="sm" @click="assignUser(r.id)">{{ trans('pages.settings.roles.actions.assign') }}</Button>
                         </div>
                     </div>

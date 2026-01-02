@@ -4,7 +4,7 @@ import { BreadcrumbItemType } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { index, show } from '@/actions/App/http/controllers/crew/EventsController';
+import { index, show } from '@/routes/crew/events';
 import { usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';

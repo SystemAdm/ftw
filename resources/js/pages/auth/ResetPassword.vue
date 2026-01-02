@@ -5,7 +5,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { trans } from 'laravel-vue-i18n';
-import { update } from '@/actions/App/http/controllers/auth/PasswordResetController';
+import { update } from '@/routes/settings/password';
 import { Toaster } from '@/components/ui/sonner';
 import { useFlashToasts } from '@/composables/useFlashToasts';
 

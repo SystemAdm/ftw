@@ -3,7 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Card } from '@/components/ui/card';
 import { trans } from 'laravel-vue-i18n';
-import { show } from '@/actions/App/http/controllers/LocationController';
+import { show } from '@/routes/locations';
 
 type LocationItem = {
   id: number;

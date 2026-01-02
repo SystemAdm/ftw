@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import { Bell, Check, Trash2, ExternalLink } from 'lucide-vue-next';
-import { index as indexRoute, markAsRead as markAsReadRoute, markAllAsRead as markAllAsReadRoute, destroy as destroyRoute } from '@/actions/App/http/controllers/NotificationsController';
+import { index as indexRoute, markAsRead as markAsReadRoute, markAllAsRead as markAllAsReadRoute, destroy as destroyRoute } from '@/routes/notifications/index';
 
 interface Notification {
     id: string;

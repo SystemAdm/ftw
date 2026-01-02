@@ -3,8 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { BreadcrumbItemType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { router, usePage } from '@inertiajs/vue3';
-import { edit as editRoute, destroy as destroyRoute, index as indexRoute } from '@/routes/admin/locations';
-import { restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/locations';
+import { edit as editRoute, destroy as destroyRoute, index as indexRoute, restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/locations';
 import { trans } from 'laravel-vue-i18n';
 import {
   AlertDialog,

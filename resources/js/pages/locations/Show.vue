@@ -4,7 +4,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { trans } from 'laravel-vue-i18n';
-import { index } from '@/actions/App/http/controllers/LocationController';
+import { index } from '@/routes/locations';
 
 type Team = { id: number; name: string; slug?: string | null } | null;
 type Upcoming = {

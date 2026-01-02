@@ -6,7 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Loader2, Upload, Image as ImageIcon, Check } from 'lucide-vue-next';
 import axios from 'axios';
 import { trans } from 'laravel-vue-i18n';
-import { images as imagesRoute, uploadImage as uploadImageRoute } from '@/actions/App/http/controllers/Admin/EventsController';
+import { images as imagesRoute} from '@/routes/admin/events';
+import  {upload as uploadImageRoute } from '@/routes/admin/events/images';
 
 const props = defineProps<{
     modelValue: string | null;
@@ -71,20 +72,13 @@ function openDialog() {
     isOpen.value = true;
     fetchImages();
 }
-
 </script>
 
 <template>
     <div class="space-y-2">
         <div v-if="selectedPath" class="relative inline-block">
             <img :src="`/storage/${selectedPath}`" class="h-32 w-auto rounded border object-cover" />
-            <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                class="absolute -right-2 -top-2 h-6 w-6"
-                @click="selectImage('')"
-            >
+            <Button type="button" variant="destructive" size="icon" class="absolute -top-2 -right-2 h-6 w-6" @click="selectImage('')">
                 <span class="sr-only">Remove</span>
                 &times;
             </Button>
@@ -98,23 +92,17 @@ function openDialog() {
                         {{ trans('pages.settings.events.fields.image') }}
                     </Button>
                 </DialogTrigger>
-                <DialogContent class="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogContent class="max-h-[80vh] max-w-3xl overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Select Image</DialogTitle>
                     </DialogHeader>
 
                     <div class="space-y-4">
                         <div class="flex items-center gap-4">
-                            <Input
-                                type="file"
-                                accept="image/*"
-                                class="hidden"
-                                id="image-upload"
-                                @change="handleFileUpload"
-                            />
+                            <Input type="file" accept="image/*" class="hidden" id="image-upload" @change="handleFileUpload" />
                             <label
                                 for="image-upload"
-                                class="flex cursor-pointer items-center justify-center rounded-md border border-dashed p-8 w-full hover:bg-muted/50"
+                                class="flex w-full cursor-pointer items-center justify-center rounded-md border border-dashed p-8 hover:bg-muted/50"
                             >
                                 <div v-if="isUploading" class="flex flex-col items-center">
                                     <Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
@@ -139,10 +127,7 @@ function openDialog() {
                                 @click="selectImage(img.path)"
                             >
                                 <img :src="img.url" class="h-full w-full object-cover transition-transform group-hover:scale-110" />
-                                <div
-                                    v-if="selectedPath === img.path"
-                                    class="absolute inset-0 flex items-center justify-center bg-primary/40"
-                                >
+                                <div v-if="selectedPath === img.path" class="absolute inset-0 flex items-center justify-center bg-primary/40">
                                     <Check class="h-8 w-8 text-white" />
                                 </div>
                             </div>

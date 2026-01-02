@@ -4,7 +4,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { trans } from 'laravel-vue-i18n'
-import { show as showLocation } from '@/actions/App/http/controllers/LocationController'
+import { show as showLocation } from '@/routes/locations'
 
 type LocationMini = {
   id: number

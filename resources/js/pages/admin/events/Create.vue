@@ -7,9 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select/index';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ImagePicker from '@/components/custom/ImagePicker.vue';
-import { index as indexRoute } from '@/routes/admin/events/index';
+import { index as indexRoute } from '@/routes/admin/events';
 import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();

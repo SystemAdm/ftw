@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { index, signup as signupRoute, cancelSignup as cancelSignupRoute } from '@/actions/App/http/controllers/EventsController';
-import { loginForm } from '@/actions/App/http/controllers/auth/UsersController';
+import { index, signup as signupRoute, cancelSignup as cancelSignupRoute } from '@/routes/events';
+import { login as loginForm } from '@/routes';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/components/layouts/PublicLayout.vue';
 import { trans } from 'laravel-vue-i18n';

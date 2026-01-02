@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
-import { submit as submitRoute } from '@/actions/App/http/controllers/pages/ContactController';
+import { submit as submitRoute } from '@/routes/contact';
 
 type I18n = {
   i18n: {

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import { Mail, Phone, Calendar, MapPin, User as UserIcon, Cog } from 'lucide-vue-next';
-import { show as settingsProfile } from '@/actions/App/http/controllers/settings/ProfileController';
+import { profile as settingsProfile } from '@/routes/settings';
 
 interface Props {
     user: {

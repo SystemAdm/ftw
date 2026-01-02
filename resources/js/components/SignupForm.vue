@@ -9,15 +9,14 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, HTMLAttributes, ref } from 'vue';
 import { trans } from 'laravel-vue-i18n';
-import { terms as showTerms, privacy as showPrivacy } from '@/routes/index';
-import lookup from '@/actions/App/http/controllers/auth/UserLookupController';
-import { store as loginStore } from '@/actions/App/http/controllers/auth/AuthenticatedSessionController';
-import { store as registerStore } from '@/actions/App/http/controllers/auth/RegisteredUserController';
-import { create } from '@/actions/App/http/controllers/auth/PasswordResetController';
-import { send, verify } from '@/actions/App/http/controllers/auth/RegistrationOtpController';
-import { verify as verifyPinAction } from '@/actions/App/http/controllers/auth/EmailVerificationController';
-import { redirectTo } from '@/actions/App/http/controllers/auth/SocialiteController';
-import { logout as logoutAction } from '@/actions/App/http/controllers/auth/UsersController';
+import { terms as showTerms, privacy as showPrivacy, logout as logoutAction } from '@/routes';
+import { lookup } from '@/routes/auth/users';
+import { store as loginStore } from '@/routes/login';
+import { store as registerStore } from '@/routes/register';
+import { request as create } from '@/routes/password';
+import { send, verify } from '@/routes/register/otp';
+import { verifyPin as verifyPinAction } from '@/routes/verification';
+import { google as redirectTo } from '@/routes/social';
 import { useForm, usePage, router, Link } from '@inertiajs/vue3';
 import axios from 'axios';
 
@@ -292,7 +291,7 @@ function verifyPin(): void {
 
 function goToSocialiteGoogle(): void {
     // Use a full page redirect instead of an XHR visit to avoid CORS/preflight issues
-    window.location.href = redirectTo['/auth/{provider}'].url('google');
+    window.location.href = redirectTo.url();
 }
 </script>
 

@@ -22,7 +22,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
-import { index as indexRoute, store as storeRoute, verify as verifyRoute, destroy as destroyRoute, searchUsers as searchUsersRoute } from '@/actions/App/http/controllers/Admin/RelationController';
+import { index as indexRoute, store as storeRoute, verify as verifyRoute, destroy as destroyRoute, searchUsers as searchUsersRoute } from '@/routes/admin/relations/index';
 
 interface PageProps extends AppPageProps {
     relations: {
