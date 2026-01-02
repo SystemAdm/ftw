@@ -62,7 +62,7 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(
     Route::delete('events/{id}/force', [EventsController::class, 'forceDestroy'])->name('events.force-destroy');
 
     // Admin Open
-    Route::get('open', [OpenController::class, 'index'])->middleware('role:admin')->name('open.index');
-    Route::post('open', [OpenController::class, 'store'])->middleware('role:admin')->name('open.store');
+    Route::get('open', [OpenController::class, 'index'])->name('open.index');
+    Route::post('open', [OpenController::class, 'store'])->name('open.store');
 
 });
