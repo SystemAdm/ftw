@@ -1,8 +1,8 @@
 <?php
 
-use App\http\controllers\settings\BillingController;
-use App\http\controllers\settings\GuardianController;
-use App\http\controllers\settings\ProfileController;
+use App\Http\Controllers\Settings\BillingController;
+use App\Http\Controllers\Settings\GuardianController;
+use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {

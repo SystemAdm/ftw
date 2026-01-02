@@ -1,16 +1,16 @@
 <?php
 
-use App\http\controllers\auth\AuthenticatedSessionController;
-use App\http\controllers\auth\EmailVerificationController;
-use App\http\controllers\auth\PasswordResetController;
-use App\http\controllers\auth\RegisteredUserController;
-use App\http\controllers\auth\RegistrationOtpController;
-use App\http\controllers\auth\SocialiteController;
-use App\http\controllers\auth\UserLookupController;
-use App\http\controllers\auth\UsersController;
-use App\http\controllers\LocationController;
-use App\http\controllers\NotificationsController;
-use App\http\controllers\TeamController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\RegistrationOtpController;
+use App\Http\Controllers\Auth\SocialiteController;
+use App\Http\Controllers\Auth\UserLookupController;
+use App\Http\Controllers\Auth\UsersController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\TeamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;

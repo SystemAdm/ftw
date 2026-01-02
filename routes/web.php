@@ -1,9 +1,9 @@
 <?php
 
-use App\http\controllers\auth\UsersController;
-use App\http\controllers\pages\ContactController;
-use App\http\controllers\pages\LegalController;
-use Illuminate\Foundation\http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\Auth\UsersController;
+use App\Http\Controllers\Pages\ContactController;
+use App\Http\Controllers\Pages\LegalController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Laravel\Cashier\http\controllers\WebhookController as CashierWebhookController;
 
