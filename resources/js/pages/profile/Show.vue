@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import { Mail, Phone, Calendar, MapPin, User as UserIcon, Cog } from 'lucide-vue-next';
+import { profile as settingsProfile } from '@/actions/App/http/controllers/settings/ProfileController';
 
 interface Props {
     user: {
@@ -88,7 +89,7 @@ const formattedBirthday = computed(() => {
 
                         <div v-if="isOwnProfile" class="flex gap-2">
                             <Button as-child variant="outline" size="sm">
-                                <Link href="/settings/profile">
+                                <Link :href="settingsProfile.url()">
                                     <Cog class="mr-2 h-4 w-4" />
                                     {{ trans('pages.ui.navigation.settings') }}
                                 </Link>

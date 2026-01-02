@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import { Bell, Check, Trash2, ExternalLink } from 'lucide-vue-next';
+import { index as indexRoute, markAsRead as markAsReadRoute, markAllAsRead as markAllAsReadRoute, destroy as destroyRoute } from '@/actions/App/http/controllers/NotificationsController';
 
 interface Notification {
     id: string;
@@ -36,20 +37,20 @@ const notifications = computed(() => page.props.notifications.data);
 const breadcrumbs: BreadcrumbItemType[] = [
     {
         title: trans('pages.notifications.title'),
-        href: '/notifications',
+        href: indexRoute.url(),
     },
 ];
 
 function markAsRead(id: string) {
-    router.post(`/notifications/${id}/read`, {}, { preserveScroll: true });
+    router.post(markAsReadRoute.url(id), {}, { preserveScroll: true });
 }
 
 function markAllAsRead() {
-    router.post('/notifications/read-all', {}, { preserveScroll: true });
+    router.post(markAllAsReadRoute.url(), {}, { preserveScroll: true });
 }
 
 function deleteNotification(id: string) {
-    router.delete(`/notifications/${id}`, { preserveScroll: true });
+    router.delete(destroyRoute.url(id), { preserveScroll: true });
 }
 
 function formatDate(dateString: string) {

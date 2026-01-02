@@ -17,6 +17,7 @@ import { create } from '@/actions/App/http/controllers/auth/PasswordResetControl
 import { send, verify } from '@/actions/App/http/controllers/auth/RegistrationOtpController';
 import { verify as verifyPinAction } from '@/actions/App/http/controllers/auth/EmailVerificationController';
 import { redirectTo } from '@/actions/App/http/controllers/auth/SocialiteController';
+import { logout as logoutAction } from '@/actions/App/http/controllers/auth/UsersController';
 import { useForm, usePage, router, Link } from '@inertiajs/vue3';
 import axios from 'axios';
 
@@ -610,7 +611,7 @@ function goToSocialiteGoogle(): void {
                         </Button>
                     </form>
 
-                    <form @submit.prevent="router.post('/logout')">
+                    <form @submit.prevent="router.post(logoutAction.url())">
                         <Button variant="ghost" class="w-full" type="submit">
                             {{ trans('pages.auth.login.logout_button') }}
                         </Button>

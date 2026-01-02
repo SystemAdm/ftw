@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Loader2, Upload, Image as ImageIcon, Check } from 'lucide-vue-next';
 import axios from 'axios';
 import { trans } from 'laravel-vue-i18n';
+import { images as imagesRoute, uploadImage as uploadImageRoute } from '@/actions/App/http/controllers/Admin/EventsController';
 
 const props = defineProps<{
     modelValue: string | null;
@@ -25,7 +26,7 @@ const selectedPath = ref<string | null>(props.modelValue);
 async function fetchImages() {
     isLoading.value = true;
     try {
-        const response = await axios.get('/admin/events/images');
+        const response = await axios.get(imagesRoute.url());
         images.value = response.data;
     } catch (error) {
         console.error('Failed to fetch images', error);
@@ -43,7 +44,7 @@ async function handleFileUpload(event: Event) {
     formData.append('image', file);
 
     try {
-        const response = await axios.post('/admin/events/images', formData);
+        const response = await axios.post(uploadImageRoute.url(), formData);
         images.value.unshift(response.data);
         selectImage(response.data.path);
     } catch (error) {

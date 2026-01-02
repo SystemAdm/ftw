@@ -6,6 +6,7 @@ import { computed } from 'vue'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { trans } from 'laravel-vue-i18n'
+import { index as billingRoute, checkout as checkoutRoute, portal as portalRoute } from '@/actions/App/http/controllers/settings/BillingController';
 
 type Props = {
   hasActiveSubscription: boolean
@@ -24,12 +25,12 @@ const checkoutForm = useForm({
 })
 
 function subscribe() {
-  checkoutForm.post('/settings/billing/checkout')
+  checkoutForm.post(checkoutRoute.url())
 }
 
 const portalForm = useForm({})
 function openPortal() {
-  portalForm.post('/settings/billing/portal')
+  portalForm.post(portalRoute.url())
 }
 
 const formattedBillingDate = computed(() => {
@@ -44,7 +45,7 @@ const formattedBillingDate = computed(() => {
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
         title: trans('pages.settings.billing.membership'),
-        href: '/settings/billing',
+        href: billingRoute.url(),
     },
 ]);
 </script>

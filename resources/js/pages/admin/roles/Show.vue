@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { computed, ref } from 'vue';
 import { trans } from 'laravel-vue-i18n';
+import { index as indexRoute, show as showRoute, edit as editRoute, destroy as destroyRoute, searchUsers as searchUsersAction, assignUser as assignUserAction, removeUser as removeUserAction } from '@/actions/App/http/controllers/Admin/RolesController';
 
 const page = usePage<PageProps>();
 const role = (page.props as any).role;
@@ -14,7 +15,7 @@ const role = (page.props as any).role;
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
         title: trans('pages.settings.roles.title'),
-        href: '/admin/roles',
+        href: indexRoute.url(),
     },
     {
         title: role.name,
@@ -26,16 +27,16 @@ const results = ref<Array<{ id: number; name: string; email: string }>>([]);
 const searching = ref(false);
 
 function goBack() {
-    router.visit('/admin/roles');
+    router.visit(indexRoute.url());
 }
 
 function editRole() {
-    router.visit(`/admin/roles/${role.id}/edit`);
+    router.visit(editRoute.url(role.id));
 }
 
 function deleteRole() {
-    router.delete(`/admin/roles/${role.id}`, {
-        onFinish: () => router.visit('/admin/roles'),
+    router.delete(destroyRoute.url(role.id), {
+        onFinish: () => router.visit(indexRoute.url()),
     });
 }
 
@@ -43,11 +44,11 @@ async function searchUsers() {
     searching.value = true;
     results.value = [];
     try {
-        const res = await fetch(`/admin/roles/${role.id}/users/search?q=${encodeURIComponent(searchTerm.value)}`, {
+        const response = await fetch(searchUsersAction.url(role.id, { query: { q: searchTerm.value } }), {
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
             credentials: 'same-origin',
         });
-        const json = await res.json();
+        const json = await response.json();
         results.value = json.data ?? [];
     } finally {
         searching.value = false;
@@ -56,17 +57,17 @@ async function searchUsers() {
 
 function assignUser(id: number) {
     router.post(
-        `/admin/roles/${role.id}/users`,
+        assignUserAction.url(role.id),
         { user_id: id },
         {
-            onFinish: () => router.visit(`/admin/roles/${role.id}`),
+            onFinish: () => router.visit(showRoute.url(role.id)),
         },
     );
 }
 
 function removeUser(id: number) {
-    router.delete(`/admin/roles/${role.id}/users/${id}`, {
-        onFinish: () => router.visit(`/admin/roles/${role.id}`),
+    router.delete(removeUserAction.url(role.id, id), {
+        onFinish: () => router.visit(showRoute.url(role.id)),
     });
 }
 </script>

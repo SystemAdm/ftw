@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
+import { submit as submitRoute } from '@/actions/App/http/controllers/pages/ContactController';
 
 type I18n = {
   i18n: {
@@ -70,7 +71,7 @@ const form = useForm({
 })
 
 function submit() {
-  form.post('/contact', {
+  form.post(submitRoute.url(), {
     onSuccess: () => {
       form.reset('name', 'email', 'subject', 'message')
       try {

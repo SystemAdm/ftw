@@ -11,6 +11,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { trans } from 'laravel-vue-i18n';
 import { useAppearance } from '@/composables/useAppearance';
+import { profile as profileRoute, appearance as appearanceRoute, password as passwordRoute, updateAvatar as avatarRoute, updateHeaderImage as headerRoute } from '@/actions/App/http/controllers/settings/ProfileController';
+import { addGuardian as addGuardianRoute, removeGuardian as removeGuardianRoute, verifyMinor as verifyMinorRoute, removeMinor as removeMinorRoute } from '@/actions/App/http/controllers/settings/GuardianController';
 
 type UserProps = {
   name: string;
@@ -59,8 +61,15 @@ const appearanceForm = useForm({
   appearance: user.value.appearance ?? 'system',
 });
 
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('pages.settings.profile.title'),
+        href: profileRoute.url(),
+    },
+]);
+
 function submitAppearance() {
-  appearanceForm.patch('/settings/appearance', {
+  appearanceForm.patch(appearanceRoute.url(), {
     onSuccess: () => {
       updateClientTheme(appearanceForm.appearance as any);
     }
@@ -80,7 +89,7 @@ const profileForm = useForm({
 });
 
 function submitProfile() {
-  profileForm.patch('/settings/profile');
+  profileForm.patch(profileRoute.url());
 }
 
 // Password form
@@ -91,7 +100,7 @@ const passwordForm = useForm({
 });
 
 function submitPassword() {
-  passwordForm.patch('/settings/password', {
+  passwordForm.patch(passwordRoute.url(), {
     onSuccess: () => {
       passwordForm.reset('current_password', 'password', 'password_confirmation');
     },
@@ -110,7 +119,7 @@ function onPickHeader(e: Event) {
 }
 
 function submitHeader() {
-  headerForm.post('/settings/header-image', {
+  headerForm.post(headerRoute.url(), {
     forceFormData: true,
     onSuccess: () => {
       if (headerInput.value) {
@@ -133,7 +142,7 @@ function onPickAvatar(e: Event) {
 }
 
 function submitAvatar() {
-  avatarForm.post('/settings/avatar', {
+  avatarForm.post(avatarRoute.url(), {
     forceFormData: true,
     onSuccess: () => {
       if (avatarInput.value) {
@@ -151,31 +160,31 @@ const guardianForm = useForm({
 });
 
 function addGuardian() {
-  guardianForm.post('/settings/guardians', {
+  guardianForm.post(addGuardianRoute.url(), {
     onSuccess: () => guardianForm.reset(),
   });
 }
 
 function removeGuardian(id: number) {
   if (confirm('Are you sure you want to remove this guardian?')) {
-    useForm({}).delete(`/settings/guardians/${id}`);
+    useForm({}).delete(removeGuardianRoute.url(id));
   }
 }
 
 function verifyMinor(id: number) {
-  useForm({}).post(`/settings/minors/${id}/verify`);
+  useForm({}).post(verifyMinorRoute.url(id));
 }
 
 function removeMinor(id: number) {
   if (confirm('Are you sure you want to remove this minor?')) {
-    useForm({}).delete(`/settings/minors/${id}`);
+    useForm({}).delete(removeMinorRoute.url(id));
   }
 }
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
         title: trans('pages.settings.profile.title'),
-        href: '/settings/profile',
+        href: profileRoute.url(),
     },
 ]);
 </script>

@@ -22,6 +22,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
+import { index as indexRoute, store as storeRoute, verify as verifyRoute, destroy as destroyRoute, searchUsers as searchUsersRoute } from '@/actions/App/http/controllers/Admin/RelationController';
 
 interface PageProps extends AppPageProps {
     relations: {
@@ -52,7 +53,7 @@ const form = useForm({
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
         title: trans('pages.settings.relations.title'),
-        href: '/admin/relations',
+        href: indexRoute.url(),
     },
 ]);
 
@@ -68,7 +69,7 @@ function formatDate(date: string) {
 }
 
 function handleVerify(relation: any) {
-    router.post(`/admin/relations/${relation.guardian_id}/${relation.minor_id}/verify`);
+    router.post(verifyRoute.url({ guardian: relation.guardian_id, minor: relation.minor_id }));
 }
 
 function openDeleteDialog(relation: any) {
@@ -78,7 +79,7 @@ function openDeleteDialog(relation: any) {
 
 function handleDelete() {
     if (!selectedRelation.value) return;
-    router.delete(`/admin/relations/${selectedRelation.value.guardian_id}/${selectedRelation.value.minor_id}`, {
+    router.delete(destroyRoute.url({ guardian: selectedRelation.value.guardian_id, minor: selectedRelation.value.minor_id }), {
         onSuccess: () => {
             deleteDialogOpen.value = false;
             selectedRelation.value = null;
@@ -100,7 +101,7 @@ async function searchGuardians() {
         guardiansFound.value = [];
         return;
     }
-    const response = await axios.get('/admin/relations/search-users', { params: { q: guardianSearch.value } });
+    const response = await axios.get(searchUsersRoute.url(), { params: { q: guardianSearch.value } });
     guardiansFound.value = response.data.data;
 }
 
@@ -109,7 +110,7 @@ async function searchMinors() {
         minorsFound.value = [];
         return;
     }
-    const response = await axios.get('/admin/relations/search-users', { params: { q: minorSearch.value } });
+    const response = await axios.get(searchUsersRoute.url(), { params: { q: minorSearch.value } });
     minorsFound.value = response.data.data;
 }
 
@@ -126,7 +127,7 @@ function selectMinor(user: any) {
 }
 
 function handleCreate() {
-    form.post('/admin/relations', {
+    form.post(storeRoute.url(), {
         onSuccess: () => {
             createDialogOpen.value = false;
         },
