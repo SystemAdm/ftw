@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Paginator from '@/components/custom/Paginator.vue';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
-import { index as modOpenRoute } from '@/actions/App/http/controllers/Mod/OpenController';
+import { index as modOpenRoute } from '@/actions/App/http/controllers/mod/OpenController';
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
