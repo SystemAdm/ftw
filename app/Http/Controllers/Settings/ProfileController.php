@@ -40,7 +40,7 @@ class ProfileController extends Controller
                     'city' => $user->postalCode->city,
                     'country' => $user->postalCode->country,
                 ] : null,
-                'appearance' => $user->appearance ?? 'system',
+                'appearance' => $user->appearance ?? 'dark',
                 'phone_public' => $user->phone_public,
                 'email_public' => $user->email_public,
             ],

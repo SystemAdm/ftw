@@ -22,6 +22,7 @@ class StoreTeamRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'active' => ['boolean'],
+            'applications_enabled' => ['boolean'],
             'users' => ['sometimes', 'array'],
             'users.*' => ['integer', 'exists:users,id'],
         ];

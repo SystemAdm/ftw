@@ -1,15 +1,22 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\Team;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-test('admin teams index page is displayed', function () {
-    $user = User::factory()->create(['email_verified_at' => now()]);
+beforeEach(function () {
+    setPermissionsTeamId(0);
+    Role::firstOrCreate(['name' => RolesEnum::ADMIN->value, 'team_id' => 0]);
+    $this->admin = User::factory()->create();
+    $this->admin->assignRole(RolesEnum::ADMIN->value);
+});
 
+test('admin teams index page is displayed', function () {
     $response = $this
-        ->actingAs($user)
+        ->actingAs($this->admin)
         ->get('/admin/teams');
 
     $response->assertOk();
@@ -17,10 +24,8 @@ test('admin teams index page is displayed', function () {
 });
 
 test('can create a team', function () {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-
     $response = $this
-        ->actingAs($user)
+        ->actingAs($this->admin)
         ->post('/admin/teams', [
             'name' => 'New Team',
             'slug' => 'new-team',
@@ -33,11 +38,10 @@ test('can create a team', function () {
 });
 
 test('can update a team', function () {
-    $user = User::factory()->create(['email_verified_at' => now()]);
     $team = Team::factory()->create();
 
     $response = $this
-        ->actingAs($user)
+        ->actingAs($this->admin)
         ->put("/admin/teams/{$team->id}", [
             'name' => 'Updated Team Name',
             'slug' => 'updated-team-name',
@@ -50,12 +54,11 @@ test('can update a team', function () {
 });
 
 test('can soft delete, restore, and force delete a team', function () {
-    $user = User::factory()->create(['email_verified_at' => now()]);
     $team = Team::factory()->create();
 
     // Soft delete
     $response = $this
-        ->actingAs($user)
+        ->actingAs($this->admin)
         ->delete("/admin/teams/{$team->id}");
 
     $response->assertRedirect('/admin/teams');
@@ -63,7 +66,7 @@ test('can soft delete, restore, and force delete a team', function () {
 
     // Restore
     $response = $this
-        ->actingAs($user)
+        ->actingAs($this->admin)
         ->post("/admin/teams/{$team->id}/restore");
 
     $response->assertRedirect('/admin/teams');
@@ -72,9 +75,67 @@ test('can soft delete, restore, and force delete a team', function () {
     // Force delete
     $this->delete("/admin/teams/{$team->id}"); // soft delete again
     $response = $this
-        ->actingAs($user)
+        ->actingAs($this->admin)
         ->delete("/admin/teams/{$team->id}/force");
 
     $response->assertRedirect('/admin/teams');
     $this->assertDatabaseMissing('teams', ['id' => $team->id]);
+});
+
+test('admin can manage team members', function () {
+    $team = Team::factory()->create();
+    $member = User::factory()->create();
+
+    // Create team roles
+    setPermissionsTeamId($team->id);
+    Role::firstOrCreate(['name' => RolesEnum::CREW->value, 'team_id' => $team->id]);
+    Role::firstOrCreate(['name' => RolesEnum::BOARD_CHAIRMAN->value, 'team_id' => $team->id]);
+
+    // Attach as pending member
+    $team->users()->attach($member, ['role' => RolesEnum::CREW->value, 'status' => 'pending']);
+
+    // Admin approves member
+    setPermissionsTeamId(0);
+    $response = $this
+        ->actingAs($this->admin)
+        ->post("/admin/teams/{$team->id}/members/{$member->id}", [
+            'role' => RolesEnum::CREW->value,
+            'status' => 'approved',
+        ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('team_user', [
+        'team_id' => $team->id,
+        'user_id' => $member->id,
+        'status' => 'approved',
+        'role' => RolesEnum::CREW->value,
+    ]);
+
+    // Admin changes role to Board Chairman
+    setPermissionsTeamId(0);
+    $response = $this
+        ->actingAs($this->admin)
+        ->post("/admin/teams/{$team->id}/members/{$member->id}", [
+            'role' => RolesEnum::BOARD_CHAIRMAN->value,
+            'status' => 'approved',
+        ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('team_user', [
+        'team_id' => $team->id,
+        'user_id' => $member->id,
+        'role' => RolesEnum::BOARD_CHAIRMAN->value,
+    ]);
+
+    // Admin removes member
+    setPermissionsTeamId(0);
+    $response = $this
+        ->actingAs($this->admin)
+        ->delete("/admin/teams/{$team->id}/members/{$member->id}");
+
+    $response->assertRedirect();
+    $this->assertDatabaseMissing('team_user', [
+        'team_id' => $team->id,
+        'user_id' => $member->id,
+    ]);
 });

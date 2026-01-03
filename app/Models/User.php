@@ -89,8 +89,10 @@ class User extends Authenticatable implements ReactsInterface
      */
     public function syncMemberRole(): void
     {
+        setPermissionsTeamId(0);
+
         if ($this->subscribed('default')) {
-            if (!$this->hasRole(RolesEnum::MEMBER->value)) {
+            if (! $this->hasRole(RolesEnum::MEMBER->value)) {
                 $this->assignRole(RolesEnum::MEMBER->value);
             }
         } else {
@@ -176,7 +178,7 @@ class User extends Authenticatable implements ReactsInterface
 
     public function isBanned(): bool
     {
-        if (!$this->banned_at) {
+        if (! $this->banned_at) {
             return false;
         }
         if ($this->banned_to === null) {
@@ -188,7 +190,9 @@ class User extends Authenticatable implements ReactsInterface
 
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class);
+        return $this->belongsToMany(Team::class)
+            ->withPivot(['role', 'status', 'application'])
+            ->withTimestamps();
     }
 
     /**
@@ -198,7 +202,7 @@ class User extends Authenticatable implements ReactsInterface
     {
         $subscription = $this->subscription('default');
 
-        if (!$subscription) {
+        if (! $subscription) {
             return null;
         }
 
@@ -209,7 +213,7 @@ class User extends Authenticatable implements ReactsInterface
         try {
             return $subscription->currentPeriodEnd()?->toIso8601String();
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed to fetch Stripe subscription for user ' . $this->id . ': ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Failed to fetch Stripe subscription for user '.$this->id.': '.$e->getMessage());
 
             return null;
         }
@@ -222,7 +226,7 @@ class User extends Authenticatable implements ReactsInterface
     {
         $subscription = $this->subscription('default');
 
-        if (!$subscription) {
+        if (! $subscription) {
             return null;
         }
 

@@ -139,6 +139,7 @@ class RolesController extends Controller
             'user_id' => ['required', 'integer', 'exists:users,id'],
         ]);
 
+        setPermissionsTeamId($role->team_id ?? 0);
         $user = User::findOrFail($validated['user_id']);
         $user->assignRole($role);
 
@@ -147,6 +148,7 @@ class RolesController extends Controller
 
     public function removeUser(Role $role, User $user): RedirectResponse
     {
+        setPermissionsTeamId($role->team_id ?? 0);
         $user->removeRole($role);
 
         return redirect()->route('admin.roles.show', $role)->with('success', __('pages.settings.roles.messages.removed'));

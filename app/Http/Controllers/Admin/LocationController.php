@@ -25,7 +25,7 @@ class LocationController extends Controller
         // Append computed attributes without globally adding to all queries
         $locations->getCollection()->each->append('postal');
 
-        return Inertia::render('admin.locations.Index', compact('locations'));
+        return Inertia::render('admin/locations/Index', compact('locations'));
     }
 
     public function create(): Response

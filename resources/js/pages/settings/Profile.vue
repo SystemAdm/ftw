@@ -19,6 +19,7 @@ import { BreadcrumbItemType } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { computed, ref } from 'vue';
+import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 
 type UserProps = {
     name: string;
@@ -62,9 +63,15 @@ const minors = computed(() => page.props.minors);
 
 const { updateAppearance: updateClientTheme } = useAppearance();
 
+const showConfirmRemoveGuardian = ref(false);
+const guardianToRemove = ref<number | null>(null);
+
+const showConfirmRemoveMinor = ref(false);
+const minorToRemove = ref<number | null>(null);
+
 // Appearance form
 const appearanceForm = useForm({
-    appearance: user.value.appearance ?? 'system',
+    appearance: user.value.appearance ?? 'dark',
 });
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
@@ -171,9 +178,19 @@ function addGuardian() {
     });
 }
 
-function removeGuardian(id: number) {
-    if (confirm('Are you sure you want to remove this guardian?')) {
-        useForm({}).delete(removeGuardianRoute.url(id));
+function confirmRemoveGuardian(id: number) {
+    guardianToRemove.value = id;
+    showConfirmRemoveGuardian.value = true;
+}
+
+function submitRemoveGuardian() {
+    if (guardianToRemove.value) {
+        useForm({}).delete(removeGuardianRoute.url(guardianToRemove.value), {
+            onFinish: () => {
+                showConfirmRemoveGuardian.value = false;
+                guardianToRemove.value = null;
+            },
+        });
     }
 }
 
@@ -181,9 +198,19 @@ function verifyMinor(id: number) {
     useForm({}).post(verifyMinorRoute.url(id));
 }
 
-function removeMinor(id: number) {
-    if (confirm('Are you sure you want to remove this minor?')) {
-        useForm({}).delete(removeMinorRoute.url(id));
+function confirmRemoveMinor(id: number) {
+    minorToRemove.value = id;
+    showConfirmRemoveMinor.value = true;
+}
+
+function submitRemoveMinor() {
+    if (minorToRemove.value) {
+        useForm({}).delete(removeMinorRoute.url(minorToRemove.value), {
+            onFinish: () => {
+                showConfirmRemoveMinor.value = false;
+                minorToRemove.value = null;
+            },
+        });
     }
 }
 </script>
@@ -426,7 +453,7 @@ function removeMinor(id: number) {
                                     }}</span>
                                 </div>
                             </div>
-                            <Button variant="ghost" size="sm" @click="removeGuardian(guardian.id)">{{
+                            <Button variant="ghost" size="sm" @click="confirmRemoveGuardian(guardian.id)">{{
                                 trans('pages.settings.profile.actions.remove')
                             }}</Button>
                         </div>
@@ -478,7 +505,7 @@ function removeMinor(id: number) {
                                 <Button v-if="!minor.verified_guardian_at" variant="outline" size="sm" @click="verifyMinor(minor.id)">{{
                                     trans('pages.settings.profile.actions.verify')
                                 }}</Button>
-                                <Button variant="ghost" size="sm" @click="removeMinor(minor.id)">{{
+                                <Button variant="ghost" size="sm" @click="confirmRemoveMinor(minor.id)">{{
                                     trans('pages.settings.profile.actions.remove')
                                 }}</Button>
                             </div>
@@ -537,6 +564,20 @@ function removeMinor(id: number) {
                 </Card>
             </div>
         </div>
+
+        <DeleteConfirmationDialog
+            v-model:open="showConfirmRemoveGuardian"
+            title="Remove Guardian"
+            description="Are you sure you want to remove this guardian?"
+            @confirm="submitRemoveGuardian"
+        />
+
+        <DeleteConfirmationDialog
+            v-model:open="showConfirmRemoveMinor"
+            title="Remove Minor"
+            description="Are you sure you want to remove this minor?"
+            @confirm="submitRemoveMinor"
+        />
     </SidebarLayout>
 </template>
 

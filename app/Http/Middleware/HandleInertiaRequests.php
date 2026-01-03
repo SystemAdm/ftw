@@ -41,9 +41,13 @@ class HandleInertiaRequests extends Middleware
 
         $user = $request->user();
 
+        if ($user) {
+            setPermissionsTeamId(0);
+        }
+
         // Determine appearance from cookie, attempting to gracefully decrypt if it was previously encrypted
-        $rawAppearance = $request->cookie('appearance', 'system');
-        $appearance = is_string($rawAppearance) ? $rawAppearance : 'system';
+        $rawAppearance = $request->cookie('appearance', 'dark');
+        $appearance = is_string($rawAppearance) ? $rawAppearance : 'dark';
         if (is_string($appearance) && str_starts_with($appearance, 'eyJ')) {
             try {
                 $appearance = Crypt::decryptString($appearance);
@@ -52,7 +56,7 @@ class HandleInertiaRequests extends Middleware
             }
         }
         if (! in_array($appearance, ['light', 'dark', 'system'], true)) {
-            $appearance = 'system';
+            $appearance = 'dark';
         }
 
         return [
@@ -61,7 +65,7 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $user,
-                'roles' => $user ? $user->getRoleNames() : [],
+                'roles' => $user ? $user->getRoleNames()->all() : [],
                 'unreadNotificationsCount' => $user ? $user->unreadNotifications()->count() : 0,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventsController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\OpenController;
@@ -12,7 +13,8 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\WeekdaysController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified', 'role:Admin'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Admin Relations
     Route::get('relations/search-users', [RelationController::class, 'searchUsers'])->name('relations.search-users');
@@ -45,6 +47,8 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified'])->group(
     Route::delete('locations/{id}/force', [LocationController::class, 'forceDestroy'])->name('locations.force-destroy');
 
     // Admin Teams
+    Route::post('teams/{team}/members/{user}', [TeamsController::class, 'updateMember'])->name('teams.members.update');
+    Route::delete('teams/{team}/members/{user}', [TeamsController::class, 'removeMember'])->name('teams.members.remove');
     Route::resource('teams', TeamsController::class);
     Route::post('teams/{id}/restore', [TeamsController::class, 'restore'])->name('teams.restore');
     Route::delete('teams/{id}/force', [TeamsController::class, 'forceDestroy'])->name('teams.force-destroy');

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RoleSeeder::class);
+    $this->seed(\Database\seeders\RoleSeeder::class);
     $this->admin = User::factory()->create();
     $this->admin->assignRole('admin');
     $this->actingAs($this->admin);

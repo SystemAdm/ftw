@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\RolesEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTeamRequest;
 use App\Http\Requests\Admin\UpdateTeamRequest;
@@ -66,9 +67,57 @@ class TeamsController extends Controller
      */
     public function show(Team $team): Response
     {
-        $team->load('users:id,name');
+        $team->load(['users' => function ($query) {
+            $query->select('users.id', 'users.name', 'users.email')
+                ->withPivot(['role', 'status', 'application']);
+        }]);
 
-        return Inertia::render('admin/teams/Show', compact('team'));
+        $availableRoles = \Spatie\Permission\Models\Role::where('team_id', $team->id)->pluck('name');
+
+        return Inertia::render('admin/teams/Show', [
+            'team' => $team,
+            'availableRoles' => $availableRoles,
+        ]);
+    }
+
+    /**
+     * Update a member's role or status in the team.
+     */
+    public function updateMember(\Illuminate\Http\Request $request, Team $team, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'role' => ['nullable', 'string', 'in:'.RolesEnum::BOARD_CHAIRMAN->value.','.RolesEnum::BOARD_MEMBER->value.','.RolesEnum::CREW->value.','.RolesEnum::INSTRUCTOR->value],
+            'status' => ['required', 'string', 'in:pending,approved,rejected'],
+        ]);
+
+        $team->users()->updateExistingPivot($user->id, [
+            'status' => $validated['status'],
+            'role' => $validated['role'],
+        ]);
+
+        setPermissionsTeamId($team->id);
+        if ($validated['status'] === 'approved' && ! empty($validated['role'])) {
+            // Sync role to Spatie too
+            $user->assignRole($validated['role']);
+        } else {
+            // Remove role from Spatie if rejected or no role
+            $user->roles()->detach();
+        }
+
+        return redirect()->back()->with('success', __('pages.settings.teams.messages.member_updated'));
+    }
+
+    /**
+     * Remove a member from the team.
+     */
+    public function removeMember(Team $team, User $user): RedirectResponse
+    {
+        $team->users()->detach($user->id);
+
+        setPermissionsTeamId($team->id);
+        $user->roles()->detach(); // Remove all roles for this team context
+
+        return redirect()->back()->with('success', __('pages.settings.teams.messages.member_removed'));
     }
 
     /**

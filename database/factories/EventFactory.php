@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\factories;
+namespace Database\Factories;
 
 use App\Models\Event;
 use App\Models\Location;

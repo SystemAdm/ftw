@@ -3,7 +3,7 @@
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->seed(\Database\Seeders\RoleSeeder::class);
+    $this->seed(\Database\seeders\RoleSeeder::class);
 });
 
 test('new users can register with foreign phone number with country code', function () {

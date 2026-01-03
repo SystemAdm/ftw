@@ -19,7 +19,7 @@ type I18n = {
 const page = usePage<I18n>()
 const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
 
-const appearance = ref<'light' | 'dark' | 'system'>((page.props as any).appearance ?? 'system')
+const appearance = ref<'light' | 'dark' | 'system'>((page.props as any).appearance ?? 'dark')
 const systemIsDark = ref(false)
 
 const logoUrl = computed(() => {

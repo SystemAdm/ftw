@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\seeders;
+namespace Database\Seeders;
 
 use App\Enums\RolesEnum;
 use App\Models\User;
@@ -11,6 +11,8 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        setPermissionsTeamId(0);
+
         $i = User::factory()->create([
             'name' => 'Odd-Erik Jovang',
             'email' => 'jovang@gmail.com',
@@ -77,8 +79,8 @@ class UserSeeder extends Seeder
         $j->assignRole([RolesEnum::ADMIN->value, RolesEnum::GUEST->value]);
         $k->assignRole([RolesEnum::GUEST->value]);
         $l->assignRole([RolesEnum::GUARDIAN->value, RolesEnum::GUEST->value]);
-        $m->assignRole([RolesEnum::MEMBER->value, RolesEnum::GUEST->value]);
-        $n->assignRole([RolesEnum::CREW->value, RolesEnum::MEMBER->value, RolesEnum::GUEST->value]);
-        $o->assignRole([RolesEnum::ADMIN->value, RolesEnum::CREW->value, RolesEnum::MEMBER->value, RolesEnum::GUEST->value]);
+        $m->assignRole([RolesEnum::GUEST->value]);
+        $n->assignRole([RolesEnum::GUEST->value]);
+        $o->assignRole([RolesEnum::ADMIN->value, RolesEnum::GUEST->value]);
     }
 }

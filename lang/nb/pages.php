@@ -482,6 +482,9 @@ return [
                 'save' => 'Lagre',
                 'cancel' => 'Avbryt',
                 'delete_permanently' => 'Slett permanent',
+                'approve' => 'Godkjenn',
+                'reject' => 'Avslå',
+                'make_leader' => 'Gjør ledere',
             ],
             'delete' => [
                 'title' => 'Slette :name?',
@@ -578,6 +581,7 @@ return [
                 'users' => 'Brukere',
                 'permissions' => 'Rettigheter',
                 'role' => 'Rolle',
+                'roles' => 'Roller',
             ],
             'actions' => [
                 'assign' => 'Tildel',
@@ -598,6 +602,7 @@ return [
                 'updated' => 'Rettighet oppdatert.',
                 'deleted' => 'Rettighet slettet.',
             ],
+            'new' => 'Ny',
         ],
         'teams' => [
             'title' => 'Lag',
@@ -609,6 +614,7 @@ return [
                 'slug' => 'Slug',
                 'description' => 'Beskrivelse',
                 'active' => 'Aktiv',
+                'applications_enabled' => 'Søknader aktivert',
                 'status' => 'Status',
                 'members' => 'Medlemmer',
                 'created' => 'Opprettet',
@@ -616,6 +622,7 @@ return [
                 'deleted' => 'Slettet',
                 'logo' => 'Logo',
                 'about' => 'Om',
+                'role' => 'Rolle',
             ],
             'status' => [
                 'active' => 'Aktiv',
@@ -625,6 +632,7 @@ return [
             'actions' => [
                 'restore' => 'Gjenopprett',
                 'force_delete' => 'Slett permanent',
+                'change_role_to' => 'Endre rolle til',
             ],
             'delete' => [
                 'title' => 'Slette laget?',
@@ -640,6 +648,8 @@ return [
                 'deleted' => 'Lag slettet.',
                 'restored' => 'Lag gjenopprettet.',
                 'force_deleted' => 'Lag slettet permanent.',
+                'member_updated' => 'Lagmedlem oppdatert.',
+                'member_removed' => 'Lagmedlem fjernet.',
             ],
         ],
         'postcodes' => [
@@ -774,6 +784,39 @@ return [
             ],
         ],
     ],
+    'crew' => [
+        'dashboard' => [
+            'my_teams' => 'Mine lag',
+            'pending_applications' => 'Ventende søknader',
+            'applications_description' => 'Søknader som venter på godkjenning.',
+            'view_events' => 'Se alle crew-arrangementer.',
+        ],
+        'teams' => [
+            'my_teams' => 'Mine lag',
+            'my_teams_description' => 'Lag du er medlem av eller har søkt på.',
+            'available_teams' => 'Tilgjengelige lag',
+            'available_teams_description' => 'Lag du kan søke om å bli med i.',
+            'no_teams' => 'Du er ikke medlem av noen lag ennå.',
+            'no_available_teams' => 'Ingen tilgjengelige lag funnet.',
+            'no_description' => 'Ingen beskrivelse tilgjengelig.',
+            'apply' => 'Søk om medlemskap',
+            'apply_to' => 'Søk til',
+            'apply_description' => 'Vennligst skriv en kort søknad som forklarer hvorfor du ønsker å bli med i dette laget.',
+            'leave' => 'Forlat lag',
+            'leave_confirm' => 'Er du sikker på at du vil forlate dette laget?',
+            'fields' => [
+                'role' => 'Rolle',
+                'status' => 'Status',
+                'application' => 'Søknad',
+                'application_placeholder' => 'Skriv søknaden din her...',
+            ],
+            'status' => [
+                'pending' => 'Venter',
+                'approved' => 'Godkjent',
+                'rejected' => 'Avvist',
+            ],
+        ],
+    ],
     'admin' => [
         'open' => [
             'title' => 'Registrer inn-/utgang',
@@ -797,6 +840,13 @@ return [
                 'in' => 'Gikk inn',
                 'out' => 'Gikk ut',
             ],
+            'manual_check_in' => 'Manuell inn',
+            'check_in' => 'Inn',
+            'manual_check_in_description' => 'Bruk denne knappen for å registrere en manuell innlogging når automatisk registrering ikke er mulig.',
+            'search_user_placeholder' => 'Søk etter bruker',
+            'check_out' => 'Ut',
+            'checking_in' => 'Registrerer inn...',
+            'confirm_check_out' => 'Bekreft utgang',
         ],
     ],
     'terms' => [
@@ -886,8 +936,20 @@ return [
             'admin_open' => 'Admin Åpne',
             'mod_open' => 'Mod Åpne',
         ],
+        'buttons' => [
+            'list' => 'Liste',
+            'new' => 'Ny',
+            'view' => 'Vis',
+        ],
     ],
-    'locations' => ['title' => 'Lokasjoner', 'view_details' => 'Vis detaljer', 'no_upcoming' => 'Ingen planlagt', 'details' => 'Detaljer', 'back_to_all' => 'Tilbake til alle', 'upcoming_weekdays' => 'Planlagte ukedager'],
+    'locations' => [
+        'title' => 'Lokasjoner',
+        'view_details' => 'Vis detaljer',
+        'no_upcoming' => 'Ingen planlagt',
+        'details' => 'Detaljer',
+        'back_to_all' => 'Tilbake til alle',
+        'upcoming_weekdays' => 'Planlagte ukedager',
+    ],
     'teams' => [
         'title' => 'Lag',
         'view_details' => 'Vis detaljer',
@@ -895,5 +957,18 @@ return [
         'no_upcoming' => 'Ingen planlagte oppdrag funnet.',
         'unnamed_assignment' => 'Unavngitt oppdrag',
         'view_location' => 'Vis lokasjon',
+    ],
+    'roles' => [
+        'Owner' => 'Eier',
+        'Board Member' => 'Styremedlem',
+        'Board Chairman' => 'Styreleder',
+        'Instructor' => 'Instruktør',
+        'Admin' => 'Administrator',
+        'Moderator' => 'Moderator',
+        'Crew' => 'Crew',
+        'Member' => 'Medlem',
+        'Guest' => 'Gjest',
+        'Visitor' => 'Besøkende',
+        'Guardian' => 'Foresatt/Verge',
     ],
 ];

@@ -22,6 +22,7 @@ class Team extends Model
         'description',
         'logo',
         'active',
+        'applications_enabled',
     ];
 
     /**
@@ -33,11 +34,14 @@ class Team extends Model
     {
         return [
             'active' => 'boolean',
+            'applications_enabled' => 'boolean',
         ];
     }
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+            ->withPivot(['role', 'status', 'application'])
+            ->withTimestamps();
     }
 }

@@ -16,7 +16,9 @@ import { index as adminPostcodesRoute } from '@/routes/admin/postcodes/index';
 import { index as adminLocationsRoute } from '@/routes/admin/locations/index';
 import { index as adminEventsRoute } from '@/routes/admin/events/index';
 import { index as adminOpenRoute } from '@/routes/admin/open/index';
+import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
 import { index as modOpenRoute } from '@/routes/mod/open/index';
+import { index as crewTeamsRoute } from '@/routes/crew/teams/index';
 import { index as crewEventsRoute } from '@/routes/crew/events/index';
 import { dashboard as dashboardRoute } from '@/routes/index';
 import { show as profileRoute } from '@/routes/profile/index';
@@ -34,7 +36,7 @@ import { AppPageProps } from '@/types';
 const page = usePage<AppPageProps>();
 const user = computed(() => {
     const u = page.props.auth?.user;
-    return u ? { ...u, avatar: u.avatar ?? '' } : null;
+    return u ? { ...u, avatar: u.avatar ?? '', roles: page.props.auth?.roles ?? [] } : null;
 });
 </script>
 
@@ -47,6 +49,7 @@ const user = computed(() => {
             <NavAdmin
                 v-if="page.props.auth.roles.includes('Admin')"
                 :items="[
+                    { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: adminDashboardRoute.url() },
                     { title: trans('pages.ui.navigation.users'), icon: UserIcon, url: adminUsersRoute.url() },
                     { title: trans('pages.ui.navigation.roles'), icon: ShieldAlert, url: adminRolesRoute.url() },
                     { title: trans('pages.ui.navigation.relations'), icon: HeartHandshake, url: adminRelationsRoute.url() },
@@ -61,7 +64,11 @@ const user = computed(() => {
             ></NavAdmin>
             <NavCrew
                 v-if="page.props.auth.roles.includes('Crew') || page.props.auth.roles.includes('Admin')"
-                :items="[{ title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: crewEventsRoute.url() }]"
+                :items="[
+                    { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: '/crew' },
+                    { title: trans('pages.ui.navigation.teams'), icon: Users, url: crewTeamsRoute.url() },
+                    { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: crewEventsRoute.url() }
+                ]"
             ></NavCrew>
             <NavMod
                 v-if="page.props.auth.roles.includes('Moderator') || page.props.auth.roles.includes('Admin')"

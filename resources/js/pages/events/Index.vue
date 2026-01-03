@@ -4,14 +4,17 @@ import PublicLayout from '@/components/layouts/PublicLayout.vue';
 import { trans } from 'laravel-vue-i18n';
 import { Calendar, MapPin, Users, CheckCircle } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
-import { show } from '@/routes/events';
+import UpcomingWeekdays from '@/components/custom/UpcomingWeekdays.vue';
+import { index as eventsIndex, show } from '@/routes/events';
 import { usePage } from '@inertiajs/vue3';
 import Paginator from '@/components/custom/Paginator.vue';
 
-const page = usePage<PageProps>();
+const page = usePage<any>();
 
 defineProps<{
     events: any;
+    days: any[];
+    week: number;
 }>();
 
 function formatDate(date: string) {
@@ -30,6 +33,10 @@ function formatDate(date: string) {
 
     <PublicLayout>
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <UpcomingWeekdays :days="days" :week="week" :base-url="eventsIndex.url()" />
+            </div>
+
             <div class="mb-8">
                 <h1 class="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                     {{ trans('pages.events.title') }}

@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Enums\RolesEnum;
 use App\Models\Event;
+use App\Support\OpeningHours;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class EventsController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request, OpeningHours $openingHours): Response
     {
         $query = Event::query()
             ->where('status', 'published')
@@ -26,7 +28,10 @@ class EventsController extends Controller
 
         $events = $query->paginate(12);
 
-        return Inertia::render('events/Index', compact('events'));
+        $week = (int) $request->query('week', 0);
+        $days = $openingHours->getForWeek($week);
+
+        return Inertia::render('events/Index', compact('events', 'days', 'week'));
     }
 
     public function show(Event $event): Response

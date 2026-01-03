@@ -24,7 +24,7 @@ it('shares system appearance by default when cookie is missing', function (): vo
     $response->assertSuccessful();
 
     $props = inertiaPropsFromHtml($response->getContent());
-    expect($props)->toHaveKey('appearance')->and($props['appearance'])->toBe('system');
+    expect($props)->toHaveKey('appearance')->and($props['appearance'])->toBe('dark');
 });
 
 it('reads appearance from cookie when provided', function (): void {

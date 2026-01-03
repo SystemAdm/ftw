@@ -20,6 +20,7 @@ const form = useForm({
   description: team.description ?? '',
   logo: null as File | null,
   active: Boolean(team.active),
+  applications_enabled: Boolean(team.applications_enabled),
   users: (team.users ?? []).map((u: any) => u.id) as number[],
 });
 
@@ -92,6 +93,11 @@ function cancel() {
       <div class="flex items-center gap-2">
         <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v)" aria-label="Select Active" />
         <Label>{{ trans('pages.settings.teams.fields.active') }}</Label>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <Checkbox :model-value="form.applications_enabled" @update:model-value="(v) => (form.applications_enabled = v)" aria-label="Select Applications Enabled" />
+        <Label>{{ trans('pages.settings.teams.fields.applications_enabled') || 'Applications Enabled' }}</Label>
       </div>
 
       <div class="flex gap-2">

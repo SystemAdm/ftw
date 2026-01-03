@@ -22,6 +22,7 @@ const props = defineProps<{
         name: string;
         email: string;
         avatar?: string | null;
+        roles?: string[];
     };
 }>();
 
@@ -68,6 +69,15 @@ const initials = computed(() => {
                             <div class="grid flex-1 text-left text-sm leading-tight">
                                 <span class="truncate font-semibold">{{ user.name }}</span>
                                 <span class="truncate text-xs">{{ user.email }}</span>
+                                <div v-if="user.roles && user.roles.length > 0" class="mt-1 flex flex-wrap gap-1">
+                                    <span
+                                        v-for="role in user.roles"
+                                        :key="role"
+                                        class="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
+                                    >
+                                        {{ trans('pages.roles.' + role) }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </DropdownMenuLabel>

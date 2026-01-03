@@ -15,11 +15,49 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { trans } from 'laravel-vue-i18n';
+import { MoreHorizontal, Trash2, Check, X, Shield, User } from 'lucide-vue-next';
+import {
+    destroy as deleteTeamRoute,
+    restore as restoreTeamRoute,
+    forceDestroy as forceDeleteTeamRoute
+} from '@/routes/admin/teams/index';
+import { update as updateMemberAction, remove as removeMemberAction } from '@/routes/admin/teams/members/index';
+import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
+import { ref, computed } from 'vue';
 
 const page = usePage<PageProps>();
 const team = page.props.team as any;
+const availableRoles = computed(() => (page.props as any).availableRoles ?? []);
+
+const showRemoveMemberConfirm = ref(false);
+const memberToRemove = ref<number | null>(null);
+
+function updateMember(userId: number, data: { role?: string; status: string }) {
+    router.post(updateMemberAction.url({ team: team.id, user: userId }), data, {
+        preserveScroll: true,
+    });
+}
+
+function confirmRemoveMember(userId: number) {
+    memberToRemove.value = userId;
+    showRemoveMemberConfirm.value = true;
+}
+
+function handleRemoveMember() {
+    if (memberToRemove.value) {
+        router.delete(removeMemberAction.url({ team: team.id, user: memberToRemove.value }), {
+            preserveScroll: true,
+            onSuccess: () => {
+                showRemoveMemberConfirm.value = false;
+                memberToRemove.value = null;
+            },
+        });
+    }
+}
 
 function goBack() {
     router.visit('/admin/teams');
@@ -30,17 +68,17 @@ function editTeam() {
 }
 
 function deleteTeam() {
-    router.delete(`/admin/teams/${team.id}`, {
+    router.delete(deleteTeamRoute.url(team.id), {
         onFinish: () => router.visit('/admin/teams'),
     });
 }
 
 function restoreTeam() {
-    router.post(`/admin/teams/${team.id}/restore`);
+    router.post(restoreTeamRoute.url(team.id));
 }
 
 function forceDeleteTeam() {
-    router.delete(`/admin/teams/${team.id}/force`, {
+    router.delete(forceDeleteTeamRoute.url(team.id), {
         onFinish: () => router.visit('/admin/teams'),
     });
 }
@@ -135,14 +173,92 @@ function forceDeleteTeam() {
 
               <section>
                 <h2 class="mb-2 text-sm font-medium text-muted-foreground">{{ trans('pages.settings.teams.fields.members') }}</h2>
-                <div class="rounded-md border bg-card p-4">
-                  <div v-if="(team.users ?? []).length" class="flex flex-wrap gap-2">
-                    <Badge v-for="u in team.users" :key="u.id" variant="outline">{{ u.name }}</Badge>
-                  </div>
-                  <div v-else class="text-sm text-muted-foreground">{{ trans('pages.settings.locations.none') }}</div>
+                <div class="rounded-md border bg-card">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{{ trans('pages.settings.users.fields.name') }}</TableHead>
+                        <TableHead>{{ trans('pages.settings.teams.fields.role') }}</TableHead>
+                        <TableHead>{{ trans('pages.settings.teams.fields.status') }}</TableHead>
+                        <TableHead class="text-right"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow v-for="u in team.users" :key="u.id">
+                        <TableCell>
+                          <div class="flex flex-col">
+                            <span class="font-medium">{{ u.name }}</span>
+                            <span class="text-xs text-muted-foreground">{{ u.email }}</span>
+                            <div v-if="u.pivot.application" class="mt-2 rounded bg-muted/50 p-2 text-xs italic">
+                              <strong>{{ trans('pages.crew.teams.fields.application') || 'Application' }}:</strong>
+                              <p class="mt-1 whitespace-pre-wrap">{{ u.pivot.application }}</p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" class="flex w-fit items-center gap-1">
+                            <Shield v-if="u.pivot.role === 'Board Chairman'" class="h-3 w-3" />
+                            <User v-else class="h-3 w-3" />
+                            {{ u.pivot.role ? trans('pages.roles.' + u.pivot.role) : trans('pages.roles.Crew') }}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge :variant="u.pivot.status === 'approved' ? 'default' : u.pivot.status === 'pending' ? 'secondary' : 'destructive'">
+                            {{ trans(`pages.crew.teams.status.${u.pivot.status}`) }}
+                          </Badge>
+                        </TableCell>
+                        <TableCell class="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal class="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem v-if="u.pivot.status === 'pending'" @click="updateMember(u.id, { status: 'approved', role: u.pivot.role })">
+                                <Check class="mr-2 h-4 w-4 text-green-600" />
+                                {{ trans('pages.settings.locations.actions.approve') || 'Approve' }}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem v-if="u.pivot.status === 'pending'" @click="updateMember(u.id, { status: 'rejected', role: u.pivot.role })">
+                                <X class="mr-2 h-4 w-4 text-red-600" />
+                                {{ trans('pages.settings.locations.actions.reject') || 'Reject' }}
+                              </DropdownMenuItem>
+                              <template v-if="u.pivot.status === 'approved'">
+                                <DropdownMenuItem
+                                    v-for="role in availableRoles"
+                                    :key="role"
+                                    v-show="u.pivot.role !== role"
+                                    @click="updateMember(u.id, { status: u.pivot.status, role })"
+                                >
+                                    <Shield class="mr-2 h-4 w-4" />
+                                    {{ trans('pages.settings.teams.actions.change_role_to') || 'Change role to' }} {{ trans('pages.roles.' + role) }}
+                                </DropdownMenuItem>
+                              </template>
+                              <DropdownMenuItem class="text-destructive" @click="confirmRemoveMember(u.id)">
+                                <Trash2 class="mr-2 h-4 w-4" />
+                                {{ trans('pages.settings.locations.actions.delete') }}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow v-if="!team.users?.length">
+                        <TableCell colspan="4" class="text-center text-sm text-muted-foreground">
+                          {{ trans('pages.settings.locations.none') }}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
               </section>
             </div>
+
+            <DeleteConfirmationDialog
+                v-model:open="showRemoveMemberConfirm"
+                :title="trans('pages.settings.teams.members.remove_confirm') || 'Remove member?'"
+                :description="trans('pages.settings.teams.members.remove_description') || 'Are you sure you want to remove this member from the team?'"
+                @confirm="handleRemoveMember"
+            />
 
             <!-- Logo preview -->
             <aside class="space-y-3">

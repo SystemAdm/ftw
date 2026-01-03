@@ -6,9 +6,11 @@ enum RolesEnum: string
 {
     // Site owner
     case OWNER = 'Owner';
+    case BOARD_CHAIRMAN = 'Board Chairman';
 
     // Board members, site leaders
     case BOARD_MEMBER = 'Board Member';
+    case INSTRUCTOR = 'Instructor';
 
     // Administrators, site managers
     case ADMIN = 'Admin';
@@ -33,24 +35,15 @@ enum RolesEnum: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::OWNER => 'Site Owner',
-            self::BOARD_MEMBER => 'Board members, site leaders',
-            self::ADMIN => 'Administrators, site managers',
-            self::MODERATOR => 'Moderators',
-            self::CREW => 'Crew, staff members',
-            self::MEMBER => 'Members, paid users',
-            self::GUEST => 'Guests, participating at events',
-            self::GUARDIAN => 'Guardians, parents of minors',
-            default => 'Visitors, just visiting the site',
-        };
+        return trans('pages.roles.'.$this->value);
     }
 
     public function color(): string
     {
         return match ($this) {
-            self::OWNER, self::BOARD_MEMBER => 'red',
+            self::OWNER, self::BOARD_CHAIRMAN, self::BOARD_MEMBER => 'red',
             self::ADMIN => 'orange',
+            self::INSTRUCTOR => 'purple',
             self::MODERATOR => 'amber',
             self::CREW => 'yellow',
             self::MEMBER => 'blue',
@@ -62,6 +55,6 @@ enum RolesEnum: string
 
     public function isAdmin(): bool
     {
-        return in_array($this, [self::OWNER, self::BOARD_MEMBER, self::ADMIN]);
+        return in_array($this, [self::OWNER, self::BOARD_MEMBER, self::BOARD_CHAIRMAN, self::ADMIN]);
     }
 }

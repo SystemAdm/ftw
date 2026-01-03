@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\seeders;
+namespace Database\Seeders;
 
 use App\Models\PostalCode;
 use Illuminate\Database\Seeder;
