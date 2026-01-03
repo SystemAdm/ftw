@@ -29,23 +29,45 @@ return new class extends Migration
 
         // 2. Model Has Roles Table
         if (! Schema::hasColumn($tableNames['model_has_roles'], $teamsKey)) {
-            Schema::table($tableNames['model_has_roles'], function (Blueprint $table) use ($teamsKey, $modelKey) {
+            Schema::table($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $teamsKey, $modelKey) {
+                if (DB::getDriverName() !== 'sqlite') {
+                    $table->dropForeign([config('permission.column_names.role_pivot_key') ?? 'role_id']);
+                }
+
                 $table->unsignedBigInteger($teamsKey)->default(0)->after(config('permission.column_names.role_pivot_key') ?? 'role_id');
                 $table->index($teamsKey, 'model_has_roles_team_foreign_key_index');
 
                 $table->dropPrimary('model_has_roles_role_model_type_primary');
                 $table->primary([$teamsKey, config('permission.column_names.role_pivot_key') ?? 'role_id', $modelKey, 'model_type'], 'model_has_roles_role_model_type_primary');
+
+                if (DB::getDriverName() !== 'sqlite') {
+                    $table->foreign(config('permission.column_names.role_pivot_key') ?? 'role_id')
+                        ->references('id')
+                        ->on($tableNames['roles'])
+                        ->onDelete('cascade');
+                }
             });
         }
 
         // 3. Model Has Permissions Table
         if (! Schema::hasColumn($tableNames['model_has_permissions'], $teamsKey)) {
-            Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) use ($teamsKey, $modelKey) {
+            Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $teamsKey, $modelKey) {
+                if (DB::getDriverName() !== 'sqlite') {
+                    $table->dropForeign([config('permission.column_names.permission_pivot_key') ?? 'permission_id']);
+                }
+
                 $table->unsignedBigInteger($teamsKey)->default(0)->after(config('permission.column_names.permission_pivot_key') ?? 'permission_id');
                 $table->index($teamsKey, 'model_has_permissions_team_foreign_key_index');
 
                 $table->dropPrimary('model_has_permissions_permission_model_type_primary');
                 $table->primary([$teamsKey, config('permission.column_names.permission_pivot_key') ?? 'permission_id', $modelKey, 'model_type'], 'model_has_permissions_permission_model_type_primary');
+
+                if (DB::getDriverName() !== 'sqlite') {
+                    $table->foreign(config('permission.column_names.permission_pivot_key') ?? 'permission_id')
+                        ->references('id')
+                        ->on($tableNames['permissions'])
+                        ->onDelete('cascade');
+                }
             });
         }
     }
@@ -60,16 +82,38 @@ return new class extends Migration
         $teamsKey = $columnNames['team_foreign_key'] ?? 'team_id';
         $modelKey = $columnNames['model_morph_key'] ?? 'model_id';
 
-        Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) use ($teamsKey, $modelKey) {
+        Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $teamsKey, $modelKey) {
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign([config('permission.column_names.permission_pivot_key') ?? 'permission_id']);
+            }
+
             $table->dropPrimary('model_has_permissions_permission_model_type_primary');
             $table->primary([config('permission.column_names.permission_pivot_key') ?? 'permission_id', $modelKey, 'model_type'], 'model_has_permissions_permission_model_type_primary');
             $table->dropColumn($teamsKey);
+
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->foreign(config('permission.column_names.permission_pivot_key') ?? 'permission_id')
+                    ->references('id')
+                    ->on($tableNames['permissions'])
+                    ->onDelete('cascade');
+            }
         });
 
-        Schema::table($tableNames['model_has_roles'], function (Blueprint $table) use ($teamsKey, $modelKey) {
+        Schema::table($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $teamsKey, $modelKey) {
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign([config('permission.column_names.role_pivot_key') ?? 'role_id']);
+            }
+
             $table->dropPrimary('model_has_roles_role_model_type_primary');
             $table->primary([config('permission.column_names.role_pivot_key') ?? 'role_id', $modelKey, 'model_type'], 'model_has_roles_role_model_type_primary');
             $table->dropColumn($teamsKey);
+
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->foreign(config('permission.column_names.role_pivot_key') ?? 'role_id')
+                    ->references('id')
+                    ->on($tableNames['roles'])
+                    ->onDelete('cascade');
+            }
         });
 
         Schema::table($tableNames['roles'], function (Blueprint $table) use ($teamsKey) {
