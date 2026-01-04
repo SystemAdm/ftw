@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import PublicLayout from '@/components/layouts/PublicLayout.vue';
+import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { BreadcrumbItem } from '@/types';
+import { show as profileRoute } from '@/routes/profile/index';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +38,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const breadcrumbs = [
+    {
+        title: props.user.name,
+        href: profileRoute.url(),
+    },
+] as BreadcrumbItem[];
+
 const initials = computed(() => {
     return props.user.name
         .split(' ')
@@ -66,7 +75,7 @@ const formattedBirthday = computed(() => {
 <template>
     <Head :title="user.name" />
 
-    <PublicLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
             <Card class="overflow-hidden">
                 <div v-if="user.header_image" class="h-48 overflow-hidden">
@@ -166,5 +175,5 @@ const formattedBirthday = computed(() => {
                 </CardContent>
             </Card>
         </div>
-    </PublicLayout>
+    </SidebarLayout>
 </template>

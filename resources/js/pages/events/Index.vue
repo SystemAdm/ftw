@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import PublicLayout from '@/components/layouts/PublicLayout.vue';
+import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { trans } from 'laravel-vue-i18n';
 import { Calendar, MapPin, Users, CheckCircle } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import UpcomingWeekdays from '@/components/custom/UpcomingWeekdays.vue';
 import { index as eventsIndex, show } from '@/routes/events';
 import { usePage } from '@inertiajs/vue3';
 import Paginator from '@/components/custom/Paginator.vue';
+import { BreadcrumbItem } from '@/types';
 
 const page = usePage<any>();
 
@@ -16,6 +17,13 @@ defineProps<{
     days: any[];
     week: number;
 }>();
+
+const breadcrumbs = [
+    {
+        title: trans('pages.events.title'),
+        href: eventsIndex.url(),
+    },
+] as BreadcrumbItem[];
 
 function formatDate(date: string) {
     return new Date(date).toLocaleString(page.props.i18n.locale, {
@@ -31,7 +39,7 @@ function formatDate(date: string) {
 <template>
     <Head :title="trans('pages.events.title')" />
 
-    <PublicLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <div class="mb-12">
                 <UpcomingWeekdays :days="days" :week="week" :base-url="eventsIndex.url()" />
@@ -105,5 +113,5 @@ function formatDate(date: string) {
                 <Paginator :collection="events" />
             </div>
         </div>
-    </PublicLayout>
+    </SidebarLayout>
 </template>

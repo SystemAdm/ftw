@@ -26,9 +26,24 @@ import { profile as settingsRoute } from '@/routes/settings';
 import { index as teamsRoute } from '@/routes/teams/index';
 import { index as locationsRoute } from '@/routes/locations/index';
 import { index as eventsRoute } from '@/routes/events/index';
+import { login as loginRoute } from '@/routes';
 
 import { usePage } from '@inertiajs/vue3';
-import { Gavel, ShieldAlert, UserIcon, Users, CalendarDays, Mail, MapPinIcon, LayoutDashboard, Cog, HeartHandshake, DoorOpen, History } from 'lucide-vue-next';
+import {
+    Gavel,
+    ShieldAlert,
+    UserIcon,
+    Users,
+    CalendarDays,
+    Mail,
+    MapPinIcon,
+    LayoutDashboard,
+    Cog,
+    HeartHandshake,
+    DoorOpen,
+    History,
+    LogIn,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
 import { AppPageProps } from '@/types';
@@ -38,6 +53,18 @@ const user = computed(() => {
     const u = page.props.auth?.user;
     return u ? { ...u, avatar: u.avatar ?? '', roles: page.props.auth?.roles ?? [] } : null;
 });
+const loggedInMenu = computed(() => [
+    { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: dashboardRoute.url() },
+    { title: trans('pages.ui.navigation.profile'), icon: UserIcon, url: profileRoute.url() },
+    { title: trans('pages.ui.navigation.settings'), icon: Cog, url: settingsRoute.url() },
+]);
+const loggedOutMenu = computed(() => [{ title: trans('pages.auth.login'), icon: LogIn, url: loginRoute.url() }]);
+const defaultMenu = computed(() => [
+    { title: trans('pages.ui.navigation.teams'), icon: Users, url: teamsRoute.url() },
+    { title: trans('pages.ui.navigation.locations'), icon: MapPinIcon, url: locationsRoute.url() },
+    { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: eventsRoute.url() },
+]);
+const menu = computed(() => (user.value ? [...loggedInMenu.value, ...defaultMenu.value] : [...loggedOutMenu.value, ...defaultMenu.value]));
 </script>
 
 <template>
@@ -59,7 +86,7 @@ const user = computed(() => {
                     { title: trans('pages.ui.navigation.locations'), icon: MapPinIcon, url: adminLocationsRoute.url() },
                     { title: trans('pages.ui.navigation.weekdays'), icon: CalendarDays, url: adminWeekdaysRoute.url() },
                     { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: adminEventsRoute.url() },
-                    { title: trans('pages.ui.navigation.admin_open'), icon: DoorOpen, url: adminOpenRoute.url() }
+                    { title: trans('pages.ui.navigation.admin_open'), icon: DoorOpen, url: adminOpenRoute.url() },
                 ]"
             ></NavAdmin>
             <NavCrew
@@ -67,23 +94,14 @@ const user = computed(() => {
                 :items="[
                     { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: '/crew' },
                     { title: trans('pages.ui.navigation.teams'), icon: Users, url: crewTeamsRoute.url() },
-                    { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: crewEventsRoute.url() }
+                    { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: crewEventsRoute.url() },
                 ]"
             ></NavCrew>
             <NavMod
                 v-if="page.props.auth.roles.includes('Moderator') || page.props.auth.roles.includes('Admin')"
                 :items="[{ title: trans('pages.ui.navigation.mod_open'), icon: History, url: modOpenRoute.url() }]"
             ></NavMod>
-            <NavDefault
-                :items="[
-                    { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: dashboardRoute.url() },
-                    { title: trans('pages.ui.navigation.profile'), icon: UserIcon, url: profileRoute.url() },
-                    { title: trans('pages.ui.navigation.settings'), icon: Cog, url: settingsRoute.url() },
-                    { title: trans('pages.ui.navigation.teams'), icon: Users, url: teamsRoute.url() },
-                    { title: trans('pages.ui.navigation.locations'), icon: MapPinIcon, url: locationsRoute.url() },
-                    { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: eventsRoute.url() }
-                ]"
-            ></NavDefault>
+            <NavDefault :items="menu"></NavDefault>
         </SidebarContent>
         <SidebarFooter>
             <NavUser v-if="user" :user="user"></NavUser>
