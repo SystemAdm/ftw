@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\RolesEnum;
 use App\Http\Controllers\Controller;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -71,6 +73,7 @@ class RegisteredUserController extends Controller
         ]);
 
         // Assign default guest role
+        setPermissionsTeamId(0);
         $user->assignRole(RolesEnum::GUEST->value);
 
         // Check for pending guardian invitations
@@ -114,7 +117,13 @@ class RegisteredUserController extends Controller
 
         // Assign crew role if email is @spillhuset.com
         if (str_ends_with(strtolower($user->email), '@spillhuset.com')) {
-            $user->assignRole(RolesEnum::CREW->value);
+            $sh = Team::where('slug', 'SH')->first();
+            if ($sh) {
+                $user->teams()->attach($sh->id, ['status' => 'approved', 'role' => RolesEnum::CREW->value]);
+                setPermissionsTeamId($sh->id);
+                $user->assignRole(RolesEnum::CREW->value);
+                setPermissionsTeamId(0);
+            }
         }
 
         if ($needGuardian) {

@@ -3,7 +3,8 @@
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->seed(\Database\seeders\RoleSeeder::class);
+    $this->seed(\Database\Seeders\TeamSeeder::class);
+    $this->seed(\Database\Seeders\RoleSeeder::class);
 });
 
 test('registration screen can be rendered', function () {
@@ -31,6 +32,7 @@ test('new users can register with email', function () {
 
     $user = \App\Models\User::where('email', 'test@example.com')->first();
     expect($user->email_verified_at)->not->toBeNull();
+    expect($user->hasRole(\App\Enums\RolesEnum::GUEST->value))->toBeTrue();
 });
 
 test('new users can register with phone', function () {
@@ -167,7 +169,30 @@ test('guardian registration fulfills pending invitation', function () {
     $this->assertAuthenticated();
 
     $user = \App\Models\User::where('email', 'guardian@example.com')->first();
-    expect($user->hasRole('guardian'))->toBeTrue();
+    expect($user->hasRole(\App\Enums\RolesEnum::GUARDIAN->value))->toBeTrue();
     expect($user->minors)->toHaveCount(1);
     expect($user->minors->first()->id)->toBe($minor->id);
+});
+
+test('new users with spillhuset email get crew role', function () {
+    session(['registration_otp_verified' => true]);
+    session(['registration_email' => 'crew@spillhuset.com']);
+
+    $response = $this->post(route('register.store'), [
+        'name' => 'Crew User',
+        'birthday' => now()->subYears(25)->toDateString(),
+        'postal_code' => '12345',
+        'email' => 'crew@spillhuset.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $this->assertAuthenticated();
+
+    $user = \App\Models\User::where('email', 'crew@spillhuset.com')->first();
+    setPermissionsTeamId(\App\Models\Team::where('slug', 'SH')->first()->id);
+    expect($user->refresh()->hasRole(\App\Enums\RolesEnum::CREW->value))->toBeTrue();
+    setPermissionsTeamId(0);
+    expect($user->refresh()->hasRole(\App\Enums\RolesEnum::GUEST->value))->toBeTrue();
 });

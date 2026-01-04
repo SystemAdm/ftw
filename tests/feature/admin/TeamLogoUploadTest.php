@@ -1,16 +1,18 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\Team;
 use App\Models\User;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->seed(\Database\seeders\RoleSeeder::class);
+    $this->seed(RoleSeeder::class);
     $this->admin = User::factory()->create();
-    $this->admin->assignRole('admin');
+    $this->admin->assignRole(RolesEnum::ADMIN->value);
     $this->actingAs($this->admin);
 });
 

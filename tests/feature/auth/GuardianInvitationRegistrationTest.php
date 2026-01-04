@@ -1,13 +1,14 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\User;
-use App\notifications\auth\GuardianInvitation;
+use App\Notifications\Auth\GuardianInvitation;
 use Illuminate\Support\Facades\Notification;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->seed(\Database\seeders\RoleSeeder::class);
+    $this->seed(\Database\Seeders\RoleSeeder::class);
 });
 
 test('invited guardian registers and gets guardian role and is linked to minor', function () {
@@ -73,8 +74,8 @@ test('invited guardian registers and gets guardian role and is linked to minor',
         dump('User was deleted at: '.$guardian->deleted_at);
         dump('Age: '.$guardian->birthday->age);
     }
-    expect($guardian->hasRole('guardian'))->toBeTrue();
-    expect($guardian->hasRole('guest'))->toBeTrue();
+    expect($guardian->hasRole(RolesEnum::GUARDIAN->value))->toBeTrue();
+    expect($guardian->hasRole(RolesEnum::GUEST->value))->toBeTrue();
 
     // Check link was completed
     $this->assertDatabaseHas('guardian_user', [
@@ -162,7 +163,7 @@ test('invited guardian via phone registers and gets guardian role', function () 
     $response->assertRedirect(route('dashboard'));
 
     $guardian = User::where('email', 'parent2@example.com')->first();
-    expect($guardian->hasRole('guardian'))->toBeTrue();
+    expect($guardian->hasRole(RolesEnum::GUARDIAN->value))->toBeTrue();
 
     // Check link was completed
     $this->assertDatabaseHas('guardian_user', [

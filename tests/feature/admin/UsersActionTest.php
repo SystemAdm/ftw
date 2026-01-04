@@ -2,14 +2,15 @@
 
 namespace Tests\feature\admin;
 
+use App\Enums\RolesEnum;
 use App\Models\User;
-use Database\seeders\RoleSeeder;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {
     $this->seed(RoleSeeder::class);
     $this->admin = User::factory()->create();
-    $this->admin->assignRole('admin');
+    $this->admin->assignRole(RolesEnum::ADMIN->value);
 });
 
 test('admin can verify a user', function () {

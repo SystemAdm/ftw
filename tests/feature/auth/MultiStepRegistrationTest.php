@@ -1,13 +1,15 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\User;
-use App\notifications\auth\VerifyEmailWithPin;
+use App\Notifications\Auth\VerifyEmailWithPin;
 use Illuminate\Support\Facades\Notification;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->seed(\Database\seeders\RoleSeeder::class);
+    $this->seed(\Database\Seeders\TeamSeeder::class);
+    $this->seed(\Database\Seeders\RoleSeeder::class);
 });
 
 test('user can complete multi-step registration', function () {
@@ -60,7 +62,7 @@ test('user can complete multi-step registration', function () {
     expect($user->birthday->toDateString())->toBe('2000-01-01');
     expect($user->postal_code)->toEqual(1234);
     expect($user->email_verified_at)->not->toBeNull();
-    expect($user->hasRole('guest'))->toBeTrue();
+    expect($user->hasRole(RolesEnum::GUEST->value))->toBeTrue();
 });
 
 test('minor registration requires guardian', function () {
@@ -86,7 +88,8 @@ test('minor registration with existing guardian', function () {
         'email' => 'parent@example.com',
         'birthday' => now()->subYears(30)->toDateString(),
     ]);
-    $guardian->assignRole('guardian');
+    setPermissionsTeamId(0);
+    $guardian->assignRole(RolesEnum::GUARDIAN->value);
 
     session(['registration_otp_verified' => true]);
     session(['registration_email' => 'minor@example.com']);
@@ -124,8 +127,10 @@ test('crew email gets crew role', function () {
 
     $response->assertRedirect(route('dashboard'));
     $user = User::where('email', 'crew@spillhuset.com')->first();
-    expect($user->hasRole('crew'))->toBeTrue();
-    expect($user->hasRole('guest'))->toBeTrue();
+    setPermissionsTeamId(\App\Models\Team::where('slug', 'SH')->first()->id);
+    expect($user->refresh()->hasRole(RolesEnum::CREW->value))->toBeTrue();
+    setPermissionsTeamId(0);
+    expect($user->refresh()->hasRole(RolesEnum::GUEST->value))->toBeTrue();
 });
 
 test('registration fails if OTP is not verified', function () {

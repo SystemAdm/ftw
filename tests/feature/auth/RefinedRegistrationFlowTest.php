@@ -1,12 +1,13 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->seed(\Database\seeders\RoleSeeder::class);
+    $this->seed(\Database\Seeders\RoleSeeder::class);
 });
 
 test('minor registration includes relationship', function () {
@@ -71,7 +72,7 @@ test('invited guardian registers and confirms relationship', function () {
     $response->assertRedirect(route('dashboard'));
 
     $guardian = User::where('email', 'parent@example.com')->first();
-    expect($guardian->hasRole('guardian'))->toBeTrue();
+    expect($guardian->hasRole(RolesEnum::GUARDIAN->value))->toBeTrue();
 
     // Check link was completed with confirmed relationship
     $this->assertDatabaseHas('guardian_user', [

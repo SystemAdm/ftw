@@ -3,7 +3,7 @@
 use App\Enums\RolesEnum;
 use App\Models\BuildingInside;
 use App\Models\User;
-use Database\seeders\RoleSeeder;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Support\Facades\Crypt;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
