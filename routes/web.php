@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\UsersController;
+use App\Http\Controllers\EventsController;
 use App\Http\Controllers\Pages\ContactController;
 use App\Http\Controllers\Pages\LegalController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Laravel\Cashier\http\controllers\WebhookController as CashierWebhookController;
@@ -41,14 +43,14 @@ Route::get('/contact', [ContactController::class, 'show'])->name('contact.show')
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 // Public Profile
-Route::get('/profile/{user?}', [\App\http\controllers\ProfileController::class, 'show'])->name('profile.show');
+Route::get('/profile/{user?}', [ProfileController::class, 'show'])->name('profile.show');
 
 // Public Events
-Route::get('/events', [\App\http\controllers\EventsController::class, 'index'])->name('events.index');
-Route::get('/events/{event}', [\App\http\controllers\EventsController::class, 'show'])->name('events.show');
-Route::post('/events/{event}/signup', [\App\http\controllers\EventsController::class, 'signup'])
+Route::get('/events', [EventsController::class, 'index'])->name('events.index');
+Route::get('/events/{event}', [EventsController::class, 'show'])->name('events.show');
+Route::post('/events/{event}/signup', [EventsController::class, 'signup'])
     ->middleware(['auth', 'verified'])
     ->name('events.signup');
-Route::delete('/events/{event}/signup', [\App\http\controllers\EventsController::class, 'cancelSignup'])
+Route::delete('/events/{event}/signup', [EventsController::class, 'cancelSignup'])
     ->middleware(['auth', 'verified'])
     ->name('events.cancelSignup');
