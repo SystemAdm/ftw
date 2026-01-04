@@ -58,7 +58,7 @@ const loggedInMenu = computed(() => [
     { title: trans('pages.ui.navigation.profile'), icon: UserIcon, url: profileRoute.url() },
     { title: trans('pages.ui.navigation.settings'), icon: Cog, url: settingsRoute.url() },
 ]);
-const loggedOutMenu = computed(() => [{ title: trans('pages.auth.login'), icon: LogIn, url: loginRoute.url() }]);
+const loggedOutMenu = computed(() => [{ title: trans('pages.auth.login.login_button'), icon: LogIn, url: loginRoute.url() }]);
 const defaultMenu = computed(() => [
     { title: trans('pages.ui.navigation.teams'), icon: Users, url: teamsRoute.url() },
     { title: trans('pages.ui.navigation.locations'), icon: MapPinIcon, url: locationsRoute.url() },
