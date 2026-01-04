@@ -69,7 +69,7 @@ class TeamsController extends Controller
     {
         $team->load(['users' => function ($query) {
             $query->select('users.id', 'users.name', 'users.email')
-                ->withPivot(['role', 'status', 'application']);
+                ->withPivot(['role', 'status', 'application', 'created_at']);
         }]);
 
         $availableRoles = \Spatie\Permission\Models\Role::where('team_id', $team->id)->pluck('name');

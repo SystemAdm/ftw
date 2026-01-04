@@ -88,6 +88,14 @@ const globalRoles = computed(() => {
 const teamRoles = computed(() => {
     return props.user.roles?.filter((r) => r.team_id !== 0) ?? [];
 });
+
+function formatDate(date: string) {
+    return new Date(date).toLocaleDateString(page.props.i18n.locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+}
 </script>
 
 <template>
@@ -115,7 +123,7 @@ const teamRoles = computed(() => {
                             </p>
                             <div v-if="user.created_at" class="flex items-center text-xs text-muted-foreground">
                                 <CalendarDays class="mr-1 h-3 w-3" />
-                                Joined {{ user.created_at }}
+                                {{ trans('pages.settings.users.fields.joined') }} {{ formatDate(user.created_at) }}
                             </div>
                         </div>
                     </div>
@@ -124,7 +132,7 @@ const teamRoles = computed(() => {
                 <div v-if="globalRoles.length > 0" class="space-y-1.5">
                     <div class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                         <Shield class="h-3 w-3" />
-                        Global Roles
+                        {{ trans('pages.settings.roles.fields.global_roles') }}
                     </div>
                     <div class="flex flex-wrap gap-1">
                         <Badge v-for="role in globalRoles" :key="role.id" variant="secondary" class="text-[10px] font-normal">
@@ -136,7 +144,7 @@ const teamRoles = computed(() => {
                 <div v-if="user.teams && user.teams.length > 0" class="space-y-1.5">
                     <div class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                         <Users class="h-3 w-3" />
-                        Teams
+                        {{ trans('pages.settings.teams.title') }}
                     </div>
                     <div class="space-y-2">
                         <div v-for="team in user.teams" :key="team.id" class="space-y-1">
@@ -159,7 +167,7 @@ const teamRoles = computed(() => {
                     <div v-if="user.guardians && user.guardians.length > 0" class="space-y-1.5">
                         <div class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                             <HeartHandshake class="h-3 w-3" />
-                            Guardians
+                            {{ trans('pages.settings.profile.guardians.title') }}
                         </div>
                         <div class="flex flex-wrap gap-1">
                             <Badge v-for="g in user.guardians" :key="g.id" variant="outline" class="text-[10px] font-normal">
@@ -171,7 +179,7 @@ const teamRoles = computed(() => {
                     <div v-if="user.minors && user.minors.length > 0" class="space-y-1.5">
                         <div class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                             <Baby class="h-3 w-3" />
-                            Minors
+                            {{ trans('pages.settings.profile.minors.title') }}
                         </div>
                         <div class="flex flex-wrap gap-1">
                             <Badge v-for="m in user.minors" :key="m.id" variant="outline" class="text-[10px] font-normal">

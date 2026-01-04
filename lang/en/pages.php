@@ -354,6 +354,9 @@ return [
         ],
         'profile' => [
             'title' => 'Profile',
+            'info' => 'Info',
+            'public' => 'Public',
+            'private' => 'Private',
             'about' => 'About',
             'no_bio' => 'This user hasn\'t added a bio yet.',
             'view_public' => 'View my public profile',
@@ -508,6 +511,7 @@ return [
                 'email' => 'Email',
                 'role' => 'Role',
                 'status' => 'Status',
+                'joined' => 'Joined',
             ],
             'status' => [
                 'email_verified' => 'Email verified',
@@ -572,6 +576,7 @@ return [
                 'scope' => 'Scope',
                 'team' => 'Team',
                 'global' => 'Global',
+                'global_roles' => 'Global Roles',
                 'users' => 'Users',
                 'permissions' => 'Permissions',
             ],

@@ -36,6 +36,16 @@ const availableRoles = computed(() => (page.props as any).availableRoles ?? []);
 const showRemoveMemberConfirm = ref(false);
 const memberToRemove = ref<number | null>(null);
 
+function formatDate(date: string) {
+    return new Date(date).toLocaleDateString(page.props.i18n.locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
 function updateMember(userId: number, data: { role?: string; status: string }) {
     router.post(updateMemberAction.url({ team: team.id, user: userId }), data, {
         preserveScroll: true,
@@ -157,15 +167,15 @@ function forceDeleteTeam() {
                     </div>
                     <div>
                       <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.teams.fields.created') }}</dt>
-                      <dd class="mt-1 text-sm">{{ team.created_at }}</dd>
+                      <dd class="mt-1 text-sm">{{ formatDate(team.created_at) }}</dd>
                     </div>
                     <div>
                       <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.teams.fields.updated') }}</dt>
-                      <dd class="mt-1 text-sm">{{ team.updated_at }}</dd>
+                      <dd class="mt-1 text-sm">{{ formatDate(team.updated_at) }}</dd>
                     </div>
                     <div v-if="team.deleted_at">
                       <dt class="text-xs uppercase tracking-wide text-muted-foreground">{{ trans('pages.settings.teams.fields.deleted') }}</dt>
-                      <dd class="mt-1 text-sm">{{ team.deleted_at }}</dd>
+                      <dd class="mt-1 text-sm">{{ formatDate(team.deleted_at) }}</dd>
                     </div>
                   </dl>
                 </div>
@@ -180,6 +190,7 @@ function forceDeleteTeam() {
                         <TableHead>{{ trans('pages.settings.users.fields.name') }}</TableHead>
                         <TableHead>{{ trans('pages.settings.teams.fields.role') }}</TableHead>
                         <TableHead>{{ trans('pages.settings.teams.fields.status') }}</TableHead>
+                        <TableHead>{{ trans('pages.settings.users.fields.joined') }}</TableHead>
                         <TableHead class="text-right"></TableHead>
                       </TableRow>
                     </TableHeader>
@@ -206,6 +217,9 @@ function forceDeleteTeam() {
                           <Badge :variant="u.pivot.status === 'approved' ? 'default' : u.pivot.status === 'pending' ? 'secondary' : 'destructive'">
                             {{ trans(`pages.crew.teams.status.${u.pivot.status}`) }}
                           </Badge>
+                        </TableCell>
+                        <TableCell class="text-xs whitespace-nowrap">
+                          {{ formatDate(u.pivot.created_at) }}
                         </TableCell>
                         <TableCell class="text-right">
                           <DropdownMenu>
@@ -243,7 +257,7 @@ function forceDeleteTeam() {
                         </TableCell>
                       </TableRow>
                       <TableRow v-if="!team.users?.length">
-                        <TableCell colspan="4" class="text-center text-sm text-muted-foreground">
+                        <TableCell colspan="5" class="text-center text-sm text-muted-foreground">
                           {{ trans('pages.settings.locations.none') }}
                         </TableCell>
                       </TableRow>

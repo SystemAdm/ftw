@@ -48,7 +48,7 @@ const formattedBirthday = computed(() => {
     if (!props.user.birthday) return null;
 
     if (typeof props.user.birthday === 'number') {
-        return props.user.birthday + ' ' + trans('events.fields.years').toLowerCase();
+        return props.user.birthday + ' ' + trans('pages.events.fields.years').toLowerCase();
     }
 
     if (props.user.birthday.length === 4) {
@@ -99,7 +99,7 @@ const formattedBirthday = computed(() => {
 
                     <div class="mt-8 grid gap-6 md:grid-cols-2">
                         <div class="space-y-4">
-                            <h3 class="text-lg font-semibold">{{ trans('pages.settings.profile.title') }} Info</h3>
+                            <h3 class="text-lg font-semibold">{{ trans('pages.settings.profile.title') }} {{ trans('pages.settings.profile.info') }}</h3>
 
                             <div class="space-y-3">
                                 <div class="flex items-center gap-3 text-sm">
@@ -110,7 +110,7 @@ const formattedBirthday = computed(() => {
                                 <div v-if="user.email" class="flex items-center gap-3 text-sm">
                                     <Mail class="h-4 w-4 text-muted-foreground" />
                                     <a :href="'mailto:' + user.email" class="hover:underline">{{ user.email }}</a>
-                                    <Badge v-if="user.email_public && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">Public</Badge>
+                                    <Badge v-if="user.email_public && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">{{ trans('pages.settings.profile.public') }}</Badge>
                                 </div>
                                 <div v-else-if="isOwnProfile" class="flex items-center gap-3 text-sm text-muted-foreground opacity-60">
                                     <Mail class="h-4 w-4" />
@@ -120,7 +120,7 @@ const formattedBirthday = computed(() => {
                                 <div v-if="user.phone" class="flex items-center gap-3 text-sm">
                                     <Phone class="h-4 w-4 text-muted-foreground" />
                                     <a :href="'tel:' + user.phone" class="hover:underline">{{ user.phone }}</a>
-                                    <Badge v-if="user.phone_public && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">Public</Badge>
+                                    <Badge v-if="user.phone_public && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">{{ trans('pages.settings.profile.public') }}</Badge>
                                 </div>
                                 <div v-else-if="isOwnProfile" class="flex items-center gap-3 text-sm text-muted-foreground opacity-60">
                                     <Phone class="h-4 w-4" />
@@ -130,8 +130,10 @@ const formattedBirthday = computed(() => {
                                 <div v-if="formattedBirthday" class="flex items-center gap-3 text-sm">
                                     <Calendar class="h-4 w-4 text-muted-foreground" />
                                     <span>{{ formattedBirthday }}</span>
-                                    <Badge v-if="user.birthday_visibility !== 'off' && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">Public ({{ user.birthday_visibility }})</Badge>
-                                    <Badge v-else-if="isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">Private</Badge>
+                                    <Badge v-if="user.birthday_visibility !== 'off' && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">
+                                        {{ trans('pages.settings.profile.public') }} ({{ trans('pages.settings.profile.visibility.' + user.birthday_visibility) }})
+                                    </Badge>
+                                    <Badge v-else-if="isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">{{ trans('pages.settings.profile.private') }}</Badge>
                                 </div>
 
                                 <div v-if="user.city || user.postal_code || isOwnProfile" class="flex items-center gap-3 text-sm">
@@ -143,8 +145,10 @@ const formattedBirthday = computed(() => {
                                         <span v-if="user.country">{{ user.country }}</span>
                                         <span v-if="!user.postal_code && !user.city && isOwnProfile" class="text-muted-foreground opacity-60">{{ trans('pages.settings.profile.location_private') }}</span>
                                     </div>
-                                    <Badge v-if="user.postal_code_visibility !== 'off' && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">Public ({{ user.postal_code_visibility }})</Badge>
-                                    <Badge v-else-if="isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">Private</Badge>
+                                    <Badge v-if="user.postal_code_visibility !== 'off' && isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">
+                                        {{ trans('pages.settings.profile.public') }} ({{ trans('pages.settings.profile.visibility.' + user.postal_code_visibility) }})
+                                    </Badge>
+                                    <Badge v-else-if="isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">{{ trans('pages.settings.profile.private') }}</Badge>
                                 </div>
                             </div>
                         </div>
