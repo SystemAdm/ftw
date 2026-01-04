@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\http\controllers\Controller;
-use App\http\requests\admin\StoreEventRequest;
-use App\http\requests\admin\UpdateEventRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreEventRequest;
+use App\Http\Requests\Admin\UpdateEventRequest;
 use App\Models\Event;
 use App\Models\Location;
 use Illuminate\Http\JsonResponse;

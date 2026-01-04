@@ -7,7 +7,7 @@ use App\Http\Controllers\Pages\LegalController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
-use Laravel\Cashier\http\controllers\WebhookController as CashierWebhookController;
+use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookController;
 
 Route::get('/', [UsersController::class, 'welcome'])->name('home');
 
