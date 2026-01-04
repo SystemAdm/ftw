@@ -1,28 +1,38 @@
 <script setup lang="ts">
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { trans } from 'laravel-vue-i18n';
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
+import TeamHoverCard from '@/components/custom/TeamHoverCard.vue';
+import { show as showTeam } from '@/routes/teams/index';
 
 type Team = {
     id: number;
     name: string;
     slug?: string;
+    description?: string | null;
+    logo?: string | null;
+    created_at?: string | null;
+};
+
+type Entry = {
+    id: number;
+    team?: Team;
+    name?: string | null;
+    description?: string | null;
+    start_time?: string | null;
+    end_time?: string | null;
+    is_excluded: boolean;
 };
 
 type Day = {
-    team?: Team;
     date: string;
     weekday: number; // 0 = Sun ... 6 = Sat
     label: string; // e.g., Fri 12 Dec
     has_weekday: boolean;
     is_excluded: boolean;
     weekday_label: string; // e.g., Friday
-    name?: string | null;
-    description?: string | null;
-    start_time?: string | null;
-    end_time?: string | null;
+    entries: Entry[];
 };
 
 const props = defineProps<{
@@ -58,23 +68,27 @@ function goToWeek(nextWeek: number) {
                     </div>
                 </div>
 
-                <div v-if="day.name || day.description || day.team" class="mt-3 space-y-1.5">
-                    <Badge v-if="day.team" variant="secondary">
-                        {{ day.team.slug ?? day.team.name }}
-                    </Badge>
-                    <div
-                        class="text-sm leading-none font-semibold"
-                        :class="day.is_excluded ? 'text-red-600 dark:text-red-400' : 'text-primary'"
-                    >
-                        {{ day.name ?? trans('pages.dashboard.unnamed') }}
-                    </div>
-                    <div v-if="day.start_time && day.end_time" class="flex items-center gap-1 text-xs text-muted-foreground">
-                        <span>{{ day.start_time.slice(0, 5) }}</span>
-                        <span>–</span>
-                        <span>{{ day.end_time.slice(0, 5) }}</span>
-                    </div>
-                    <div v-if="day.description" class="mt-1 line-clamp-2 text-xs text-muted-foreground" :title="day.description">
-                        {{ day.description }}
+                <div v-if="day.entries && day.entries.length > 0" class="mt-3 space-y-4">
+                    <div v-for="entry in day.entries" :key="entry.id" class="space-y-1.5">
+                        <TeamHoverCard v-if="entry.team" :team="entry.team" />
+
+                        <div
+                            class="text-sm leading-none font-semibold"
+                            :class="entry.is_excluded ? 'text-red-600 dark:text-red-400' : 'text-primary'"
+                        >
+                            <Link v-if="entry.team" :href="showTeam.url(entry.team.id)" class="hover:underline">
+                                {{ entry.name ?? trans('pages.dashboard.unnamed') }}
+                            </Link>
+                            <span v-else>{{ entry.name ?? trans('pages.dashboard.unnamed') }}</span>
+                        </div>
+                        <div v-if="entry.start_time && entry.end_time" class="flex items-center gap-1 text-xs text-muted-foreground">
+                            <span>{{ entry.start_time.slice(0, 5) }}</span>
+                            <span>–</span>
+                            <span>{{ entry.end_time.slice(0, 5) }}</span>
+                        </div>
+                        <div v-if="entry.description" class="mt-1 line-clamp-2 text-xs text-muted-foreground" :title="entry.description">
+                            {{ entry.description }}
+                        </div>
                     </div>
                 </div>
             </Card>

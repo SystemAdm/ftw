@@ -2,12 +2,22 @@
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { trans } from 'laravel-vue-i18n';
 import { index } from '@/routes/locations';
+import TeamHoverCard from '@/components/custom/TeamHoverCard.vue';
+import { show as showTeam } from '@/routes/teams/index';
 
-type Team = { id: number; name: string; slug?: string | null } | null;
+type Team = {
+    id: number;
+    name: string;
+    slug?: string | null;
+    description?: string | null;
+    logo?: string | null;
+    created_at?: string | null;
+} | null;
+
 type Upcoming = {
+  id: number;
   date: string;
   label: string;
   weekday: number;
@@ -75,14 +85,22 @@ function googleMapEmbedUrl(loc: LocationDetails): string | null {
             <h2 class="text-lg font-semibold">{{ trans('pages.locations.upcoming_weekdays') }}</h2>
             <div v-if="upcoming.length === 0" class="mt-2 text-sm text-muted-foreground">{{ trans('pages.locations.no_upcoming') }}</div>
             <ul v-else class="mt-2 divide-y">
-              <li v-for="day in upcoming" :key="day.date" class="py-3">
+              <li v-for="day in upcoming" :key="day.id" class="py-3">
                 <div class="flex items-center justify-between">
                   <div>
                     <div class="text-sm text-muted-foreground">{{ day.weekday_label }} • {{ day.label }}</div>
-                    <div class="text-sm"><span class="font-medium">{{ day.name ?? trans('pages.locations.unnamed_assignment') }}</span> <span v-if="day.start_time && day.end_time" class="text-muted-foreground">— {{ day.start_time }}–{{ day.end_time }}</span></div>
+                    <div class="text-sm">
+                        <Link v-if="day.team" :href="showTeam.url(day.team.id)" class="font-medium hover:underline">
+                            {{ day.name ?? trans('pages.locations.unnamed_assignment') }}
+                        </Link>
+                        <span v-else class="font-medium">{{ day.name ?? trans('pages.locations.unnamed_assignment') }}</span>
+                        <span v-if="day.start_time && day.end_time" class="text-muted-foreground">— {{ day.start_time }}–{{ day.end_time }}</span>
+                    </div>
                     <div v-if="day.description" class="text-xs text-muted-foreground mt-1">{{ day.description }}</div>
                   </div>
-                  <Badge v-if="day.team">{{ day.team?.slug ?? day.team?.name }}</Badge>
+                  <div v-if="day.team">
+                    <TeamHoverCard :team="day.team" />
+                  </div>
                 </div>
               </li>
             </ul>

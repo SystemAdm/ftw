@@ -64,19 +64,33 @@ class OpeningHours
             $hasWeekday = $eligibleNotExcluded->isNotEmpty();
             $isExcluded = $hasWeekday === false && $eligible->isNotEmpty();
 
-            // Prefer name/description from an eligible item (even if excluded for the date),
-            // falling back to first candidate as a last resort.
-            $preferred = $eligible->first() ?? $candidates->first();
+            // Prepare entries for all eligible weekdays
+            $entries = $eligible->map(function (Weekday $w) use ($date) {
+                $isThisExcluded = $w->exclusions->contains(function ($exclusion) use ($date): bool {
+                    $excluded = $exclusion->excluded_date instanceof Carbon
+                        ? $exclusion->excluded_date
+                        : Carbon::parse($exclusion->excluded_date);
 
-            // Prepare team (id, name, slug) if available on preferred weekday
-            $team = null;
-            if ($preferred !== null && $preferred->team !== null) {
-                $team = [
-                    'id' => $preferred->team->id,
-                    'name' => $preferred->team->name,
-                    'slug' => $preferred->team->slug,
+                    return $excluded->isSameDay($date);
+                });
+
+                return [
+                    'id' => $w->id,
+                    'name' => $w->name,
+                    'description' => $w->description,
+                    'start_time' => $w->start_time,
+                    'end_time' => $w->end_time,
+                    'is_excluded' => $isThisExcluded,
+                    'team' => $w->team ? [
+                        'id' => $w->team->id,
+                        'name' => $w->team->name,
+                        'slug' => $w->team->slug,
+                        'description' => $w->team->description,
+                        'logo' => $w->team->logo,
+                        'created_at' => $w->team->created_at?->translatedFormat('F Y'),
+                    ] : null,
                 ];
-            }
+            })->values()->all();
 
             $days[] = [
                 'date' => $date->toDateString(),
@@ -85,12 +99,7 @@ class OpeningHours
                 'has_weekday' => $hasWeekday,
                 'is_excluded' => $isExcluded,
                 'weekday_label' => $date->translatedFormat('l'), // Full day name, locale aware
-                // Include optional name/description for the first matching Weekday context
-                'name' => optional($preferred)->name,
-                'description' => optional($preferred)->description,
-                'start_time' => optional($preferred)->start_time,
-                'end_time' => optional($preferred)->end_time,
-                'team' => $team,
+                'entries' => $entries,
             ];
         }
 

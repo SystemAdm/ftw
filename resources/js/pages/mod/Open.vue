@@ -13,6 +13,7 @@ import { index as modOpenRoute, store as modOpenStore, destroy as modOpenDestroy
 import { search as modUsersSearch } from '@/routes/mod/users/index';
 import axios from 'axios';
 import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
+import UserHoverCard from '@/components/custom/UserHoverCard.vue';
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
@@ -157,7 +158,9 @@ function formatDate(date: string) {
                             </TableHeader>
                             <TableBody>
                                 <TableRow v-for="entry in inside" :key="entry.id">
-                                    <TableCell>{{ entry.user.name }}</TableCell>
+                                    <TableCell>
+                                        <UserHoverCard :user="entry.user" />
+                                    </TableCell>
                                     <TableCell>{{ formatDate(entry.entered_at) }}</TableCell>
                                     <TableCell class="text-right">
                                         <Button variant="ghost" size="sm" @click="confirmCheckOut(entry.user_id)">
@@ -190,7 +193,9 @@ function formatDate(date: string) {
                             </TableHeader>
                             <TableBody>
                                 <TableRow v-for="log in history.data" :key="log.id">
-                                    <TableCell>{{ log.user.name }}</TableCell>
+                                    <TableCell>
+                                        <UserHoverCard :user="log.user" />
+                                    </TableCell>
                                     <TableCell>
                                         <span :class="log.action === 'in' ? 'text-green-600' : 'text-red-600'">
                                             {{ trans(`pages.mod.open.actions.${log.action}`) }}

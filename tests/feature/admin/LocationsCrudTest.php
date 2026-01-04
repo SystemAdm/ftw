@@ -1,23 +1,27 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\Location;
 use App\Models\PostalCode;
 use App\Models\User;
+use Database\Seeders\RoleSeeder;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-it('shows admin locations index', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
+beforeEach(function () {
+    $this->seed(RoleSeeder::class);
+    $this->admin = User::factory()->create(['email_verified_at' => now()]);
+    setPermissionsTeamId(0);
+    $this->admin->assignRole(RolesEnum::ADMIN->value);
+    $this->actingAs($this->admin);
+});
 
+it('shows admin locations index', function (): void {
     $response = $this->get('/admin/locations');
     $response->assertSuccessful();
 });
 
 it('can create, update, soft delete, restore and force delete a location', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
-
     $pc = PostalCode::factory()->create(['postal_code' => 11111]);
 
     // Create

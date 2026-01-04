@@ -55,6 +55,7 @@ function handleDelete() {
             <TableHeader>
                 <TableRow>
                     <TableHead>{{ trans('pages.settings.roles.fields.name') }}</TableHead>
+                    <TableHead>{{ trans('pages.settings.roles.fields.scope') }}</TableHead>
                     <TableHead>{{ trans('pages.settings.roles.fields.guard') }}</TableHead>
                     <TableHead class="text-center">{{ trans('pages.settings.roles.fields.users') }}</TableHead>
                     <TableHead class="w-12"></TableHead>
@@ -64,6 +65,10 @@ function handleDelete() {
                 <TableRow v-for="role in (page.props as any).roles.data" :key="role.id" class="group">
                     <TableCell class="cursor-pointer font-medium" @click="router.visit(`/admin/roles/${role.id}`)">
                         {{ role.name }}
+                    </TableCell>
+                    <TableCell class="cursor-pointer" @click="router.visit(`/admin/roles/${role.id}`)">
+                        <span v-if="role.team" class="text-sm font-medium">{{ role.team.name }}</span>
+                        <span v-else class="text-sm text-muted-foreground italic">{{ trans('pages.settings.roles.fields.global') }}</span>
                     </TableCell>
                     <TableCell class="cursor-pointer" @click="router.visit(`/admin/roles/${role.id}`)">
                         {{ role.guard_name }}

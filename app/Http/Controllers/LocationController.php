@@ -67,7 +67,7 @@ class LocationController extends Controller
         // Preload all weekdays for this location grouped by weekday number
         $weekdays = Weekday::query()
             ->where('location_id', $location->id)
-            ->with(['exclusions', 'team:id,name,slug'])
+            ->with(['exclusions', 'team:id,name,slug,description,logo,created_at'])
             ->get()
             ->groupBy('weekday');
 
@@ -106,22 +106,24 @@ class LocationController extends Controller
                 return $isExcluded === false;
             });
 
-            if ($eligibleNotExcluded->isNotEmpty()) {
-                /** @var Weekday $first */
-                $first = $eligibleNotExcluded->first();
+            foreach ($eligibleNotExcluded as $w) {
                 $upcoming[] = [
+                    'id' => $w->id,
                     'date' => $date->toDateString(),
                     'label' => $date->translatedFormat('d M'),
                     'weekday' => $weekdayNumber,
                     'weekday_label' => $date->translatedFormat('l'),
-                    'name' => $first->name,
-                    'description' => $first->description,
-                    'start_time' => $first->start_time,
-                    'end_time' => $first->end_time,
-                    'team' => $first->team ? [
-                        'id' => $first->team->id,
-                        'name' => $first->team->name,
-                        'slug' => $first->team->slug,
+                    'name' => $w->name,
+                    'description' => $w->description,
+                    'start_time' => $w->start_time,
+                    'end_time' => $w->end_time,
+                    'team' => $w->team ? [
+                        'id' => $w->team->id,
+                        'name' => $w->team->name,
+                        'slug' => $w->team->slug,
+                        'description' => $w->team->description,
+                        'logo' => $w->team->logo,
+                        'created_at' => $w->team->created_at?->translatedFormat('F Y'),
                     ] : null,
                 ];
             }

@@ -7,13 +7,16 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const permissions = (page.props as any).permissions ?? [];
+const teams = (page.props as any).teams ?? [];
 
 const form = reactive({
     name: '',
+    team_id: '0',
     guard_name: 'web',
     permissions: [] as number[],
 });
@@ -42,6 +45,22 @@ function submit() {
                 <FieldLabel>{{ trans('pages.settings.roles.fields.name') }}</FieldLabel>
                 <Input v-model="form.name" :class="{ 'border-red-500': errors.name }" @input="errors.name = [] as any" />
                 <FieldError v-if="errors.name">{{ errors.name[0] }}</FieldError>
+            </Field>
+
+            <Field>
+                <FieldLabel>{{ trans('pages.settings.roles.fields.scope') }}</FieldLabel>
+                <Select v-model="form.team_id">
+                    <SelectTrigger>
+                        <SelectValue :placeholder="trans('pages.settings.roles.fields.global')" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="0">{{ trans('pages.settings.roles.fields.global') }}</SelectItem>
+                        <SelectItem v-for="team in teams" :key="team.id" :value="team.id.toString()">
+                            {{ team.name }}
+                        </SelectItem>
+                    </SelectContent>
+                </Select>
+                <FieldError v-if="errors.team_id">{{ errors.team_id[0] }}</FieldError>
             </Field>
 
             <Field>

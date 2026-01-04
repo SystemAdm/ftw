@@ -17,7 +17,15 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::withTrashed()
-            ->with(['bans', 'verifier:id,name'])
+            ->select('id', 'name', 'email', 'avatar', 'created_at', 'birthday', 'email_verified_at', 'verified_at', 'verified_by', 'banned_at', 'deleted_at')
+            ->with([
+                'bans',
+                'verifier:id,name',
+                'roles',
+                'teams:id,name',
+                'guardians:id,name',
+                'minors:id,name',
+            ])
             ->latest()
             ->paginate(15);
 

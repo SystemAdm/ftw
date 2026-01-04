@@ -10,6 +10,7 @@ import { CheckCircle2, XCircle, ShieldCheck, ShieldAlert, MoreHorizontal, Eye, E
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import UserHoverCard from '@/components/custom/UserHoverCard.vue';
 import {
     Dialog,
     DialogContent,
@@ -106,7 +107,9 @@ function handleUnban(user: any) {
                     :key="user.id"
                     :class="{ 'bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-200': user.is_banned }"
                 >
-                    <TableCell class="font-medium">{{ user.name }}</TableCell>
+                    <TableCell class="font-medium">
+                        <UserHoverCard :user="user" />
+                    </TableCell>
                     <TableCell>{{ user.email }}</TableCell>
                     <TableCell>
                         <div class="flex items-center justify-center gap-2">

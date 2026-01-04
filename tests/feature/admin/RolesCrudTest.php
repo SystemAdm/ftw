@@ -1,21 +1,41 @@
 <?php
 
+use App\Enums\RolesEnum;
+use App\Models\Team;
 use App\Models\User;
+use Database\Seeders\RoleSeeder;
+use Database\Seeders\TeamSeeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-it('shows roles index', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
+uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
+beforeEach(function () {
+    $this->seed(TeamSeeder::class);
+    $this->seed(RoleSeeder::class);
+    $this->admin = User::factory()->create(['email_verified_at' => now()]);
+    setPermissionsTeamId(0);
+    $this->admin->assignRole(RolesEnum::ADMIN->value);
+    $this->actingAs($this->admin);
+});
+
+it('shows roles index with scope information', function (): void {
+    $team = Team::where('slug', 'SH')->first();
+    Role::firstOrCreate(['name' => 'TeamRole', 'guard_name' => 'web', 'team_id' => $team->id]);
+    Role::firstOrCreate(['name' => 'GlobalRole', 'guard_name' => 'web', 'team_id' => 0]);
+
+    $response = $this->get('/admin/roles');
+    $response->assertSuccessful();
+    $response->assertSee('Global');
+    $response->assertSee($team->name);
+});
+
+it('shows roles index', function (): void {
     $response = $this->get('/admin/roles');
     $response->assertSuccessful();
 });
 
 it('creates a role with permissions', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
-
     $permA = Permission::firstOrCreate(['name' => 'posts.view']);
     $permB = Permission::firstOrCreate(['name' => 'posts.edit']);
 
@@ -36,9 +56,6 @@ it('creates a role with permissions', function (): void {
 });
 
 it('updates a role and permissions', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
-
     $role = Role::firstOrCreate(['name' => 'Author', 'guard_name' => 'web']);
     $p1 = Permission::firstOrCreate(['name' => 'articles.create']);
     $p2 = Permission::firstOrCreate(['name' => 'articles.publish']);
@@ -58,10 +75,42 @@ it('updates a role and permissions', function (): void {
         ->toEqualCanonicalizing(['articles.publish']);
 });
 
-it('deletes a role', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
+it('creates a team-specific role', function (): void {
+    $team = Team::where('slug', 'SH')->first();
 
+    $this->withSession(['_token' => 'test']);
+    $response = $this->post('/admin/roles', [
+        'name' => 'TeamEditor',
+        'guard_name' => 'web',
+        'team_id' => $team->id,
+        '_token' => 'test',
+    ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseHas('roles', [
+        'name' => 'TeamEditor',
+        'team_id' => $team->id,
+    ]);
+});
+
+it('updates a role scope', function (): void {
+    $team = Team::where('slug', 'SH')->first();
+    $role = Role::firstOrCreate(['name' => 'Author', 'guard_name' => 'web', 'team_id' => 0]);
+
+    $this->withSession(['_token' => 'test']);
+    $response = $this->put("/admin/roles/{$role->id}", [
+        'name' => 'Author',
+        'guard_name' => 'web',
+        'team_id' => $team->id,
+        '_token' => 'test',
+    ]);
+    $response->assertRedirect();
+
+    $role->refresh();
+    expect($role->team_id)->toEqual($team->id);
+});
+
+it('deletes a role', function (): void {
     $role = Role::firstOrCreate(['name' => 'TempRole', 'guard_name' => 'web']);
 
     $this->withSession(['_token' => 'test']);
@@ -72,9 +121,6 @@ it('deletes a role', function (): void {
 });
 
 it('searches users excluding users already with role', function (): void {
-    $admin = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($admin);
-
     $role = Role::firstOrCreate(['name' => 'Searcher', 'guard_name' => 'web']);
     $u1 = User::factory()->create(['name' => 'Alice Finder', 'email_verified_at' => now()]);
     $u2 = User::factory()->create(['name' => 'Bob Finder', 'email_verified_at' => now()]);
@@ -88,9 +134,6 @@ it('searches users excluding users already with role', function (): void {
 });
 
 it('assigns and removes user from role', function (): void {
-    $admin = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($admin);
-
     $role = Role::firstOrCreate(['name' => 'Managers', 'guard_name' => 'web']);
     $target = User::factory()->create(['email_verified_at' => now()]);
 

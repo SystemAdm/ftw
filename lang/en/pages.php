@@ -569,6 +569,9 @@ return [
             'fields' => [
                 'name' => 'Name',
                 'guard' => 'Guard',
+                'scope' => 'Scope',
+                'team' => 'Team',
+                'global' => 'Global',
                 'users' => 'Users',
                 'permissions' => 'Permissions',
             ],

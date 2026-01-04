@@ -16,14 +16,24 @@ class OpenController extends Controller
 {
     public function index(): Response
     {
-        $inside = BuildingInside::with('user')
+        $inside = BuildingInside::with([
+            'user' => fn ($q) => $q->select('id', 'name', 'email', 'avatar', 'created_at', 'birthday')
+                ->with(['roles', 'teams:id,name', 'guardians:id,name', 'minors:id,name']),
+        ])
             ->orderBy('entered_at', 'desc')
             ->get();
 
-        $history = BuildingLog::with('user')
+        $history = BuildingLog::with([
+            'user' => fn ($q) => $q->select('id', 'name', 'email', 'avatar', 'created_at', 'birthday')
+                ->with(['roles', 'teams:id,name', 'guardians:id,name', 'minors:id,name']),
+        ])
             ->where('created_at', '>=', now()->subWeek())
             ->orderBy('created_at', 'desc')
             ->paginate(50);
+
+        // Format dates for frontend
+        $inside->each(fn ($i) => $i->user->created_at_formatted = $i->user->created_at?->translatedFormat('F Y'));
+        $history->getCollection()->each(fn ($h) => $h->user->created_at_formatted = $h->user->created_at?->translatedFormat('F Y'));
 
         return Inertia::render('mod/Open', [
             'inside' => $inside,

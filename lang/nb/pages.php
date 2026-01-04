@@ -578,6 +578,9 @@ return [
             'fields' => [
                 'name' => 'Navn',
                 'guard' => 'Vakt (Guard)',
+                'scope' => 'Omfang',
+                'team' => 'Lag',
+                'global' => 'Global',
                 'users' => 'Brukere',
                 'permissions' => 'Rettigheter',
                 'role' => 'Rolle',
