@@ -46,6 +46,21 @@ class ProfileController extends Controller
             $displayName = $parts[0];
         }
 
+        $roles = [];
+        if ($isOwnProfile) {
+            $roles = \DB::table('model_has_roles')
+                ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                ->leftJoin('teams', 'roles.team_id', '=', 'teams.id')
+                ->where('model_has_roles.model_id', $user->id)
+                ->where('model_has_roles.model_type', get_class($user))
+                ->select('roles.name as role_name', 'teams.name as team_name')
+                ->get()
+                ->map(function ($row) {
+                    return $row->team_name ? "{$row->role_name} ({$row->team_name})" : $row->role_name;
+                })
+                ->all();
+        }
+
         $postalCode = null;
         $city = null;
         $municipality = null;
@@ -88,6 +103,7 @@ class ProfileController extends Controller
                 'email_public' => $user->email_public,
                 'phone_public' => $user->phone_public,
                 'name_public' => $user->name_public,
+                'roles' => $roles,
             ],
             'isOwnProfile' => $isOwnProfile,
         ]);

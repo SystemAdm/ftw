@@ -157,7 +157,7 @@ return [
         ],
         'contact' => [
             'heading' => 'Kontakt',
-            'body' => 'Spørsmål om denne policyen? Send e‑post til web@spillhuset.com eller bruk kontaktskjemaet.',
+            'body' => 'Spørsmål om denne policyen? Send e‑post til post@spillhuset.com eller bruk kontaktskjemaet.',
         ],
         'changes' => [
             'heading' => 'Endringer i denne policyen',
@@ -320,11 +320,11 @@ return [
         ],
         'security' => [
             'heading' => 'Sikkerhet',
-            'body' => 'Vi iverksetter rimelige tekniske og organisatoriske tiltak for å beskytte data. Ingen systemer er 100% sikre, but we continuously improve our safeguards.',
+            'body' => 'Vi iverksetter rimelige tekniske og organisatoriske tiltak for å beskytte data. Ingen systemer er 100% sikre, men vi forbedrer våre sikkerhetstiltak kontinuerlig.',
         ],
         'contact' => [
             'heading' => 'Kontakt',
-            'body' => 'Spørsmål? Kontakt oss:',
+            'body' => 'Spørsmål? Kontakt oss på post@spillhuset.com eller via kontaktskjemaet.',
         ],
         'changes' => [
             'heading' => 'Endringer i erklæringen',
@@ -909,7 +909,7 @@ return [
         ],
         'contact' => [
             'heading' => 'Kontakt',
-            'body' => 'Spørsmål? Kontakt oss:',
+            'body' => 'Spørsmål? Kontakt oss på post@spillhuset.com eller via kontaktskjemaet.',
         ],
     ],
     'notifications' => [

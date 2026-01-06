@@ -17,7 +17,7 @@ class TeamMembersController extends Controller
     public function update(Request $request, Team $team, User $user): RedirectResponse
     {
         $currentUser = auth()->user();
-        $isAdmin = $currentUser->hasRole(RolesEnum::ADMIN->value);
+        $isAdmin = $currentUser->hasRole([RolesEnum::ADMIN->value, RolesEnum::OWNER->value]);
         $isLeader = $currentUser->teams()
             ->where('team_id', $team->id)
             ->wherePivot('role', RolesEnum::BOARD_CHAIRMAN->value)
@@ -54,7 +54,7 @@ class TeamMembersController extends Controller
     public function destroy(Team $team, User $user): RedirectResponse
     {
         $currentUser = auth()->user();
-        $isAdmin = $currentUser->hasRole(RolesEnum::ADMIN->value);
+        $isAdmin = $currentUser->hasRole([RolesEnum::ADMIN->value, RolesEnum::OWNER->value]);
         $isLeader = $currentUser->teams()
             ->where('team_id', $team->id)
             ->wherePivot('role', RolesEnum::BOARD_CHAIRMAN->value)

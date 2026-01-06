@@ -195,5 +195,6 @@ return [
     */
 
     'attributes' => [],
+    'captcha' => 'The captcha verification failed. Please try again.',
 
 ];

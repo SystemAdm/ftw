@@ -25,6 +25,7 @@ class Event extends Model
         'description',
         'image_path',
         'location_id',
+        'team_id',
         'event_start',
         'event_end',
         'signup_needed',
@@ -61,6 +62,14 @@ class Event extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    /**
+     * Team that owns this event (nullable).
+     */
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
     }
 
     /**

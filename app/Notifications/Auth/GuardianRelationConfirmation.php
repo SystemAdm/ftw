@@ -34,11 +34,11 @@ class GuardianRelationConfirmation extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Guardian Relation Confirmation')
-            ->line($this->minor->name.' has registered and listed you as their guardian.')
-            ->line('Please confirm this relationship by logging into your account.')
-            ->action('Confirm Relation', url('/settings/profile'))
-            ->line('Thank you for being part of our community!');
+            ->subject(__('emails.guardian_confirmation.subject'))
+            ->line(__('emails.guardian_confirmation.line1', ['name' => $this->minor->name]))
+            ->line(__('emails.guardian_confirmation.line2'))
+            ->action(__('emails.guardian_confirmation.action'), url('/settings/profile'))
+            ->line(__('emails.guardian_confirmation.line3'));
     }
 
     /**
@@ -51,7 +51,7 @@ class GuardianRelationConfirmation extends Notification
         return [
             'minor_id' => $this->minor->id,
             'minor_name' => $this->minor->name,
-            'message' => $this->minor->name.' has registered and listed you as their guardian.',
+            'message' => __('emails.guardian_confirmation.line1', ['name' => $this->minor->name]),
             'action_url' => '/settings/profile',
             'type' => 'guardian_confirmation',
         ];

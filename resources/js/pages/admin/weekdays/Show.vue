@@ -3,7 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { usePage, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { edit as editRoute, index as indexRoute } from '@/routes/admin/weekdays';
-import { add as addExclusion } from '@/routes/admin/weekdays/exclusions';
+import { add as addExclusion, remove as removeExclusion } from '@/routes/admin/weekdays/exclusions';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,8 +11,11 @@ import { ref, computed } from 'vue';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { trans } from 'laravel-vue-i18n';
+import { Trash2 } from 'lucide-vue-next';
 
-const page = usePage<PageProps>();
+import { AppPageProps } from '@/types';
+
+const page = usePage<AppPageProps>();
 const weekday = computed<any>(() => (page.props as any).weekday);
 
 const open = ref(false);
@@ -26,12 +29,18 @@ function addExcluded() {
     {
       preserveScroll: true,
       onSuccess: () => {
-        router.reload({ only: ['weekday'], preserveScroll: true });
         exclusionDate.value = '';
         open.value = false;
       },
     },
   );
+}
+
+function removeExcluded(id: number) {
+  if (!confirm(trans('ui.are_you_sure'))) return;
+  router.delete(removeExclusion.url(weekday.value.id, id), {
+    preserveScroll: true,
+  });
 }
 </script>
 
@@ -108,8 +117,13 @@ function addExcluded() {
               {{ trans('pages.settings.locations.none') }}
             </li>
             <li v-for="ex in (weekday.exclusions ?? [])" :key="ex.id" class="flex items-center justify-between p-4">
-              <span>{{ ex.excluded_date_formatted ?? ex.excluded_date }}</span>
-              <span class="text-xs text-muted-foreground">ID: {{ ex.id }}</span>
+              <div class="flex flex-col">
+                <span class="font-medium">{{ ex.excluded_date_formatted ?? ex.excluded_date }}</span>
+                <span class="text-xs text-muted-foreground">ID: {{ ex.id }}</span>
+              </div>
+              <Button variant="ghost" size="icon" class="text-destructive hover:bg-destructive/10" @click="removeExcluded(ex.id)">
+                <Trash2 class="h-4 w-4" />
+              </Button>
             </li>
           </ul>
         </div>

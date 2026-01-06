@@ -1,12 +1,20 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Weekday;
 use App\Models\WeekdayExcluded;
+use Spatie\Permission\Models\Role;
+
+beforeEach(function () {
+    setPermissionsTeamId(0);
+    Role::firstOrCreate(['name' => RolesEnum::ADMIN->value, 'team_id' => 0]);
+});
 
 it('shows weekdays index', function (): void {
     $user = User::factory()->create(['email_verified_at' => now()]);
+    $user->assignRole(RolesEnum::ADMIN->value);
     $this->actingAs($user);
 
     $response = $this->get('/admin/weekdays');
@@ -15,6 +23,7 @@ it('shows weekdays index', function (): void {
 
 it('creates, updates, and deletes a weekday and manages exclusions', function (): void {
     $user = User::factory()->create(['email_verified_at' => now()]);
+    $user->assignRole(RolesEnum::ADMIN->value);
     $this->actingAs($user);
 
     $team = Team::factory()->create();

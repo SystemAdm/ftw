@@ -34,11 +34,11 @@ class GuardianInvitation extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Guardian Invitation')
-            ->line($this->minor->name.' has registered and listed you as their guardian.')
-            ->line('To confirm this relationship, please create an account on our platform.')
-            ->action('Create Account', url('/register'))
-            ->line('Thank you!');
+            ->subject(__('emails.guardian_invitation.subject'))
+            ->line(__('emails.guardian_invitation.line1', ['name' => $this->minor->name]))
+            ->line(__('emails.guardian_invitation.line2'))
+            ->action(__('emails.guardian_invitation.action'), url('/register'))
+            ->line(__('emails.guardian_invitation.line3'));
     }
 
     /**

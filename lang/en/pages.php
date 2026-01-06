@@ -156,7 +156,7 @@ return [
         ],
         'contact' => [
             'heading' => 'Contact',
-            'body' => 'Questions about this policy? Email web@spillhuset.com or use our contact form.',
+            'body' => 'Questions about this policy? Email post@spillhuset.com or use our contact form.',
         ],
         'changes' => [
             'heading' => 'Changes to this policy',
@@ -900,7 +900,7 @@ return [
         ],
         'contact' => [
             'heading' => 'Contact',
-            'body' => 'Have questions? Contact us via the contact form or email.',
+            'body' => 'Have questions? Contact us at post@spillhuset.com or via the contact form.',
         ],
     ],
     'notifications' => [

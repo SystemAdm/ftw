@@ -74,7 +74,7 @@ const menu = computed(() => (user.value ? [...loggedInMenu.value, ...defaultMenu
         </SidebarHeader>
         <SidebarContent>
             <NavAdmin
-                v-if="page.props.auth.roles.includes('Admin')"
+                v-if="page.props.auth.isGlobalAdmin"
                 :items="[
                     { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: adminDashboardRoute.url() },
                     { title: trans('pages.ui.navigation.users'), icon: UserIcon, url: adminUsersRoute.url() },
@@ -90,7 +90,7 @@ const menu = computed(() => (user.value ? [...loggedInMenu.value, ...defaultMenu
                 ]"
             ></NavAdmin>
             <NavCrew
-                v-if="page.props.auth.roles.includes('Crew') || page.props.auth.roles.includes('Admin')"
+                v-if="page.props.auth.isCrew"
                 :items="[
                     { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: '/crew' },
                     { title: trans('pages.ui.navigation.teams'), icon: Users, url: crewTeamsRoute.url() },
@@ -98,7 +98,7 @@ const menu = computed(() => (user.value ? [...loggedInMenu.value, ...defaultMenu
                 ]"
             ></NavCrew>
             <NavMod
-                v-if="page.props.auth.roles.includes('Moderator') || page.props.auth.roles.includes('Admin')"
+                v-if="page.props.auth.roles.includes('Moderator') || page.props.auth.isGlobalAdmin"
                 :items="[{ title: trans('pages.ui.navigation.mod_open'), icon: History, url: modOpenRoute.url() }]"
             ></NavMod>
             <NavDefault :items="menu"></NavDefault>

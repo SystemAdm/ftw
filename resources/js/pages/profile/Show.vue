@@ -32,6 +32,7 @@ interface Props {
         email_public: boolean;
         phone_public: boolean;
         name_public: boolean;
+        roles?: string[];
     };
     isOwnProfile: boolean;
 }
@@ -159,6 +160,12 @@ const formattedBirthday = computed(() => {
                                     </Badge>
                                     <Badge v-else-if="isOwnProfile" variant="outline" class="text-[10px] uppercase tracking-wider">{{ trans('pages.settings.profile.private') }}</Badge>
                                 </div>
+                            </div>
+
+                            <div v-if="user.roles && user.roles.length > 0" class="flex flex-wrap gap-2">
+                                <Badge v-for="role in user.roles" :key="role" variant="secondary" class="font-normal">
+                                    {{ role }}
+                                </Badge>
                             </div>
                         </div>
 

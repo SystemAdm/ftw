@@ -43,7 +43,10 @@ it('sends contact email', function (): void {
     $this->post('/contact', $payload)
         ->assertRedirect('/contact');
 
-    Mail::assertSent(ContactMail::class);
+    Mail::assertSent(ContactMail::class, function (ContactMail $mail) use ($payload) {
+        return $mail->hasTo('post@spillhuset.com') &&
+               $mail->hasReplyTo($payload['email']);
+    });
 });
 
 it('flashes error when mail sending fails', function (): void {

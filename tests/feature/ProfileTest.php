@@ -135,3 +135,52 @@ test('public profile respects birthday visibility', function () {
     $response = $this->get(route('profile.show', $user));
     $response->assertDontSee('1990');
 });
+
+test('user can see their roles on their own profile', function () {
+    $user = User::factory()->create();
+    $team = \App\Models\Team::factory()->create(['name' => 'Alpha Team']);
+
+    // Global role
+    $adminRole = \Spatie\Permission\Models\Role::create(['name' => 'Admin', 'guard_name' => 'web', 'team_id' => 0]);
+    \DB::table('model_has_roles')->insert([
+        'role_id' => $adminRole->id,
+        'model_type' => User::class,
+        'model_id' => $user->id,
+        'team_id' => 0,
+    ]);
+
+    // Team role
+    setPermissionsTeamId($team->id);
+    $crewRole = \Spatie\Permission\Models\Role::create(['name' => 'Crew', 'guard_name' => 'web', 'team_id' => $team->id]);
+    \DB::table('model_has_roles')->insert([
+        'role_id' => $crewRole->id,
+        'model_type' => User::class,
+        'model_id' => $user->id,
+        'team_id' => $team->id,
+    ]);
+    setPermissionsTeamId(0);
+
+    $response = $this->actingAs($user)->get(route('profile.show', $user));
+
+    $response->assertStatus(200);
+    $response->assertSee('Admin');
+    $response->assertSee('Crew (Alpha Team)');
+});
+
+test('other users cannot see roles on a public profile', function () {
+    $user = User::factory()->create();
+    $visitor = User::factory()->create();
+
+    $uniqueRole = \Spatie\Permission\Models\Role::create(['name' => 'SuperUniqueRole', 'guard_name' => 'web', 'team_id' => 0]);
+    \DB::table('model_has_roles')->insert([
+        'role_id' => $uniqueRole->id,
+        'model_type' => User::class,
+        'model_id' => $user->id,
+        'team_id' => 0,
+    ]);
+
+    $response = $this->actingAs($visitor)->get(route('profile.show', $user));
+
+    $response->assertStatus(200);
+    $response->assertDontSee('SuperUniqueRole');
+});

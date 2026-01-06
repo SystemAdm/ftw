@@ -26,7 +26,7 @@ class ContactController extends Controller
         $data = $request->validated();
 
         try {
-            Mail::to('web@spillhuset.com')->send(
+            Mail::to('post@spillhuset.com')->send(
                 new ContactMail(
                     userName: $data['name'],
                     userEmail: $data['email'],

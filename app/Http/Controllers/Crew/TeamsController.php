@@ -40,7 +40,7 @@ class TeamsController extends Controller
 
         // Ensure user is member of team or is admin
         $isMember = $user->teams()->where('team_id', $team->id)->wherePivot('status', 'approved')->exists();
-        $isAdmin = $user->hasRole(RolesEnum::ADMIN->value);
+        $isAdmin = $user->hasRole([RolesEnum::ADMIN->value, RolesEnum::OWNER->value]);
 
         if (! $isMember && ! $isAdmin) {
             abort(403);
@@ -51,7 +51,7 @@ class TeamsController extends Controller
                 ->withPivot(['role', 'status', 'application']);
         }]);
 
-        // Check if user is "privileged" (Admin or Board Chairman of this team)
+        // Check if user is "privileged" (Global Admin, or Board Chairman of this team)
         $isLeader = $user->teams()
             ->where('team_id', $team->id)
             ->wherePivot('role', RolesEnum::BOARD_CHAIRMAN->value)

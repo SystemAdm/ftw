@@ -56,7 +56,7 @@ const appName = page.props.name || 'FTW'
             </section>
             <!-- Features -->
             <section id="features" class="mx-auto grid grid-cols-1 gap-4 py-12 sm:grid-cols-2 lg:grid-cols-2">
-                <div class="rounded-xl border bg-background p-6 text-center">
+                <div class="rounded-xl border bg-background p-6 text-center bg-red-900">
                     <div class="flex flex-col items-center p-0">
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-500/15 text-fuchsia-300">
                             <img src="/images/UFB_logo.png" alt="UFB logo" class="h-6 w-6" />
@@ -64,10 +64,8 @@ const appName = page.props.name || 'FTW'
                         <h3 class="font-semibold text-foreground">Torsdagsåpent!</h3>
                     </div>
                     <div class="p-0">
-                        <p class="mt-1 text-sm text-muted-foreground">
-                            Vi holder åpent sammen med
-                            <a href="https://www.ufbinfo.no" class="font-bold text-foreground"><abbr title="Ungdom og Fritid i Bærum kommune">UFB</abbr></a
-                            >.<br />Åpningstid: 15:00 - 21:00<br />Åpent for alle over 13 år
+                        <p class="mt-1 text-xl text-foreground">
+                            Utgår grunnet flytting til Sandvika
                         </p>
                     </div>
                 </div>

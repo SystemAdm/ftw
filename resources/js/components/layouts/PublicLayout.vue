@@ -36,7 +36,7 @@ const user = computed(() => {
 });
 
 const isAdmin = computed(() => page.props.auth?.roles?.includes('Admin'));
-const isCrew = computed(() => page.props.auth?.roles?.includes('Crew') || isAdmin.value);
+const isCrew = computed(() => page.props.auth?.isCrew);
 const isMod = computed(() => page.props.auth?.roles?.includes('Moderator') || isAdmin.value);
 
 const { appearance, updateAppearance } = useAppearance();

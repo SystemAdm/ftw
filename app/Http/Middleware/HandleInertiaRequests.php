@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\RolesEnum;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -41,8 +42,17 @@ class HandleInertiaRequests extends Middleware
 
         $user = $request->user();
 
+        $isCrew = false;
+        $isGlobalAdmin = false;
         if ($user) {
-            setPermissionsTeamId(0);
+            $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
+
+            // Check if user is global admin or has any role in any team
+            $isCrew = $isGlobalAdmin ||
+                \DB::table('model_has_roles')
+                    ->where('model_id', $user->id)
+                    ->where('model_type', get_class($user))
+                    ->exists();
         }
 
         // Determine appearance from cookie, attempting to gracefully decrypt if it was previously encrypted
@@ -66,10 +76,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user,
                 'roles' => $user ? $user->getRoleNames()->all() : [],
+                'isCrew' => $isCrew,
+                'isGlobalAdmin' => $isGlobalAdmin,
                 'unreadNotificationsCount' => $user ? $user->unreadNotifications()->count() : 0,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'status' => fn () => $request->session()->get('status'),
+            'status' => fn () => $request->session()->get('status') ?? $request->session()->get('success'),
             'error' => fn () => $request->session()->get('error'),
             'ban_message' => fn () => $request->session()->get('ban_message'),
             // Expose environment flag so we can hide experimental UI in production

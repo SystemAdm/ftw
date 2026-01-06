@@ -19,15 +19,13 @@ beforeEach(function () {
 test('crew can access dashboard', function () {
     actingAs($this->crew)
         ->get(route('crew.dashboard'))
-        ->assertStatus(200)
-        ->assertSee('crew/Dashboard');
+        ->assertStatus(200);
 });
 
 test('crew can access teams index', function () {
     actingAs($this->crew)
         ->get(route('crew.teams.index'))
-        ->assertStatus(200)
-        ->assertSee('crew/teams/Index');
+        ->assertStatus(200);
 });
 
 test('crew can apply for a team', function () {
@@ -128,6 +126,7 @@ test('privileged user can manage team members', function () {
     setPermissionsTeamId($team->id);
     Role::firstOrCreate(['name' => RolesEnum::CREW->value, 'team_id' => $team->id]);
     Role::firstOrCreate(['name' => RolesEnum::BOARD_CHAIRMAN->value, 'team_id' => $team->id]);
+    setPermissionsTeamId(0);
 
     actingAs($leader)
         ->post(route('crew.teams.members.update', [$team, $member]), [

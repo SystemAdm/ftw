@@ -34,10 +34,10 @@ class VerifyEmailWithPin extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('Verify Email Address'))
-            ->line(__('Your verification PIN is:'))
+            ->subject(__('emails.verify_email.subject'))
+            ->line(__('emails.verify_email.line1'))
             ->line($this->pin)
-            ->line(__('Please enter this PIN to verify your email address.'));
+            ->line(__('emails.verify_email.line2'));
     }
 
     /**

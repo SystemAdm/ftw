@@ -4,6 +4,9 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class ContactMail extends Mailable
@@ -17,17 +20,32 @@ class ContactMail extends Mailable
         public string $messageBody
     ) {}
 
-    public function build(): self
+    /**
+     * Get the message envelope.
+     */
+    public function envelope(): Envelope
     {
-        return $this
-            ->subject('[Contact] '.$this->subjectLine)
-            ->replyTo($this->userEmail, $this->userName)
-            ->view('emails.contact')
-            ->with([
+        return new Envelope(
+            subject: '[Contact] '.$this->subjectLine,
+            replyTo: [
+                new Address($this->userEmail, $this->userName),
+            ],
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.contact',
+            with: [
                 'name' => $this->userName,
                 'email' => $this->userEmail,
                 'body' => $this->messageBody,
                 'subjectLine' => $this->subjectLine,
-            ]);
+            ],
+        );
     }
 }

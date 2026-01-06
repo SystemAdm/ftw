@@ -34,7 +34,9 @@ return [
         'vipps' => 'Vipps',
         'org' => 'Org.no',
         'form' => 'Contact form',
-        'email_error' => 'We could not send the email right now. Please try again later. You may send us e-mail through your own mail-client instead. <a href="mailto://post@spillhuset.com?Kontakt&nbsp;Oss">post@spillhuset.com</a>',
+        'or' => ' or ',
+        'direct' => 'direct email: <a class="text-foreground" href="mailto:post@spillhuset.com?subject=Contact%20Us">post@spillhuset.com</a>',
+        'email_error' => 'We could not send the email right now. Please try again later. You may send us e-mail through your own mail-client instead. <a href="mailto:post@spillhuset.com?subject=Contact%20Us">post@spillhuset.com</a>',
     ],
 
     // Translations used in outgoing contact email template

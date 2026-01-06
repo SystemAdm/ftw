@@ -6,9 +6,9 @@ use App\Http\Controllers\Crew\TeamMembersController;
 use App\Http\Controllers\Crew\TeamsController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('crew.')->prefix('crew')->middleware(['auth', 'verified', 'role:Crew|Admin'])->group(function () {
+Route::name('crew.')->prefix('crew')->middleware(['auth', 'verified', 'crew', 'team.context'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('events', EventsController::class)->only(['index', 'show']);
+    Route::resource('events', EventsController::class);
 
     Route::get('teams', [TeamsController::class, 'index'])->name('teams.index');
     Route::get('teams/{team}', [TeamsController::class, 'show'])->name('teams.show');
