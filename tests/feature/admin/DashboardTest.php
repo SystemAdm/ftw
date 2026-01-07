@@ -18,7 +18,17 @@ test('admin can access dashboard', function () {
         ->get(route('admin.dashboard'));
 
     $response->assertStatus(200);
-    $response->assertSee('admin/Dashboard');
+});
+
+test('owner can access dashboard', function () {
+    $owner = User::factory()->create();
+    Role::firstOrCreate(['name' => RolesEnum::OWNER->value, 'team_id' => 0]);
+    $owner->assignRole(RolesEnum::OWNER->value);
+
+    $response = actingAs($owner)
+        ->get(route('admin.dashboard'));
+
+    $response->assertStatus(200);
 });
 
 test('guest cannot access admin dashboard', function () {

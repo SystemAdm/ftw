@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\WeekdaysController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified', 'role:Admin'])->group(function () {
+Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified', 'team.context', 'role:Admin|Owner'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Admin Relations

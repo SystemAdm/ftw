@@ -2,6 +2,7 @@
 
 namespace Tests\feature\admin;
 
+use App\Enums\RolesEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -9,12 +10,13 @@ use Spatie\Permission\Models\Role;
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
-    Role::create(['name' => 'admin']);
+    setPermissionsTeamId(0);
+    Role::firstOrCreate(['name' => RolesEnum::ADMIN->value, 'team_id' => 0]);
 });
 
 it('can view relations index', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $guardian = User::factory()->create();
     $minor = User::factory()->create();
 
@@ -35,7 +37,7 @@ it('can view relations index', function () {
 
 it('can create a relation', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $guardian = User::factory()->create();
     $minor = User::factory()->create();
 
@@ -58,7 +60,7 @@ it('can create a relation', function () {
 
 it('can verify a relation', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $guardian = User::factory()->create();
     $minor = User::factory()->create();
 
@@ -84,7 +86,7 @@ it('can verify a relation', function () {
 
 it('can delete a relation', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $guardian = User::factory()->create();
     $minor = User::factory()->create();
 
@@ -109,7 +111,7 @@ it('can delete a relation', function () {
 
 it('can search users for relations', function () {
     $admin = User::factory()->create();
-    $admin->assignRole('admin');
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $user = User::factory()->create(['name' => 'Searchable User']);
 
     actingAs($admin)

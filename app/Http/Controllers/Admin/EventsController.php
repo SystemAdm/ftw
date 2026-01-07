@@ -19,7 +19,7 @@ class EventsController extends Controller
     public function index(): Response
     {
         $events = Event::query()
-            ->with(['location:id,name'])
+            ->with(['location:id,name', 'team:id,name'])
             ->latest('event_start')
             ->withTrashed()
             ->paginate(15);
@@ -57,8 +57,9 @@ class EventsController extends Controller
     public function create(): Response
     {
         $locations = Location::query()->select('id', 'name')->orderBy('name')->get();
+        $teams = \App\Models\Team::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/events/Create', compact('locations'));
+        return Inertia::render('admin/events/Create', compact('locations', 'teams'));
     }
 
     public function store(StoreEventRequest $request): RedirectResponse
@@ -86,8 +87,9 @@ class EventsController extends Controller
     public function edit(Event $event): Response
     {
         $locations = Location::query()->select('id', 'name')->orderBy('name')->get();
+        $teams = \App\Models\Team::query()->select('id', 'name')->orderBy('name')->get();
 
-        return Inertia::render('admin/events/Edit', compact('event', 'locations'));
+        return Inertia::render('admin/events/Edit', compact('event', 'locations', 'teams'));
     }
 
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse

@@ -28,6 +28,7 @@ class UpdateEventRequest extends FormRequest
             'image' => ['nullable', 'image', 'max:2048'],
             'image_path' => ['nullable', 'string', 'max:255'],
             'location_id' => ['nullable', 'exists:locations,id'],
+            'team_id' => ['nullable', 'exists:teams,id'],
             'event_start' => ['required', 'date'],
             'event_end' => ['required', 'date', 'after:event_start'],
             'signup_needed' => ['boolean'],

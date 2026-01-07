@@ -1,15 +1,23 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\BuildingLog;
 use App\Models\Event;
 use App\Models\EventLog;
 use App\Models\PostalCode;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
+beforeEach(function () {
+    setPermissionsTeamId(0);
+    Role::firstOrCreate(['name' => RolesEnum::ADMIN->value, 'team_id' => 0]);
+});
+
 it('renders the admin user show page', function () {
     $admin = User::factory()->create(['email_verified_at' => now()]);
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $user = User::factory()->create();
 
     $response = $this->actingAs($admin)
@@ -24,6 +32,7 @@ it('renders the admin user show page', function () {
 
 it('shows event logs with translated actions', function () {
     $admin = User::factory()->create(['email_verified_at' => now()]);
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $user = User::factory()->create();
 
     // Create postal codes to satisfy location foreign key constraint
@@ -66,6 +75,7 @@ it('shows event logs with translated actions', function () {
 
 it('shows building logs in recent activity', function () {
     $admin = User::factory()->create(['email_verified_at' => now()]);
+    $admin->assignRole(RolesEnum::ADMIN->value);
     $user = User::factory()->create();
 
     BuildingLog::create([

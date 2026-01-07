@@ -12,8 +12,9 @@ use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
     Storage::fake('public');
+    setPermissionsTeamId(0);
     $this->admin = User::factory()->create();
-    \Spatie\Permission\Models\Role::firstOrCreate(['name' => RolesEnum::ADMIN->value]);
+    \Spatie\Permission\Models\Role::firstOrCreate(['name' => RolesEnum::ADMIN->value, 'team_id' => 0]);
     $this->admin->assignRole(RolesEnum::ADMIN->value);
 
     // Create default postal codes for locations
@@ -186,6 +187,27 @@ it('can update an event', function () {
         'id' => $event->id,
         'title' => 'New Title',
         'status' => 'published',
+    ]);
+});
+
+it('can assign a team to an event', function () {
+    $team = \App\Models\Team::factory()->create();
+
+    $data = [
+        'title' => 'Team Event',
+        'event_start' => now()->addDay()->format('Y-m-d H:i'),
+        'event_end' => now()->addDay()->addHours(2)->format('Y-m-d H:i'),
+        'status' => 'published',
+        'team_id' => $team->id,
+    ];
+
+    actingAs($this->admin)
+        ->post(route('admin.events.store'), $data)
+        ->assertRedirect();
+
+    $this->assertDatabaseHas('events', [
+        'title' => 'Team Event',
+        'team_id' => $team->id,
     ]);
 });
 

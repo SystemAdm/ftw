@@ -1,26 +1,29 @@
 <?php
 
+use App\Enums\RolesEnum;
 use App\Models\PostalCode;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-it('shows admin postcodes index', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
+beforeEach(function () {
+    setPermissionsTeamId(0);
+    Role::firstOrCreate(['name' => RolesEnum::ADMIN->value, 'team_id' => 0]);
+    $this->user = User::factory()->create(['email_verified_at' => now()]);
+    $this->user->assignRole(RolesEnum::ADMIN->value);
+});
 
-    $response = $this->get('/admin/postcodes');
+it('shows admin postcodes index', function (): void {
+    $response = $this->actingAs($this->user)->get('/admin/postcodes');
     $response->assertSuccessful();
     $response->assertSee(trans('pages.settings.postcodes.title'));
 });
 
 it('can create, update, soft delete, restore and force delete a postal code', function (): void {
-    $user = User::factory()->create(['email_verified_at' => now()]);
-    $this->actingAs($user);
-
     // Create
     $this->withSession(['_token' => 'test']);
-    $store = $this->post('/admin/postcodes', [
+    $store = $this->actingAs($this->user)->post('/admin/postcodes', [
         'postal_code' => 54321,
         'city' => 'Sample City',
         'state' => 'SC',
@@ -36,7 +39,7 @@ it('can create, update, soft delete, restore and force delete a postal code', fu
 
     // Update
     $this->withSession(['_token' => 'test']);
-    $update = $this->put('/admin/postcodes/54321', [
+    $update = $this->actingAs($this->user)->put('/admin/postcodes/54321', [
         'city' => 'Updated City',
         'state' => 'USC',
         'country' => 'USA',
@@ -50,21 +53,21 @@ it('can create, update, soft delete, restore and force delete a postal code', fu
 
     // Soft delete
     $this->withSession(['_token' => 'test']);
-    $del = $this->delete('/admin/postcodes/54321', ['_token' => 'test']);
+    $del = $this->actingAs($this->user)->delete('/admin/postcodes/54321', ['_token' => 'test']);
     $del->assertRedirect('/admin/postcodes');
     $this->assertSoftDeleted('postal_codes', ['postal_code' => 54321]);
 
     // Restore
     $this->withSession(['_token' => 'test']);
-    $restore = $this->post('/admin/postcodes/54321/restore', ['_token' => 'test']);
+    $restore = $this->actingAs($this->user)->post('/admin/postcodes/54321/restore', ['_token' => 'test']);
     $restore->assertRedirect('/admin/postcodes');
     $this->assertDatabaseHas('postal_codes', ['postal_code' => 54321, 'deleted_at' => null]);
 
     // Force delete
     $this->withSession(['_token' => 'test']);
     // delete first then force
-    $this->delete('/admin/postcodes/54321', ['_token' => 'test'])->assertRedirect();
-    $force = $this->delete('/admin/postcodes/54321/force', ['_token' => 'test']);
+    $this->actingAs($this->user)->delete('/admin/postcodes/54321', ['_token' => 'test'])->assertRedirect();
+    $force = $this->actingAs($this->user)->delete('/admin/postcodes/54321/force', ['_token' => 'test']);
     $force->assertRedirect('/admin/postcodes');
     $this->assertDatabaseMissing('postal_codes', ['postal_code' => 54321]);
 });

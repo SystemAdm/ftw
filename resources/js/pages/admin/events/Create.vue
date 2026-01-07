@@ -14,6 +14,7 @@ import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<PageProps>();
 const locations = (page.props as any).locations as Array<{ id: number; name: string }>;
+const teams = (page.props as any).teams as Array<{ id: number; name: string }>;
 
 const form = useForm({
   title: '',
@@ -22,6 +23,7 @@ const form = useForm({
   image: null as File | null,
   image_path: '' as string | null,
   location_id: null as number | null,
+  team_id: null as number | null,
   event_start: '',
   event_end: '',
   signup_needed: false,
@@ -47,6 +49,13 @@ const locationIdValue = computed<string>({
   get: () => (form.location_id == null ? '__none__' : String(form.location_id)),
   set: (v) => {
     form.location_id = v === '__none__' ? null : Number(v);
+  },
+});
+
+const teamIdValue = computed<string>({
+  get: () => (form.team_id == null ? '__none__' : String(form.team_id)),
+  set: (v) => {
+    form.team_id = v === '__none__' ? null : Number(v);
   },
 });
 
@@ -115,6 +124,22 @@ const locationIdValue = computed<string>({
               <FieldError v-if="form.errors.location_id">{{ form.errors.location_id }}</FieldError>
             </Field>
 
+            <Field>
+              <FieldLabel>{{ trans('pages.settings.events.fields.team') }}</FieldLabel>
+              <Select :model-value="teamIdValue" @update:model-value="(v) => (teamIdValue = v as string)">
+                <SelectTrigger>
+                  <SelectValue placeholder="—" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">—</SelectItem>
+                  <SelectItem v-for="t in teams" :key="t.id" :value="String(t.id)">{{ t.name }}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FieldError v-if="form.errors.team_id">{{ form.errors.team_id }}</FieldError>
+            </Field>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field>
               <FieldLabel>{{ trans('pages.settings.events.fields.status') }}</FieldLabel>
               <Select v-model="form.status">

@@ -96,6 +96,7 @@ function handleForceDelete() {
             <TableHeader>
                 <TableRow>
                     <TableHead>{{ trans('pages.settings.events.fields.title') }}</TableHead>
+                    <TableHead>{{ trans('pages.settings.events.fields.team') }}</TableHead>
                     <TableHead>{{ trans('pages.settings.events.fields.location') }}</TableHead>
                     <TableHead>{{ trans('pages.settings.events.fields.event_start') }}</TableHead>
                     <TableHead>{{ trans('pages.settings.events.fields.status') }}</TableHead>
@@ -111,6 +112,7 @@ function handleForceDelete() {
                             {{ trans('pages.settings.events.status.deleted') }}
                         </Badge>
                     </TableCell>
+                    <TableCell class="cursor-pointer" @click="router.visit(show.url(e.id))">{{ e.team?.name ?? '—' }}</TableCell>
                     <TableCell class="cursor-pointer" @click="router.visit(show.url(e.id))">{{ e.location?.name ?? '—' }}</TableCell>
                     <TableCell class="cursor-pointer" @click="router.visit(show.url(e.id))">{{ formatDate(e.event_start) }}</TableCell>
                     <TableCell class="cursor-pointer" @click="router.visit(show.url(e.id))">
@@ -156,14 +158,14 @@ function handleForceDelete() {
                     </TableCell>
                 </TableRow>
                 <TableRow v-if="(page.props as any).events.data.length === 0">
-                    <TableCell colspan="6" class="py-8 text-center text-muted-foreground">
+                    <TableCell colspan="7" class="py-8 text-center text-muted-foreground">
                         {{ trans('pages.settings.events.none') }}
                     </TableCell>
                 </TableRow>
             </TableBody>
             <TableFooter v-if="(page.props as any).events.last_page > 1">
                 <TableRow>
-                    <TableCell colspan="6">
+                    <TableCell colspan="7">
                         <Paginator :collection="(page.props as any).events" />
                     </TableCell>
                 </TableRow>

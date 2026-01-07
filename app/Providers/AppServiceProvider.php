@@ -23,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Set default team context for Spatie permissions to 0 (Global)
+        if (function_exists('setPermissionsTeamId')) {
+            setPermissionsTeamId(0);
+        }
+
         // Register Discord Socialite provider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('twitch', \SocialiteProviders\Twitch\Provider::class);
