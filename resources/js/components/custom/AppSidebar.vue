@@ -20,6 +20,7 @@ import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
 import { index as modOpenRoute } from '@/routes/mod/open/index';
 import { index as crewTeamsRoute } from '@/routes/crew/teams/index';
 import { index as crewEventsRoute } from '@/routes/crew/events/index';
+import { index as crewWeekdaysRoute } from '@/routes/crew/weekdays/index';
 import { dashboard as dashboardRoute } from '@/routes/index';
 import { show as profileRoute } from '@/routes/profile/index';
 import { profile as settingsRoute } from '@/routes/settings';
@@ -94,6 +95,7 @@ const menu = computed(() => (user.value ? [...loggedInMenu.value, ...defaultMenu
                 :items="[
                     { title: trans('pages.ui.navigation.dashboard'), icon: LayoutDashboard, url: '/crew' },
                     { title: trans('pages.ui.navigation.teams'), icon: Users, url: crewTeamsRoute.url() },
+                    { title: trans('pages.ui.navigation.weekdays'), icon: CalendarDays, url: crewWeekdaysRoute.url() },
                     { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: crewEventsRoute.url() },
                 ]"
             ></NavCrew>
