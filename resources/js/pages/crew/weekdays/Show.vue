@@ -3,7 +3,7 @@ import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { usePage, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { edit as editRoute, index as indexRoute } from '@/routes/crew/weekdays';
-import { addExclusion, removeExclusion } from '@/routes/crew/weekdays';
+import { add as addExclusion, remove as removeExclusion } from '@/routes/crew/weekdays/exclusions';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
