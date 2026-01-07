@@ -33,7 +33,7 @@ class StoreEventRequest extends FormRequest
             'event_end' => ['required', 'date', 'after:event_start'],
             'signup_needed' => ['boolean'],
             'signup_start' => ['nullable', 'required_if:signup_needed,true', 'date'],
-            'signup_end' => ['nullable', 'required_if:signup_needed,true', 'date', 'after:signup_start', 'before:event_start'],
+            'signup_end' => ['nullable', 'required_if:signup_needed,true', 'date', 'after:signup_start', 'before_or_equal:event_end'],
             'age_min' => ['nullable', 'integer', 'min:0'],
             'age_max' => ['nullable', 'integer', 'min:0', 'gte:age_min'],
             'number_of_seats' => ['nullable', 'integer', 'min:-1'],

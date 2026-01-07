@@ -543,6 +543,13 @@ function goToSocialiteGoogle(): void {
                         </div>
                     </div>
                     <form class="space-y-4" @submit.prevent="register">
+                        <div v-if="Object.keys(registrationForm.errors).length > 0" class="rounded-md bg-destructive/15 p-3">
+                            <ul class="list-inside list-disc text-sm text-destructive">
+                                <li v-for="(error, field) in registrationForm.errors" :key="field">
+                                    {{ error }}
+                                </li>
+                            </ul>
+                        </div>
                         <Button type="submit" class="w-full" :disabled="registrationForm.processing">
                             {{
                                 registrationForm.processing

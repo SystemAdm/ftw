@@ -31,8 +31,8 @@ class EventFactory extends Factory
         $signupEnd = null;
         if ($signupNeeded) {
             $signupStart = fake()->dateTimeBetween('-10 days', $eventStart->format('Y-m-d H:i:s'));
-            // Ensure signup_end is between signup_start and event_start
-            $signupEnd = fake()->dateTimeBetween($signupStart->format('Y-m-d H:i:s'), $eventStart->format('Y-m-d H:i:s'));
+            // Ensure signup_end is between signup_start and event_end
+            $signupEnd = fake()->dateTimeBetween($signupStart->format('Y-m-d H:i:s'), $eventEnd ? $eventEnd->format('Y-m-d H:i:s') : $eventStart->format('Y-m-d H:i:s'));
         }
 
         // Optional age constraints
