@@ -16,6 +16,10 @@ const qrCodeValue = computed(() => page.props.qr_code_value);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
         title: trans('pages.dashboard.title'),
         href: dashboard.url(),
     },

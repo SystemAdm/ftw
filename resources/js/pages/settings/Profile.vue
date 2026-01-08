@@ -76,6 +76,10 @@ const appearanceForm = useForm({
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
         title: trans('pages.settings.profile.title'),
         href: profileRoute.url(),
     },

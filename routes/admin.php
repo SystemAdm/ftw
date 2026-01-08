@@ -22,11 +22,12 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified', 'team.co
     Route::delete('relations/{guardian}/{minor}', [RelationController::class, 'destroy'])->name('relations.destroy');
     Route::resource('relations', RelationController::class)->except(['destroy', 'show', 'edit', 'update']);
 
-    // Admin Users
     Route::post('users/{user}/verify', [UsersController::class, 'verify'])->name('users.verify');
     Route::post('users/{user}/reset-password', [UsersController::class, 'resetPassword'])->name('users.reset-password');
     Route::post('users/{user}/ban', [UsersController::class, 'ban'])->name('users.ban');
     Route::post('users/{user}/unban', [UsersController::class, 'unban'])->name('users.unban');
+    Route::post('users/{id}/restore', [UsersController::class, 'restore'])->name('users.restore');
+    Route::delete('users/{id}/force', [UsersController::class, 'forceDestroy'])->name('users.force-destroy');
     Route::resource('users', UsersController::class);
 
     // Admin Roles & PermissionsController

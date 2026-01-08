@@ -29,8 +29,31 @@ import { update as updateMemberAction, remove as removeMemberAction } from '@/ro
 import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 import { ref, computed } from 'vue';
 
+import { BreadcrumbItemType } from '@/types';
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
+import { index as indexRoute } from '@/routes/admin/teams';
+
 const page = usePage<PageProps>();
 const team = page.props.team as any;
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
+    {
+        title: trans('pages.settings.teams.title'),
+        href: indexRoute.url(),
+    },
+    {
+        title: team.name,
+        href: page.url,
+    },
+]);
 const availableRoles = computed(() => (page.props as any).availableRoles ?? []);
 
 const showRemoveMemberConfirm = ref(false);
@@ -95,7 +118,7 @@ function forceDeleteTeam() {
 </script>
 
 <template>
-    <SidebarLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
       <Card class="mx-auto w-full max-w-4xl">
         <CardHeader class="flex items-start justify-between gap-4 sm:flex-row">
           <div class="space-y-1">

@@ -3,9 +3,34 @@ import { usePage, router } from '@inertiajs/vue3'
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { trans } from 'laravel-vue-i18n'
+import { computed } from 'vue'
+import { BreadcrumbItemType } from '@/types'
+
+import { index } from '@/routes/admin/permissions';
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
 
 const page = usePage<PageProps>()
 const permission = (page.props as any).permission
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+  {
+    title: trans('ui.navigation.home'),
+    href: '/',
+  },
+  {
+    title: trans('ui.navigation.admin'),
+    href: adminDashboardRoute.url(),
+  },
+  {
+    title: trans('pages.settings.permissions.title'),
+    href: index.url(),
+  },
+  {
+    title: permission.name,
+    href: page.url,
+  },
+]);
 
 function goBack() {
   router.visit('/admin/permissions')
@@ -23,7 +48,7 @@ function deletePermission() {
 </script>
 
 <template>
-  <SidebarLayout>
+  <SidebarLayout :breadcrumbs="breadcrumbs">
     <div class="mb-4 flex items-center justify-between">
       <h1 class="text-xl font-semibold">Permission: {{ permission.name }}</h1>
       <div class="flex gap-2">

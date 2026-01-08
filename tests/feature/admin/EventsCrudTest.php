@@ -105,11 +105,12 @@ it('can update event image', function () {
         ->post(route('admin.events.update', $event), [
             '_method' => 'patch',
             'title' => 'Updated Title',
-            'event_start' => $event->event_start->format('Y-m-d H:i'),
-            'event_end' => $event->event_end ? $event->event_end->format('Y-m-d H:i') : now()->addDay()->addHours(2)->format('Y-m-d H:i'),
+            'event_start' => now()->addDay()->format('Y-m-d H:i'),
+            'event_end' => now()->addDay()->addHours(2)->format('Y-m-d H:i'),
             'status' => 'published',
             'image' => $newImage,
         ])
+        ->assertSessionHasNoErrors()
         ->assertRedirect();
 
     $event->refresh();

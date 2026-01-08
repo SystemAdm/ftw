@@ -4,6 +4,7 @@ import { BreadcrumbItemType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { router, usePage } from '@inertiajs/vue3';
 import { edit as editRoute, destroy as destroyRoute, index as indexRoute, restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/locations';
+import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
 import { trans } from 'laravel-vue-i18n';
 import {
   AlertDialog,
@@ -23,6 +24,14 @@ const page = usePage();
 const location = (page.props as any).location as any;
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
     {
         title: trans('pages.settings.locations.title'),
         href: indexRoute.url(),

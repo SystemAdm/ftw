@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import UserHoverCard from '@/components/custom/UserHoverCard.vue';
+import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 import {
     Dialog,
     DialogContent,
@@ -34,17 +35,31 @@ interface PageProps extends AppPageProps {
 const inertiaPage = usePage<PageProps>();
 
 const banDialogOpen = ref(false);
+const deleteDialogOpen = ref(false);
+const forceDeleteDialogOpen = ref(false);
 const selectedUser = ref<any>(null);
+const userToDelete = ref<any>(null);
 
 const banForm = useForm({
     reason: '',
     banned_to: '',
 });
 
+import { index, restore, forceDestroy } from '@/routes/admin/users';
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
+
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
+    {
         title: trans('pages.settings.users.title'),
-        href: '/admin/users',
+        href: index.url(),
     },
 ]);
 function formatDate(date: string) {
@@ -84,6 +99,42 @@ function handleBan() {
 function handleUnban(user: any) {
     router.post(`/admin/users/${user.id}/unban`);
 }
+
+function handleRestore(id: number) {
+    router.post(restore.url(id));
+}
+
+function confirmDelete(user: any) {
+    userToDelete.value = user;
+    deleteDialogOpen.value = true;
+}
+
+function confirmForceDelete(user: any) {
+    userToDelete.value = user;
+    forceDeleteDialogOpen.value = true;
+}
+
+function handleDelete() {
+    if (userToDelete.value) {
+        router.delete(`/admin/users/${userToDelete.value.id}`, {
+            onFinish: () => {
+                deleteDialogOpen.value = false;
+                userToDelete.value = null;
+            },
+        });
+    }
+}
+
+function handleForceDelete() {
+    if (userToDelete.value) {
+        router.delete(forceDestroy.url(userToDelete.value.id), {
+            onFinish: () => {
+                forceDeleteDialogOpen.value = false;
+                userToDelete.value = null;
+            },
+        });
+    }
+}
 </script>
 
 <template>
@@ -105,10 +156,18 @@ function handleUnban(user: any) {
                 <TableRow
                     v-for="user in inertiaPage.props.users.data"
                     :key="user.id"
-                    :class="{ 'bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-200': user.is_banned }"
+                    :class="{
+                        'bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-200': user.is_banned,
+                        'opacity-50': user.deleted_at
+                    }"
                 >
                     <TableCell class="font-medium">
-                        <UserHoverCard :user="user" />
+                        <div class="flex items-center gap-2">
+                            <UserHoverCard :user="user" />
+                            <Badge v-if="user.deleted_at" variant="destructive">
+                                {{ trans('pages.settings.teams.status.deleted') }}
+                            </Badge>
+                        </div>
                     </TableCell>
                     <TableCell>{{ user.email }}</TableCell>
                     <TableCell>
@@ -167,29 +226,41 @@ function handleUnban(user: any) {
                                     {{ trans('pages.settings.events.actions.edit') }}
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem v-if="!user.verified_at" @click="handleVerify(user)">
-                                    <UserCheck class="mr-2 h-4 w-4" />
-                                    {{ trans('pages.settings.users.actions.verify') }}
-                                </DropdownMenuItem>
+                                <template v-if="user.deleted_at">
+                                    <DropdownMenuItem @click="handleRestore(user.id)" class="text-green-600 focus:text-green-600">
+                                        <ShieldCheck class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.locations.actions.restore') }}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem @click="confirmForceDelete(user)" class="text-destructive focus:text-destructive">
+                                        <Trash2 class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.locations.actions.force_delete') }}
+                                    </DropdownMenuItem>
+                                </template>
+                                <template v-else>
+                                    <DropdownMenuItem v-if="!user.verified_at" @click="handleVerify(user)">
+                                        <UserCheck class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.users.actions.verify') }}
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem @click="handleResetPassword(user)">
-                                    <Key class="mr-2 h-4 w-4" />
-                                    {{ trans('pages.settings.users.actions.reset_password') }}
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem @click="handleResetPassword(user)">
+                                        <Key class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.users.actions.reset_password') }}
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem v-if="!user.is_banned" class="text-destructive focus:text-destructive" @click="openBanDialog(user)">
-                                    <Ban class="mr-2 h-4 w-4" />
-                                    {{ trans('pages.settings.users.actions.ban') }}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem v-else @click="handleUnban(user)">
-                                    <ShieldCheck class="mr-2 h-4 w-4" />
-                                    {{ trans('pages.settings.users.actions.unban') }}
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem v-if="!user.is_banned" class="text-destructive focus:text-destructive" @click="openBanDialog(user)">
+                                        <Ban class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.users.actions.ban') }}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem v-else @click="handleUnban(user)">
+                                        <ShieldCheck class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.users.actions.unban') }}
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem class="text-destructive focus:text-destructive" @click="router.delete(`/admin/users/${user.id}`)">
-                                    <Trash2 class="mr-2 h-4 w-4" />
-                                    {{ trans('pages.settings.events.actions.delete') }}
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem class="text-destructive focus:text-destructive" @click="confirmDelete(user)">
+                                        <Trash2 class="mr-2 h-4 w-4" />
+                                        {{ trans('pages.settings.events.actions.delete') }}
+                                    </DropdownMenuItem>
+                                </template>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </TableCell>
@@ -235,5 +306,19 @@ function handleUnban(user: any) {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+
+        <DeleteConfirmationDialog
+            v-model:open="deleteDialogOpen"
+            :title="trans('pages.settings.locations.delete.title', { name: userToDelete?.name ?? '' })"
+            :description="trans('pages.settings.locations.delete.description')"
+            @confirm="handleDelete"
+        />
+
+        <DeleteConfirmationDialog
+            v-model:open="forceDeleteDialogOpen"
+            :title="trans('pages.settings.locations.force_delete.title', { name: userToDelete?.name ?? '' })"
+            :description="trans('pages.settings.locations.force_delete.description')"
+            @confirm="handleForceDelete"
+        />
     </SidebarLayout>
 </template>

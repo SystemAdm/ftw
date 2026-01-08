@@ -162,6 +162,40 @@ class UsersController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::withTrashed()->findOrFail($id);
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot delete yourself.');
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'User soft-deleted successfully.');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore(string $id)
+    {
+        $user = User::withTrashed()->findOrFail($id);
+        $user->restore();
+
+        return back()->with('success', 'User restored successfully.');
+    }
+
+    /**
+     * Force-delete the specified resource from storage.
+     */
+    public function forceDestroy(string $id)
+    {
+        $user = User::withTrashed()->findOrFail($id);
+
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot delete yourself.');
+        }
+
+        $user->forceDelete();
+
+        return back()->with('success', 'User permanently deleted.');
     }
 }

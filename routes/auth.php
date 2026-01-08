@@ -41,6 +41,7 @@ Route::middleware('guest')->group(function () {
 
 Route::resource('locations', LocationController::class)->only(['index', 'show']);
 Route::resource('teams', TeamController::class)->only(['index', 'show']);
+Route::post('teams/{team}/apply', [TeamController::class, 'apply'])->name('teams.apply')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
     Route::post('logout', [UsersController::class, 'logout'])->name('logout');

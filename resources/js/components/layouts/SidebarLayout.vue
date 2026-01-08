@@ -52,19 +52,19 @@ watch(banMessage, (val) => {
                     <SidebarTrigger class="-ml-1" />
                     <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
                     <Breadcrumb v-if="breadcrumbs && breadcrumbs.length > 0">
-                        <BreadcrumbList>
+                        <BreadcrumbList class="gap-1 sm:gap-1">
                             <template v-for="(item, index) in breadcrumbs" :key="item.href">
-                                <BreadcrumbItem :class="{ 'hidden md:block': index < breadcrumbs.length - 1 }">
-                                    <BreadcrumbLink v-if="index < breadcrumbs.length - 1" :href="item.href">
+                                <BreadcrumbItem class="bg-muted/50 px-2 py-0.5 rounded-md border border-transparent hover:border-border transition-colors">
+                                    <BreadcrumbLink v-if="index < breadcrumbs.length - 1" :href="item.href" class="text-xs font-medium">
                                         {{ item.title }}
                                     </BreadcrumbLink>
-                                    <BreadcrumbPage v-else>
+                                    <BreadcrumbPage v-else class="text-xs font-bold">
                                         {{ item.title }}
                                     </BreadcrumbPage>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator
                                     v-if="index < breadcrumbs.length - 1"
-                                    class="hidden md:block"
+                                    class="mx-0"
                                 />
                             </template>
                         </BreadcrumbList>

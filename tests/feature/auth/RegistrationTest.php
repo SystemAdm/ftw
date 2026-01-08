@@ -14,10 +14,12 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register with email', function () {
-    session(['registration_otp_verified' => true]);
-    session(['registration_email' => 'test@example.com']);
+    $this->withoutMiddleware();
 
-    $response = $this->post(route('register.store'), [
+    $response = $this->withSession([
+        'registration_otp_verified' => true,
+        'registration_email' => 'test@example.com',
+    ])->post(route('register.store'), [
         'name' => 'Test User',
         'birthday' => now()->subYears(20)->toDateString(),
         'postal_code' => '12345',
@@ -36,10 +38,10 @@ test('new users can register with email', function () {
 });
 
 test('new users can register with phone', function () {
-    session(['registration_otp_verified' => true]);
-    session(['registration_email' => 'phone@example.com']);
-
-    $response = $this->post(route('register.store'), [
+    $response = $this->withSession([
+        'registration_otp_verified' => true,
+        'registration_email' => 'phone@example.com',
+    ])->post(route('register.store'), [
         'name' => 'Phone User',
         'birthday' => now()->subYears(20)->toDateString(),
         'postal_code' => '12345',
@@ -74,10 +76,10 @@ test('new users cannot register if allow_new_users is false', function () {
 });
 
 test('minor registration requires guardian', function () {
-    session(['registration_otp_verified' => true]);
-    session(['registration_email' => 'minor@example.com']);
-
-    $response = $this->post(route('register.store'), [
+    $response = $this->withSession([
+        'registration_otp_verified' => true,
+        'registration_email' => 'minor@example.com',
+    ])->post(route('register.store'), [
         'name' => 'Minor User',
         'birthday' => now()->subYears(10)->toDateString(), // 10 years old
         'postal_code' => '12345',
@@ -116,10 +118,10 @@ test('minor registration with existing guardian user', function () {
         'birthday' => now()->subYears(30)->toDateString(),
     ]);
 
-    session(['registration_otp_verified' => true]);
-    session(['registration_email' => 'minor-with-parent@example.com']);
-
-    $response = $this->post(route('register.store'), [
+    $response = $this->withSession([
+        'registration_otp_verified' => true,
+        'registration_email' => 'minor-with-parent@example.com',
+    ])->post(route('register.store'), [
         'name' => 'Minor User 2',
         'birthday' => now()->subYears(10)->toDateString(),
         'postal_code' => '12345',
@@ -152,10 +154,10 @@ test('guardian registration fulfills pending invitation', function () {
         'updated_at' => now(),
     ]);
 
-    session(['registration_otp_verified' => true]);
-    session(['registration_email' => 'guardian@example.com']);
-
-    $response = $this->post(route('register.store'), [
+    $response = $this->withSession([
+        'registration_otp_verified' => true,
+        'registration_email' => 'guardian@example.com',
+    ])->post(route('register.store'), [
         'name' => 'Guardian User',
         'birthday' => now()->subYears(30)->toDateString(),
         'postal_code' => '12345',

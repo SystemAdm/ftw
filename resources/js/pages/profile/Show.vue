@@ -39,12 +39,16 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const breadcrumbs = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
     {
         title: props.user.name,
         href: profileRoute.url(),
     },
-] as BreadcrumbItem[];
+]);
 
 const initials = computed(() => {
     return props.user.name

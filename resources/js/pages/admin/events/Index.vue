@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { create as createRoute, destroy, forceDestroy, restore, show } from '@/routes/admin/events';
+import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
 import { router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { Edit, Eye, MoreHorizontal, RotateCcw, Trash2 } from 'lucide-vue-next';
@@ -20,6 +21,14 @@ const forceDeleteDialogOpen = ref(false);
 const selectedEventId = ref<number | null>(null);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
     {
         title: trans('pages.settings.events.title'),
         href: '/admin/events',

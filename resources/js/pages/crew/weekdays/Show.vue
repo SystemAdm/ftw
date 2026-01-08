@@ -15,8 +15,29 @@ import { Trash2 } from 'lucide-vue-next';
 
 import { AppPageProps } from '@/types';
 
+import { BreadcrumbItemType } from '@/types';
+
 const page = usePage<AppPageProps>();
 const weekday = computed<any>(() => (page.props as any).weekday);
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.crew'),
+        href: '/crew',
+    },
+    {
+        title: trans('pages.settings.weekdays.title'),
+        href: indexRoute.url(),
+    },
+    {
+        title: weekday.value ? trans(`pages.settings.weekdays.days.${weekday.value.weekday}`) : '...',
+        href: page.url,
+    },
+]);
 
 const open = ref(false);
 const exclusionDate = ref('');
@@ -45,7 +66,7 @@ function removeExcluded(id: number) {
 </script>
 
 <template>
-  <SidebarLayout>
+  <SidebarLayout :breadcrumbs="breadcrumbs">
     <div v-if="weekday" class="mb-4 flex items-center justify-between">
       <h1 class="text-xl font-semibold">{{ trans('pages.settings.weekdays.fields.weekday') }}: {{ trans(`pages.settings.weekdays.days.${weekday.weekday}`) }}</h1>
       <div class="flex gap-2">

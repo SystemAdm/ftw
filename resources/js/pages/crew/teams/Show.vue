@@ -14,6 +14,8 @@ import { index as crewTeamsRoute } from '@/routes/crew/teams/index';
 import { update as updateMemberAction, destroy as removeMemberAction } from '@/routes/crew/teams/members/index';
 import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 
+import { dashboard as crewDashboardRoute } from '@/routes/crew';
+
 const page = usePage<any>();
 const team = computed(() => page.props.team);
 const isPrivileged = computed(() => page.props.isPrivileged);
@@ -24,8 +26,12 @@ const memberToRemove = ref<number | null>(null);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
-        title: trans('pages.ui.navigation.crew_menu'),
-        href: '/crew',
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.crew'),
+        href: crewDashboardRoute.url(),
     },
     {
         title: trans('pages.ui.navigation.teams'),

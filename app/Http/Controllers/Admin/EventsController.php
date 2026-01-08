@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreEventRequest;
 use App\Http\Requests\Admin\UpdateEventRequest;
 use App\Models\Event;
 use App\Models\Location;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,8 +17,12 @@ use Inertia\Response;
 
 class EventsController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(): Response
     {
+        $this->authorize('viewAny', Event::class);
+
         $events = Event::query()
             ->with(['location:id,name', 'team:id,name'])
             ->latest('event_start')
@@ -29,6 +34,8 @@ class EventsController extends Controller
 
     public function images(): JsonResponse
     {
+        $this->authorize('viewAny', Event::class);
+
         $files = Storage::disk('public')->files('events');
         $images = array_map(function ($file) {
             return [
@@ -42,6 +49,8 @@ class EventsController extends Controller
 
     public function uploadImage(Request $request): JsonResponse
     {
+        $this->authorize('create', Event::class);
+
         $request->validate([
             'image' => ['required', 'image', 'max:2048'],
         ]);
@@ -56,6 +65,8 @@ class EventsController extends Controller
 
     public function create(): Response
     {
+        $this->authorize('create', Event::class);
+
         $locations = Location::query()->select('id', 'name')->orderBy('name')->get();
         $teams = \App\Models\Team::query()->select('id', 'name')->orderBy('name')->get();
 
@@ -64,6 +75,8 @@ class EventsController extends Controller
 
     public function store(StoreEventRequest $request): RedirectResponse
     {
+        $this->authorize('create', Event::class);
+
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -79,6 +92,8 @@ class EventsController extends Controller
 
     public function show(Event $event): Response
     {
+        $this->authorize('view', $event);
+
         $event->load(['location:id,name']);
 
         return Inertia::render('admin/events/Show', compact('event'));
@@ -86,6 +101,8 @@ class EventsController extends Controller
 
     public function edit(Event $event): Response
     {
+        $this->authorize('update', $event);
+
         $locations = Location::query()->select('id', 'name')->orderBy('name')->get();
         $teams = \App\Models\Team::query()->select('id', 'name')->orderBy('name')->get();
 
@@ -94,6 +111,8 @@ class EventsController extends Controller
 
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
+        $this->authorize('update', $event);
+
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
@@ -109,6 +128,8 @@ class EventsController extends Controller
 
     public function destroy(Event $event): RedirectResponse
     {
+        $this->authorize('delete', $event);
+
         $event->delete();
 
         return redirect()->route('admin.events.index')->with('success', __('pages.admin.events.messages.deleted'));
@@ -116,14 +137,20 @@ class EventsController extends Controller
 
     public function restore(int $id): RedirectResponse
     {
-        Event::withTrashed()->findOrFail($id)->restore();
+        $event = Event::withTrashed()->findOrFail($id);
+        $this->authorize('restore', $event);
+
+        $event->restore();
 
         return back()->with('success', __('pages.admin.events.messages.restored'));
     }
 
     public function forceDestroy(int $id): RedirectResponse
     {
-        Event::withTrashed()->findOrFail($id)->forceDelete();
+        $event = Event::withTrashed()->findOrFail($id);
+        $this->authorize('forceDelete', $event);
+
+        $event->forceDelete();
 
         return redirect()->route('admin.events.index')->with('success', __('pages.admin.events.messages.force_deleted'));
     }

@@ -58,10 +58,21 @@ function handleForceDelete() {
     }
 }
 
+import { index } from '@/routes/admin/teams';
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
+
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
+    {
         title: trans('pages.settings.teams.title'),
-        href: '/admin/teams',
+        href: index.url(),
     },
 ]);
 </script>

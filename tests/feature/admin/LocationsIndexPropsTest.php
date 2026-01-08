@@ -29,5 +29,5 @@ it('shows postal_code as scalar and related city only on locations index', funct
     $response->assertSuccessful();
     // Ensure the page output contains the scalar postal code and the related city string
     $response->assertSee((string) $pc->postal_code);
-    $response->assertSee(e($pc->city));
+    $response->assertSee($pc->city, false);
 });

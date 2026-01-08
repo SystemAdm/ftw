@@ -45,7 +45,7 @@ it('registers user entry with valid QR code', function () {
     ]);
 
     $response->assertRedirect();
-    $response->assertSessionHas('success', 'John Doe has entered the building.');
+    $response->assertSessionHas('status', 'John Doe has entered the building.');
 
     $this->assertDatabaseHas('building_inside', [
         'user_id' => $user->id,
@@ -71,7 +71,7 @@ it('registers user exit when already inside', function () {
     ]);
 
     $response->assertRedirect();
-    $response->assertSessionHas('success', 'John Doe has left the building.');
+    $response->assertSessionHas('status', 'John Doe has left the building.');
 
     $this->assertDatabaseMissing('building_inside', [
         'user_id' => $user->id,

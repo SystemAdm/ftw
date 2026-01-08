@@ -17,7 +17,11 @@ import UserHoverCard from '@/components/custom/UserHoverCard.vue';
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
-        title: trans('pages.ui.navigation.mod_menu'),
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.moderator'),
         href: modOpenRoute.url(),
     },
 ]);

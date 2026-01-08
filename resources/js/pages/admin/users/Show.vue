@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { trans } from 'laravel-vue-i18n';
-import { Mail, Phone, Calendar, MapPin, User as UserIcon, ShieldCheck, ShieldAlert, Ban, Clock, Users, Activity, ArrowLeft } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { Mail, Phone, Calendar, MapPin, User as UserIcon, ShieldCheck, ShieldAlert, Ban, Clock, Users, Activity, ArrowLeft, Trash2, RotateCcw } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import { BreadcrumbItemType, AppPageProps } from '@/types';
+import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
+import { restore, forceDestroy, destroy } from '@/routes/admin/users';
+import { router, Head, Link, usePage } from '@inertiajs/vue3';
 
 interface User {
     id: number;
@@ -49,6 +51,9 @@ interface PageProps extends AppPageProps {
 
 const page = usePage<PageProps>();
 const user = computed(() => page.props.user);
+
+const deleteDialogOpen = ref(false);
+const forceDeleteDialogOpen = ref(false);
 
 const combinedLogs = computed(() => {
     const eventLogs = (user.value.logs || []).map((log: any) => ({
@@ -95,6 +100,25 @@ function formatBirthday(date: string | null) {
         day: 'numeric',
     });
 }
+
+function handleRestore() {
+    router.post(restore.url(user.value.id));
+}
+
+function handleDelete() {
+    router.delete(destroy.url(user.value.id), {
+        onFinish: () => (deleteDialogOpen.value = false),
+    });
+}
+
+function handleForceDelete() {
+    router.delete(forceDestroy.url(user.value.id), {
+        onFinish: () => {
+            forceDeleteDialogOpen.value = false;
+            router.visit('/admin/users');
+        },
+    });
+}
 </script>
 
 <template>
@@ -115,6 +139,23 @@ function formatBirthday(date: string | null) {
                     </div>
                 </div>
                 <div class="flex gap-2">
+                    <template v-if="user.deleted_at">
+                        <Button variant="outline" @click="handleRestore">
+                            <RotateCcw class="mr-2 h-4 w-4" />
+                            {{ trans('pages.settings.locations.actions.restore') }}
+                        </Button>
+                        <Button variant="destructive" @click="forceDeleteDialogOpen = true">
+                            <Trash2 class="mr-2 h-4 w-4" />
+                            {{ trans('pages.settings.locations.actions.force_delete') }}
+                        </Button>
+                    </template>
+                    <template v-else>
+                        <Button variant="destructive" @click="deleteDialogOpen = true">
+                            <Trash2 class="mr-2 h-4 w-4" />
+                            {{ trans('pages.settings.events.actions.delete') }}
+                        </Button>
+                    </template>
+
                     <Badge v-if="user.is_banned" variant="destructive" class="flex items-center gap-1">
                         <Ban class="h-3 w-3" />
                         {{ trans('pages.settings.users.status.banned') }}
@@ -135,6 +176,13 @@ function formatBirthday(date: string | null) {
                         <ShieldAlert class="h-3 w-3" />
                         {{ trans('pages.settings.users.status.unverified') }}
                     </Badge>
+                </div>
+            </div>
+
+            <div v-if="user.deleted_at" class="rounded-lg bg-destructive/10 p-4 text-destructive border border-destructive/20 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <Trash2 class="h-5 w-5" />
+                    <span class="font-medium">This user was deleted on {{ formatDate(user.deleted_at) }}</span>
                 </div>
             </div>
 
@@ -416,5 +464,19 @@ function formatBirthday(date: string | null) {
                 </div>
             </div>
         </div>
+
+        <DeleteConfirmationDialog
+            v-model:open="deleteDialogOpen"
+            :title="trans('pages.settings.locations.delete.title', { name: user.name })"
+            :description="trans('pages.settings.locations.delete.description')"
+            @confirm="handleDelete"
+        />
+
+        <DeleteConfirmationDialog
+            v-model:open="forceDeleteDialogOpen"
+            :title="trans('pages.settings.locations.force_delete.title', { name: user.name })"
+            :description="trans('pages.settings.locations.force_delete.description')"
+            @confirm="handleForceDelete"
+        />
     </SidebarLayout>
 </template>

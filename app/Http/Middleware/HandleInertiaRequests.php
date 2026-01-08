@@ -95,6 +95,7 @@ class HandleInertiaRequests extends Middleware
                 'fallback' => config('app.fallback_locale'),
                 'trans' => [
                     'ui' => trans('ui'),
+                    'crew' => trans('crew'),
                     // Legal and other page copy
                     'pages' => trans('pages'),
                 ],

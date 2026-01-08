@@ -24,9 +24,31 @@ import {
 } from '@/routes/admin/postcodes';
 import { router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
+import { computed } from 'vue';
+import { BreadcrumbItemType } from '@/types';
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
 
 const page = usePage();
 const postcode = (page.props as any).postcode as any;
+
+const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
+    {
+        title: trans('pages.settings.postcodes.title'),
+        href: indexRoute.url(),
+    },
+    {
+        title: postcode.postal_code,
+        href: page.url,
+    },
+]);
 
 function del() {
     router.delete(destroyRoute.url(postcode.postal_code), {
@@ -46,7 +68,7 @@ function forceDel() {
 </script>
 
 <template>
-    <SidebarLayout>
+    <SidebarLayout :breadcrumbs="breadcrumbs">
         <Card class="mx-auto w-full max-w-4xl">
             <CardHeader class="flex items-start justify-between gap-4 sm:flex-row">
                 <div class="space-y-1">

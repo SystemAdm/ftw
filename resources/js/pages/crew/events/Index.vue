@@ -13,12 +13,22 @@ import { trans } from 'laravel-vue-i18n';
 import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
+import { dashboard as crewDashboardRoute } from '@/routes/crew';
+
 const page = usePage<PageProps>();
 
 const deleteDialogOpen = ref(false);
 const selectedEventId = ref<number | null>(null);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.crew'),
+        href: crewDashboardRoute.url(),
+    },
     {
         title: trans('pages.ui.navigation.events'),
         href: index.url(),

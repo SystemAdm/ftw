@@ -44,6 +44,10 @@ const formattedBillingDate = computed(() => {
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
         title: trans('pages.settings.billing.membership'),
         href: billingRoute.url(),
     },

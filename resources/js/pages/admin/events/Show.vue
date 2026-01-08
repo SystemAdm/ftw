@@ -8,6 +8,7 @@ import { trans } from 'laravel-vue-i18n';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Users, Trash2, RotateCcw, Edit } from 'lucide-vue-next';
 import { edit, index, destroy, restore, forceDestroy } from '@/routes/admin/events';
+import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
 import { computed, ref } from 'vue';
 
 const page = usePage<PageProps>();
@@ -17,6 +18,14 @@ const deleteDialogOpen = ref(false);
 const forceDeleteDialogOpen = ref(false);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
     {
         title: trans('pages.settings.events.title'),
         href: index.url(),

@@ -24,6 +24,14 @@ const selectedPostcode = ref<any>(null);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
   {
+    title: trans('ui.navigation.home'),
+    href: '/',
+  },
+  {
+    title: trans('ui.navigation.admin'),
+    href: '/admin',
+  },
+  {
     title: trans('pages.settings.postcodes.title'),
     href: '/admin/postcodes',
   },

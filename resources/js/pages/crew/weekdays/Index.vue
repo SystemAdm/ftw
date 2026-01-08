@@ -19,6 +19,14 @@ const selectedWeekdayId = ref<number | null>(null);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.crew'),
+        href: '/crew',
+    },
+    {
         title: trans('pages.settings.weekdays.title'),
         href: '/crew/weekdays',
     },

@@ -53,4 +53,8 @@ return [
     'footer' => [
         'rights' => 'All rights reserved.',
     ],
+
+    'navigation' => [
+        'home' => 'Home',
+    ],
 ];

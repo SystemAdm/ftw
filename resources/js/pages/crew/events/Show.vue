@@ -9,10 +9,20 @@ import { usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
 
+import { dashboard as crewDashboardRoute } from '@/routes/crew';
+
 const page = usePage<PageProps>();
 const event = computed(() => (page.props as any).event);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.crew'),
+        href: crewDashboardRoute.url(),
+    },
     {
         title: trans('pages.ui.navigation.events'),
         href: index.url(),

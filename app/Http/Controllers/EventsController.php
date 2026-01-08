@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\RolesEnum;
 use App\Models\Event;
 use App\Support\OpeningHours;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,6 +12,8 @@ use Inertia\Response;
 
 class EventsController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request, OpeningHours $openingHours): Response
     {
         $query = Event::query()
@@ -36,8 +38,8 @@ class EventsController extends Controller
 
     public function show(Event $event): Response
     {
-        if ($event->status !== 'published' && ! auth()->user()?->hasRole(RolesEnum::ADMIN->value)) {
-            abort(404);
+        if ($event->status !== 'published') {
+            $this->authorize('view', $event);
         }
 
         $event->load(['location']);
@@ -50,6 +52,8 @@ class EventsController extends Controller
 
     public function signup(Event $event): RedirectResponse
     {
+        $this->authorize('signup', $event);
+
         /** @var \App\Models\User $user */
         $user = auth()->user();
 

@@ -25,6 +25,8 @@ class EventsController extends Controller
      */
     public function index(Request $request): Response
     {
+        $this->authorize('viewAny', Event::class);
+
         $user = $request->user();
         $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
 
@@ -46,6 +48,8 @@ class EventsController extends Controller
      */
     public function create(Request $request): Response
     {
+        $this->authorize('create', Event::class);
+
         $user = $request->user();
         $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
 
@@ -69,6 +73,8 @@ class EventsController extends Controller
      */
     public function store(StoreEventRequest $request): RedirectResponse
     {
+        $this->authorize('create', Event::class);
+
         $user = $request->user();
         $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
         $data = $request->validated();
@@ -93,12 +99,7 @@ class EventsController extends Controller
      */
     public function show(Request $request, Event $event): Response
     {
-        $user = $request->user();
-        $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
-
-        if (! $isGlobalAdmin && ! $user->teams->contains('id', $event->team_id)) {
-            abort(403);
-        }
+        $this->authorize('view', $event);
 
         $event->load([
             'location',
@@ -119,12 +120,10 @@ class EventsController extends Controller
      */
     public function edit(Request $request, Event $event): Response
     {
+        $this->authorize('update', $event);
+
         $user = $request->user();
         $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
-
-        if (! $isGlobalAdmin && ! $user->teams->contains('id', $event->team_id)) {
-            abort(403);
-        }
 
         $teams = Team::query()
             ->when(! $isGlobalAdmin, function ($query) use ($user) {
@@ -147,11 +146,13 @@ class EventsController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
+        $this->authorize('update', $event);
+
         $user = $request->user();
         $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
         $data = $request->validated();
 
-        if (! $isGlobalAdmin && (! $user->teams->contains('id', $event->team_id) || ! $user->teams->contains('id', $data['team_id']))) {
+        if (! $isGlobalAdmin && ! $user->teams->contains('id', $data['team_id'])) {
             abort(403);
         }
 
@@ -171,12 +172,7 @@ class EventsController extends Controller
      */
     public function destroy(Request $request, Event $event): RedirectResponse
     {
-        $user = $request->user();
-        $isGlobalAdmin = RolesEnum::userIsGlobalAdmin($user);
-
-        if (! $isGlobalAdmin && ! $user->teams->contains('id', $event->team_id)) {
-            abort(403);
-        }
+        $this->authorize('delete', $event);
 
         $event->delete();
 

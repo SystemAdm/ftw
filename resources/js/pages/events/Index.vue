@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
-import { trans } from 'laravel-vue-i18n';
-import { Calendar, MapPin, Users, CheckCircle } from 'lucide-vue-next';
-import { Badge } from '@/components/ui/badge';
-import UpcomingWeekdays from '@/components/custom/UpcomingWeekdays.vue';
-import { index as eventsIndex, show } from '@/routes/events';
-import { usePage } from '@inertiajs/vue3';
 import Paginator from '@/components/custom/Paginator.vue';
+import UpcomingWeekdays from '@/components/custom/UpcomingWeekdays.vue';
+import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
+import { Badge } from '@/components/ui/badge';
+import { index as eventsIndex, show } from '@/routes/events';
 import { BreadcrumbItem } from '@/types';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { trans } from 'laravel-vue-i18n';
+import { Calendar, CheckCircle, MapPin, Users } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const page = usePage<any>();
 
@@ -18,12 +18,16 @@ defineProps<{
     week: number;
 }>();
 
-const breadcrumbs = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
     {
         title: trans('pages.events.title'),
         href: eventsIndex.url(),
     },
-] as BreadcrumbItem[];
+]);
 
 function formatDate(date: string) {
     return new Date(date).toLocaleString(page.props.i18n.locale, {

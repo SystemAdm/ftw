@@ -47,7 +47,11 @@ const props = defineProps<{
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
-        title: trans('pages.ui.navigation.admin_menu'),
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
         href: adminDashboardRoute.url(),
     },
 ]);

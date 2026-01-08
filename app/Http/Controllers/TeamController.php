@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RolesEnum;
 use App\Models\Team;
 use App\Models\Weekday;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -110,12 +113,45 @@ class TeamController extends Controller
             'description' => $team->description,
             'logo' => $team->logo,
             'active' => (bool) $team->active,
+            'applications_enabled' => (bool) $team->applications_enabled,
         ];
+
+        $isMember = false;
+        if (auth()->check()) {
+            $isMember = auth()->user()->teams()->where('team_id', $team->id)->exists();
+        }
 
         return Inertia::render('teams/Show', [
             'team' => $t,
             'upcoming' => $upcoming,
+            'isMember' => $isMember,
         ]);
+    }
+
+    public function apply(Request $request, Team $team): RedirectResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        if (! $team->applications_enabled) {
+            return back()->with('error', 'Applications are currently disabled for this team.');
+        }
+
+        if ($user->teams()->where('team_id', $team->id)->exists()) {
+            return back()->with('error', 'You have already applied for or are a member of this team.');
+        }
+
+        $validated = $request->validate([
+            'application' => ['required', 'string', 'min:10', 'max:2000'],
+        ]);
+
+        $user->teams()->attach($team->id, [
+            'status' => 'pending',
+            'role' => RolesEnum::CREW->value,
+            'application' => $validated['application'],
+        ]);
+
+        return back()->with('success', 'Your application for '.$team->name.' has been submitted.');
     }
 
     // Public controller only needs index/show

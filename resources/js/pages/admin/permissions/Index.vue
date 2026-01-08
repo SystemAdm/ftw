@@ -11,6 +11,9 @@ import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { BreadcrumbItemType } from '@/types';
 
+import { index } from '@/routes/admin/permissions';
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
+
 const page = usePage<PageProps>()
 
 const deleteDialogOpen = ref(false);
@@ -18,8 +21,16 @@ const selectedPermissionId = ref<number | null>(null);
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
   {
+    title: trans('ui.navigation.home'),
+    href: '/',
+  },
+  {
+    title: trans('ui.navigation.admin'),
+    href: adminDashboardRoute.url(),
+  },
+  {
     title: trans('pages.settings.permissions.title'),
-    href: '/admin/permissions',
+    href: index.url(),
   },
 ]);
 

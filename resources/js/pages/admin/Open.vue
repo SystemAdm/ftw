@@ -9,9 +9,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { trans } from 'laravel-vue-i18n';
 import { computed, ref, onMounted } from 'vue';
 
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
+
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     {
-        title: trans('pages.ui.navigation.admin_menu'),
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
+    {
+        title: trans('pages.admin.open.title'),
         href: '/admin/open',
     },
 ]);

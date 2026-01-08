@@ -39,7 +39,7 @@ return [
         'email_error' => 'Vi kan ikke sende e-post akkurat nå. Vennligst prøv igjen senere. Du kan sende oss e-post gjennom din egen e-postklient isteden. <a class="text-foreground" href="mailto:post@spillhuset.com?subject=Kontakt%20Oss">post@spillhuset.com</a>',
     ],
 
-    // Translations used in outgoing contact email template
+    // Translations used in the outgoing contact email template
     'contact_email' => [
         'heading' => 'Kontaktskjema',
         'from' => 'Fra',
@@ -52,5 +52,9 @@ return [
 
     'footer' => [
         'rights' => 'Alle rettigheter forbeholdt.',
+    ],
+
+    'navigation' => [
+        'home' => 'Hjem',
     ],
 ];

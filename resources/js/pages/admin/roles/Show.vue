@@ -10,10 +10,20 @@ import { router, usePage } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { computed, ref } from 'vue';
 
+import { dashboard as adminDashboardRoute } from '@/routes/admin';
+
 const page = usePage<PageProps>();
 const role = (page.props as any).role;
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
     {
         title: trans('pages.settings.roles.title'),
         href: indexRoute.url(),

@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        if (($_ENV['APP_ENV'] ?? null) === 'testing' || ($_SERVER['APP_ENV'] ?? null) === 'testing') {
+            $middleware->validateCsrfTokens(except: ['*']);
+        }
         // Apply CORS headers globally so preflight (OPTIONS) requests are handled consistently
         $middleware->append(HandleCors::class);
         $middleware->encryptCookies(except: [

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { router, usePage } from '@inertiajs/vue3';
 import { create as createRoute, show as showRoute, edit as editRoute, destroy as destroyRoute, restore as restoreRoute, forceDestroy as forceDestroyRoute } from '@/routes/admin/locations';
+import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
 import { Table, TableBody, TableEmpty, TableHead, TableHeader, TableRow, TableCell, TableFooter } from '@/components/ui/table';
 import Paginator from '@/components/custom/Paginator.vue';
 import { trans } from 'laravel-vue-i18n';
@@ -55,6 +56,14 @@ function handleForceDelete() {
 }
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
+    {
+        title: trans('ui.navigation.home'),
+        href: '/',
+    },
+    {
+        title: trans('ui.navigation.admin'),
+        href: adminDashboardRoute.url(),
+    },
     {
         title: trans('pages.settings.locations.title'),
         href: '/admin/locations',
