@@ -39,6 +39,10 @@ class EventsController extends Controller
     public function show(Event $event): Response
     {
         if ($event->status !== 'published') {
+            if (! auth()->check()) {
+                abort(404);
+            }
+
             $this->authorize('view', $event);
         }
 

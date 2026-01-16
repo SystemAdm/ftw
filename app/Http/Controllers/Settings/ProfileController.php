@@ -82,7 +82,7 @@ class ProfileController extends Controller
         $data = $request->validated();
 
         $user->given_name = $data['given_name'];
-        $user->middle_name = $data['middle_name'];
+        $user->middle_name = $data['middle_name'] ?? null;
         $user->family_name = $data['family_name'];
         $user->name = trim($user->given_name.' '.($user->middle_name ? $user->middle_name.' ' : '').$user->family_name);
         $user->birthday = $data['birthday'];

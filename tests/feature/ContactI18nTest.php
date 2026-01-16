@@ -29,6 +29,6 @@ it('exposes contact translations via Inertia props (nb) and renders', function (
         ->toHaveKey('i18n')
         ->and(data_get($props, 'i18n.locale'))->toBe('nb')
         ->and(data_get($props, 'i18n.trans.pages.contact.title'))->toBe('Kontakt oss')
-        ->and(data_get($props, 'i18n.trans.pages.contact.labels.name'))->toBe('Navn')
+        ->and(data_get($props, 'i18n.trans.pages.contact.labels.name'))->toBe('Fullt navn')
         ->and(data_get($props, 'i18n.trans.pages.contact.actions.send'))->toBe('Send');
 });

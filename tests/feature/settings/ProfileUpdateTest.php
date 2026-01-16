@@ -24,6 +24,8 @@ test('profile information can be updated', function () {
     $response = $this
         ->actingAs($user)
         ->patch(route('settings.profile.update'), [
+            'given_name' => $user->given_name,
+            'family_name' => $user->family_name,
             'birthday' => '1990-01-01',
             'birthday_visibility' => BirthdayVisibility::Birthdate->value,
             'postal_code' => $postalCode->postal_code,
