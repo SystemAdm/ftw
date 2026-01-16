@@ -13,32 +13,38 @@ class PostalCodeSeeder extends Seeder
     public function run(): void
     {
         PostalCode::firstOrCreate([
-            'postal_code' => 1300,
+            'postal_code' => 1300], [
             'city' => 'Sandvika',
             'state' => 'Akershus',
             'country' => 'Norge',
             'municipality' => 'Bærum',
         ]);
         PostalCode::firstOrCreate([
-            'postal_code' => 1353,
+            'postal_code' => 1353], [
             'city' => 'Bærums Verk',
             'state' => 'Akershus',
             'country' => 'Norge',
             'municipality' => 'Bærum',
         ]);
-        PostalCode::factory()->create([
-            'postal_code' => 1350,
-            'city' => 'Lommedalen',
-            'state' => 'Akershus',
-            'country' => 'Norge',
-            'municipality' => 'Bærum',
-        ]);
-        PostalCode::factory()->create([
-            'postal_code' => 3512,
-            'city' => 'Hønefoss',
-            'state' => 'Buskerud',
-            'country' => 'Norge',
-            'municipality' => 'Hole',
-        ]);
+        PostalCode::firstOrCreate(
+            [
+                'postal_code' => 1350
+            ], [
+                'city' => 'Lommedalen',
+                'state' => 'Akershus',
+                'country' => 'Norge',
+                'municipality' => 'Bærum',
+            ]
+        );
+        PostalCode::firstOrCreate(
+            [
+                'postal_code' => 3512
+            ], [
+                'city' => 'Hønefoss',
+                'state' => 'Buskerud',
+                'country' => 'Norge',
+                'municipality' => 'Hole',
+            ]
+        );
     }
 }
