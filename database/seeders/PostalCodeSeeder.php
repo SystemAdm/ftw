@@ -12,14 +12,14 @@ class PostalCodeSeeder extends Seeder
      */
     public function run(): void
     {
-        PostalCode::factory()->create([
+        PostalCode::firstOrCreate([
             'postal_code' => 1300,
             'city' => 'Sandvika',
             'state' => 'Akershus',
             'country' => 'Norge',
             'municipality' => 'Bærum',
         ]);
-        PostalCode::factory()->create([
+        PostalCode::firstOrCreate([
             'postal_code' => 1353,
             'city' => 'Bærums Verk',
             'state' => 'Akershus',
