@@ -12,7 +12,8 @@ test('new users can register with foreign phone number with country code', funct
 
     // US number
     $response = $this->post(route('register.store'), [
-        'name' => 'US User',
+        'given_name' => 'US',
+        'family_name' => 'User',
         'birthday' => now()->subYears(20)->toDateString(),
         'postal_code' => '12345',
         'phone' => '+12025550123',
@@ -24,7 +25,7 @@ test('new users can register with foreign phone number with country code', funct
     $response->assertSessionHasNoErrors();
     $this->assertAuthenticated();
 
-    $user = \App\Models\User::where('name', 'US User')->first();
+    $user = \App\Models\User::where('family_name', 'User')->where('given_name', 'US')->first();
     expect($user->phoneNumbers)->toHaveCount(1);
     expect($user->phoneNumbers->first()->e164)->toBe('+12025550123');
 });
@@ -35,7 +36,8 @@ test('new users can register with Swedish phone number with country code', funct
 
     // SE number
     $response = $this->post(route('register.store'), [
-        'name' => 'SE User',
+        'given_name' => 'SE',
+        'family_name' => 'User',
         'birthday' => now()->subYears(20)->toDateString(),
         'postal_code' => '12345',
         'phone' => '+46701234567',
@@ -47,7 +49,7 @@ test('new users can register with Swedish phone number with country code', funct
     $response->assertSessionHasNoErrors();
     $this->assertAuthenticated();
 
-    $user = \App\Models\User::where('name', 'SE User')->first();
+    $user = \App\Models\User::where('family_name', 'User')->where('given_name', 'SE')->first();
     expect($user->phoneNumbers)->toHaveCount(1);
     expect($user->phoneNumbers->first()->e164)->toBe('+46701234567');
 });
@@ -99,7 +101,8 @@ test('new users can register with Swedish local phone number', function () {
 
     // SE number in local format
     $response = $this->post(route('register.store'), [
-        'name' => 'SE Local User',
+        'given_name' => 'SE Local',
+        'family_name' => 'User',
         'birthday' => now()->subYears(20)->toDateString(),
         'postal_code' => '12345',
         'phone' => '0701234567',
@@ -111,7 +114,7 @@ test('new users can register with Swedish local phone number', function () {
     $response->assertSessionHasNoErrors();
     $this->assertAuthenticated();
 
-    $user = \App\Models\User::where('name', 'SE Local User')->first();
+    $user = \App\Models\User::where('family_name', 'User')->where('given_name', 'SE Local')->first();
     expect($user->phoneNumbers)->toHaveCount(1);
     expect($user->phoneNumbers->first()->e164)->toBe('+46701234567');
 });

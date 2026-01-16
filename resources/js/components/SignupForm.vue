@@ -35,7 +35,9 @@ const matchType = ref<string>('email');
 const formattedPhone = ref<string | null>(null);
 const selectedUser = ref<any>(null);
 const password = ref('');
-const name = ref('');
+const given_name = ref('');
+const middle_name = ref('');
+const family_name = ref('');
 const email = ref('');
 const phone = ref('');
 const pin = ref('');
@@ -180,7 +182,9 @@ function loginWithPassword(): void {
 }
 
 const registrationForm = useForm({
-    name: '',
+    given_name: '',
+    middle_name: '',
+    family_name: '',
     email: '',
     phone: '',
     password: '',
@@ -192,7 +196,9 @@ const registrationForm = useForm({
 });
 
 function goToRegister(): void {
-    name.value = '';
+    given_name.value = '';
+    middle_name.value = '';
+    family_name.value = '';
     email.value = query.value.includes('@') ? query.value : '';
     phone.value = formattedPhone.value || (!query.value.includes('@') ? query.value : '');
     history.value.push(step.value);
@@ -257,7 +263,9 @@ async function searchGuardian(): Promise<void> {
 }
 
 function register(): void {
-    registrationForm.name = name.value;
+    registrationForm.given_name = given_name.value;
+    registrationForm.middle_name = middle_name.value;
+    registrationForm.family_name = family_name.value;
     registrationForm.email = email.value;
     registrationForm.phone = phone.value;
     registrationForm.password = password.value;
@@ -396,9 +404,19 @@ function goToSocialiteGoogle(): void {
                     </div>
                     <form class="space-y-4" @submit.prevent="sendOtp">
                         <Field>
-                            <FieldLabel for="name">{{ trans('pages.auth.login.name_label') }}</FieldLabel>
-                            <Input id="name" type="text" v-model="name" required />
-                            <div v-if="registrationForm.errors.name" class="text-sm text-red-600">{{ registrationForm.errors.name }}</div>
+                            <FieldLabel for="given_name">{{ trans('pages.auth.login.given_name_label') }}</FieldLabel>
+                            <Input id="given_name" type="text" v-model="given_name" required />
+                            <div v-if="registrationForm.errors.given_name" class="text-sm text-red-600">{{ registrationForm.errors.given_name }}</div>
+                        </Field>
+                        <Field>
+                            <FieldLabel for="middle_name">{{ trans('pages.auth.login.middle_name_label') }}</FieldLabel>
+                            <Input id="middle_name" type="text" v-model="middle_name" />
+                            <div v-if="registrationForm.errors.middle_name" class="text-sm text-red-600">{{ registrationForm.errors.middle_name }}</div>
+                        </Field>
+                        <Field>
+                            <FieldLabel for="family_name">{{ trans('pages.auth.login.family_name_label') }}</FieldLabel>
+                            <Input id="family_name" type="text" v-model="family_name" required />
+                            <div v-if="registrationForm.errors.family_name" class="text-sm text-red-600">{{ registrationForm.errors.family_name }}</div>
                         </Field>
                         <Field>
                             <FieldLabel for="email">{{ trans('pages.auth.login.email_label') }}</FieldLabel>
@@ -506,8 +524,16 @@ function goToSocialiteGoogle(): void {
                     </div>
                     <div class="space-y-2 rounded-md border p-4 text-sm">
                         <div class="flex justify-between">
-                            <span class="font-semibold">{{ trans('pages.auth.login.name_label') }}:</span>
-                            <span>{{ name }}</span>
+                            <span class="font-semibold">{{ trans('pages.auth.login.given_name_label') }}:</span>
+                            <span>{{ given_name }}</span>
+                        </div>
+                        <div class="flex justify-between" v-if="middle_name">
+                            <span class="font-semibold">{{ trans('pages.auth.login.middle_name_label') }}:</span>
+                            <span>{{ middle_name }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold">{{ trans('pages.auth.login.family_name_label') }}:</span>
+                            <span>{{ family_name }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="font-semibold">{{ trans('pages.auth.login.email_label') }}:</span>

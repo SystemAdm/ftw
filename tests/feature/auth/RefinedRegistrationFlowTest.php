@@ -17,7 +17,8 @@ test('minor registration includes relationship', function () {
     session(['registration_email' => 'minor@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Minor User',
+        'given_name' => 'Minor',
+        'family_name' => 'User',
         'email' => 'minor@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -60,7 +61,8 @@ test('invited guardian registers and confirms relationship', function () {
     session(['registration_email' => 'parent@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Guardian User',
+        'given_name' => 'Guardian',
+        'family_name' => 'User',
         'email' => 'parent@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -102,7 +104,8 @@ test('guardian must be older than 25', function () {
     session(['registration_email' => 'young-parent@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Young Guardian',
+        'given_name' => 'Young',
+        'family_name' => 'Guardian',
         'email' => 'young-parent@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',

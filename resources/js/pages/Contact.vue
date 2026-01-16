@@ -8,16 +8,9 @@ import { Textarea } from '@/components/ui/textarea'
 import PublicLayout from '@/components/layouts/PublicLayout.vue'
 import { submit as submitRoute } from '@/routes/contact';
 
-type I18n = {
-  i18n: {
-    trans: {
-      pages: Record<string, any>
-    }
-  }
-}
+import { trans } from 'laravel-vue-i18n';
 
-const page = usePage<I18n>()
-const t = computed(() => page.props.i18n?.trans?.pages?.contact ?? {})
+const page = usePage<any>()
 const siteKey = computed(() => (page.props as any).captcha?.turnstile_site_key ?? '')
 const status = computed(() => (page.props as any).status ?? null)
 const error = computed(() => (page.props as any).error ?? null)
@@ -87,8 +80,8 @@ function submit() {
 <template>
   <PublicLayout>
   <div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-    <Head :title="t.title ?? 'Contact'" />
-    <h1 class="text-2xl font-bold tracking-tight mb-4">{{ t.title ?? 'Contact' }}</h1>
+    <Head :title="trans('pages.contact.title')" />
+    <h1 class="text-2xl font-bold tracking-tight mb-4">{{ trans('pages.contact.title') }}</h1>
 
     <!-- Success / status message -->
     <div v-if="status" class="mb-4 rounded-md border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300" v-html="status">
@@ -101,22 +94,22 @@ function submit() {
 
     <form @submit.prevent="submit" class="space-y-4">
       <div class="space-y-2">
-        <Label for="name">{{ t.labels?.name ?? 'Name' }}</Label>
+        <Label for="name">{{ trans('pages.contact.labels.name') }}</Label>
         <Input id="name" v-model="form.name" />
         <div v-if="form.errors.name" class="text-sm text-red-600">{{ form.errors.name }}</div>
       </div>
       <div class="space-y-2">
-        <Label for="email">{{ t.labels?.email ?? 'Email' }}</Label>
+        <Label for="email">{{ trans('pages.contact.labels.email') }}</Label>
         <Input id="email" type="email" v-model="form.email" />
         <div v-if="form.errors.email" class="text-sm text-red-600">{{ form.errors.email }}</div>
       </div>
       <div class="space-y-2">
-        <Label for="subject">{{ t.labels?.subject ?? 'Subject' }}</Label>
+        <Label for="subject">{{ trans('pages.contact.labels.subject') }}</Label>
         <Input id="subject" v-model="form.subject" />
         <div v-if="form.errors.subject" class="text-sm text-red-600">{{ form.errors.subject }}</div>
       </div>
       <div class="space-y-2">
-        <Label for="message">{{ t.labels?.message ?? 'Message' }}</Label>
+        <Label for="message">{{ trans('pages.contact.labels.message') }}</Label>
         <Textarea id="message" v-model="form.message" rows="6" />
         <div v-if="form.errors.message" class="text-sm text-red-600">{{ form.errors.message }}</div>
       </div>
@@ -125,7 +118,7 @@ function submit() {
         <div ref="widgetEl" class="cf-turnstile" />
         <div v-if="form.errors['cf-turnstile-response']" class="text-sm text-red-600">{{ form.errors['cf-turnstile-response'] }}</div>
       </div>
-      <Button type="submit" :disabled="form.processing">{{ form.processing ? (t.actions?.sending ?? 'Sending…') : (t.actions?.send ?? 'Send') }}</Button>
+      <Button type="submit" :disabled="form.processing">{{ form.processing ? trans('pages.contact.actions.sending') : trans('pages.contact.actions.send') }}</Button>
     </form>
   </div>
   </PublicLayout>

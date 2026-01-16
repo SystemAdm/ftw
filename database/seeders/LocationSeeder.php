@@ -28,6 +28,8 @@ class LocationSeeder extends Seeder
             'description' => 'Sammen med UFB og Flisespikkeriet',
             'street_address' => 'Skollerudveien',
             'street_number' => '5',
+            'latitude' => '59.9429798715757510.50802216101194',
+            'longitude' => '10.50802216101194',
         ]);
 
         // Location::factory(6)->create();

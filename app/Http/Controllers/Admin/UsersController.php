@@ -46,6 +46,30 @@ class UsersController extends Controller
     }
 
     /**
+     * Set police confirmed timestamp for a user.
+     */
+    public function policeConfirm(User $user)
+    {
+        $user->update([
+            'police_confirmed_at' => now(),
+        ]);
+
+        return back()->with('success', 'User police report confirmed.');
+    }
+
+    /**
+     * Remove police confirmed timestamp for a user.
+     */
+    public function policeUnconfirm(User $user)
+    {
+        $user->update([
+            'police_confirmed_at' => null,
+        ]);
+
+        return back()->with('success', 'User police report unconfirmed.');
+    }
+
+    /**
      * Send password reset link to user.
      */
     public function resetPassword(User $user)

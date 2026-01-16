@@ -8,18 +8,28 @@ import { faFacebook, faInstagram, faGoogle, faLinkedin, faGithub } from '@fortaw
 
 library.add(faFacebook, faInstagram, faGoogle, faLinkedin, faGithub)
 
-type I18n = {
-  i18n: {
-    trans: {
-      ui: Record<string, any>
-    }
-  }
-}
+import { trans } from 'laravel-vue-i18n';
 
-const page = usePage<I18n>()
-const ui = computed(() => page.props.i18n?.trans?.ui ?? {})
+const page = usePage<any>();
 
-const appearance = ref<'light' | 'dark' | 'system'>((page.props as any).appearance ?? 'dark')
+const brand = computed(() => trans('ui.brand'));
+const legalHeading = computed(() => trans('ui.legal.heading'));
+const legalPrivacy = computed(() => trans('ui.legal.privacy'));
+const legalTerms = computed(() => trans('ui.legal.terms'));
+const legalCookie = computed(() => trans('ui.legal.cookie'));
+const contactHeading = computed(() => trans('ui.contact.heading'));
+const contactVisit = computed(() => trans('ui.contact.visit'));
+const contactBank = computed(() => trans('ui.contact.bank'));
+const contactVipps = computed(() => trans('ui.contact.vipps'));
+const contactOrg = computed(() => trans('ui.contact.org'));
+const contactForm = computed(() => trans('ui.contact.form'));
+const contactOr = computed(() => trans('ui.contact.or'));
+const contactDirect = computed(() => trans('ui.contact.direct'));
+const aboutHeading = computed(() => trans('ui.about.heading'));
+const aboutDescription = computed(() => trans('ui.about.description'));
+const footerRights = computed(() => trans('ui.footer.rights'));
+
+const appearance = ref<'light' | 'dark' | 'system'>((page.props as any).appearance ?? 'dark');
 const systemIsDark = ref(false)
 
 const logoUrl = computed(() => {
@@ -72,7 +82,7 @@ onMounted(() => {
           <span class="inline-grid h-10 place-items-center rounded-md ">
             <img :src="logoUrl" alt="Spillhuset logo" class="h-15 md:block" />
           </span>
-          <!--<span class="text-base font-semibold tracking-wide text-foreground uppercase">{{ ui.brand ?? 'Spillhuset' }}</span>-->
+          <!--<span class="text-base font-semibold tracking-wide text-foreground uppercase">{{ brand }}</span>-->
         </Link>
 
         <!-- Socials -->
@@ -102,21 +112,21 @@ onMounted(() => {
       <div class="grid grid-cols-1 gap-8 text-sm text-muted-foreground md:grid-cols-3">
         <!-- Legal -->
         <div class="text-center md:text-left">
-          <h3 class="mb-3 text-foreground font-semibold">{{ ui.legal?.heading ?? 'Legal' }}</h3>
+          <h3 class="mb-3 text-foreground font-semibold">{{ legalHeading }}</h3>
           <ul class="space-y-2">
             <li>
               <Link href="/privacy" class="hover:text-foreground transition">
-                <span v-html="ui.legal?.privacy ?? 'Privacy notice'"></span>
+                <span v-html="legalPrivacy"></span>
               </Link>
             </li>
             <li>
               <Link href="/terms" class="hover:text-foreground transition">
-                <span v-html="ui.legal?.terms ?? 'Terms & conditions'"></span>
+                <span v-html="legalTerms"></span>
               </Link>
             </li>
             <li>
               <Link href="/cookie" class="hover:text-foreground transition">
-                <span v-html="ui.legal?.cookie ?? 'Cookie policy'"></span>
+                <span v-html="legalCookie"></span>
               </Link>
             </li>
           </ul>
@@ -124,13 +134,13 @@ onMounted(() => {
 
         <!-- Contact / Visit -->
         <div class="text-center md:text-left">
-          <h3 class="mb-3 text-foreground font-semibold">{{ ui.contact?.heading ?? 'Contact' }}</h3>
+          <h3 class="mb-3 text-foreground font-semibold">{{ contactHeading }}</h3>
           <ul class="space-y-2">
-            <li>{{ ui.contact?.visit ?? 'Visit address' }}: Skollerudveien 5, 1353 Bærums Verk</li>
-            <li>{{ ui.contact?.bank ?? 'Bank account' }}: <span class="font-medium text-foreground">2220.29.86645</span> <span>Sparebanken Øst</span></li>
-            <li>{{ ui.contact?.vipps ?? 'Vipps' }}: <span class="font-medium text-foreground">#611764</span></li>
+            <li>{{ contactVisit }}: Skollerudveien 5, 1353 Bærums Verk</li>
+            <li>{{ contactBank }}: <span class="font-medium text-foreground">2220.29.86645</span> <span>Sparebanken Øst</span></li>
+            <li>{{ contactVipps }}: <span class="font-medium text-foreground">#611764</span></li>
             <li>
-              {{ ui.contact?.org ?? 'Org.nr' }}:
+              {{ contactOrg }}:
               <a
                 href="https://virksomhet.brreg.no/nb/oppslag/enheter/917616140"
                 target="_blank"
@@ -142,22 +152,22 @@ onMounted(() => {
             </li>
             <li>
               <Link href="/contact" class="hover:text-foreground transition">
-                <span class="text-foreground" v-html="ui.contact?.form ?? 'Contact form'"></span>
-              </Link>{{ui.contact?.or ?? ''}}
-                <span v-html="ui.contact?.direct ?? ''"></span>
+                <span class="text-foreground" v-html="contactForm"></span>
+              </Link>{{ contactOr }}
+                <span v-html="contactDirect"></span>
             </li>
           </ul>
         </div>
 
         <!-- About -->
         <div class="text-center md:text-left">
-          <h3 class="mb-3 text-foreground font-semibold">{{ ui.about?.heading ?? 'About' }}</h3>
-          <p class="text-sm/6">{{ ui.about?.description ?? 'A meetup for gamers – play, compete, win. Follow us on social media for news and events.' }}</p>
+          <h3 class="mb-3 text-foreground font-semibold">{{ aboutHeading }}</h3>
+          <p class="text-sm/6">{{ aboutDescription }}</p>
         </div>
       </div>
 
       <!-- Bottom -->
-      <div class="mt-10 text-center text-xs text-muted-foreground">© {{ "2014 - " + new Date().getFullYear() }} {{ ui.brand ?? 'Spillhuset' }}. {{ ui.footer?.rights ?? 'All rights reserved.' }}</div>
+      <div class="mt-10 text-center text-xs text-muted-foreground">© {{ "2014 - " + new Date().getFullYear() }} {{ brand }}. {{ footerRights }}</div>
     </div>
   </footer>
 </template>

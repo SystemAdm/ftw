@@ -36,7 +36,7 @@ return [
         'form' => 'Kontaktskjema',
         'or' => ' eller ',
         'direct' => 'direkte e-post: <a class="text-foreground" href="mailto:post@spillhuset.com?subject=Kontakt%20Oss">post@spillhuset.com</a>',
-        'email_error' => 'Vi kan ikke sende e-post akkurat nå. Vennligst prøv igjen senere. Du kan sende oss e-post gjennom din egen e-postklient isteden. <a class="text-foreground" href="mailto:post@spillhuset.com?subject=Kontakt%20Oss">post@spillhuset.com</a>',
+        'email_error' => 'Vi kan ikke sende e-post akkurat nå. Vennligst prøv igjen senere. Du kan sende oss e-post gjennom din egen e-postklient isteden. <a href="mailto:post@spillhuset.com?subject=Kontakt%20Oss">post@spillhuset.com</a>',
     ],
 
     // Translations used in the outgoing contact email template

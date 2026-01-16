@@ -28,7 +28,14 @@ import { index as eventsRoute } from '@/routes/events/index';
 import { trans } from 'laravel-vue-i18n';
 
 const page = usePage<any>();
-const ui = computed(() => page.props.i18n?.trans?.ui ?? {});
+
+const brand = computed(() => trans('ui.brand'));
+const menuTitle = computed(() => trans('ui.menu.title'));
+const menuClose = computed(() => trans('ui.menu.close'));
+const appearanceHeading = computed(() => trans('ui.appearance.heading'));
+const appearanceLight = computed(() => trans('ui.appearance.light'));
+const appearanceDark = computed(() => trans('ui.appearance.dark'));
+const appearanceSystem = computed(() => trans('ui.appearance.system'));
 
 const user = computed(() => {
     const u = page.props.auth?.user;
@@ -63,7 +70,7 @@ const logoUrl = computed(() => {
 
 function onAppearanceChange(mode: 'light' | 'dark' | 'system') {
     updateAppearance(mode);
-    toast.success(ui.value?.appearance?.changed ?? 'Theme updated');
+    toast.success(trans('ui.appearance.changed'));
 }
 
 onMounted(() => {
@@ -107,7 +114,7 @@ useFlashToasts(page);
                 </div>
                 <!-- Center title (brand links to home) -->
                 <Link href="/" aria-label="Go to home" class="text-center text-lg font-bold tracking-wide transition hover:opacity-90 sm:text-xl uppercase">
-                    {{ ui.brand ?? 'Spillhuset' }}
+                    {{ brand }}
                 </Link>
                 <!-- Right hamburger -->
                 <div class="flex items-center justify-end pr-1">
@@ -129,8 +136,8 @@ useFlashToasts(page);
                         </SheetTrigger>
                         <SheetContent side="right" class="w-80 max-w-[85vw] flex flex-col p-0">
                             <SheetHeader class="px-6 pt-6">
-                                <SheetTitle>{{ ui.menu?.title ?? 'Menu' }}</SheetTitle>
-                                <SheetDescription class="sr-only">{{ ui.menu?.title ?? 'Menu' }}</SheetDescription>
+                                <SheetTitle>{{ menuTitle }}</SheetTitle>
+                                <SheetDescription class="sr-only">{{ menuTitle }}</SheetDescription>
                             </SheetHeader>
 
                             <div class="flex-1 overflow-y-auto px-6 pb-6">
@@ -228,7 +235,7 @@ useFlashToasts(page);
                                 <!-- Appearance toggle -->
                                 <div class="mt-8 border-t pt-6">
                                     <div class="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                                        {{ ui.appearance?.heading ?? 'Appearance' }}
+                                        {{ appearanceHeading }}
                                     </div>
                                     <div class="grid grid-cols-1 gap-2">
                                         <button
@@ -239,7 +246,7 @@ useFlashToasts(page);
                                             :class="{ 'bg-accent text-accent-foreground': appearance === 'light' }"
                                         >
                                             <FontAwesomeIcon icon="sun" class="h-4 w-4" />
-                                            <span>{{ ui.appearance?.light ?? 'Light' }}</span>
+                                            <span>{{ appearanceLight }}</span>
                                         </button>
                                         <button
                                             type="button"
@@ -249,7 +256,7 @@ useFlashToasts(page);
                                             :class="{ 'bg-accent text-accent-foreground': appearance === 'dark' }"
                                         >
                                             <FontAwesomeIcon icon="moon" class="h-4 w-4" />
-                                            <span>{{ ui.appearance?.dark ?? 'Dark' }}</span>
+                                            <span>{{ appearanceDark }}</span>
                                         </button>
                                         <button
                                             type="button"
@@ -259,14 +266,14 @@ useFlashToasts(page);
                                             :class="{ 'bg-accent text-accent-foreground': appearance === 'system' }"
                                         >
                                             <FontAwesomeIcon icon="desktop" class="h-4 w-4" />
-                                            <span>{{ ui.appearance?.system ?? 'System' }}</span>
+                                            <span>{{ appearanceSystem }}</span>
                                         </button>
                                     </div>
                                 </div>
 
                                 <div class="mt-8">
                                     <SheetClose as-child>
-                                        <Button variant="secondary" class="w-full">{{ ui.menu?.close ?? 'Close' }}</Button>
+                                        <Button variant="secondary" class="w-full">{{ menuClose }}</Button>
                                     </SheetClose>
                                 </div>
                             </div>

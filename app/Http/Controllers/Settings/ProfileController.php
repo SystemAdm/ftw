@@ -26,6 +26,9 @@ class ProfileController extends Controller
         return Inertia::render('settings/Profile', [
             'user' => [
                 'name' => $user->name,
+                'given_name' => $user->given_name,
+                'middle_name' => $user->middle_name,
+                'family_name' => $user->family_name,
                 'name_public' => $user->name_public,
                 'email' => $user->email,
                 'avatar' => $user->avatar,
@@ -78,6 +81,10 @@ class ProfileController extends Controller
 
         $data = $request->validated();
 
+        $user->given_name = $data['given_name'];
+        $user->middle_name = $data['middle_name'];
+        $user->family_name = $data['family_name'];
+        $user->name = trim($user->given_name.' '.($user->middle_name ? $user->middle_name.' ' : '').$user->family_name);
         $user->birthday = $data['birthday'];
         $user->birthday_visibility = $data['birthday_visibility'];
         $user->postal_code = $data['postal_code'];

@@ -14,13 +14,16 @@ return new class extends Migration
     {
         Schema::create('guardian_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('guardian_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('guardian_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->foreignId('minor_id')->constrained('users')->cascadeOnDelete();
             $table->string('relationship');
+            $table->string('pending_contact')->nullable();
             $table->boolean('confirmed_guardian')->default(false);
             $table->boolean('confirmed_admin')->default(false);
-            $table->foreignIdFor(User::class, 'confirmed_by')->nullable()->constrained('users')->cascadeOnDelete()->nullOnDelete();
-            $table->dateTime('confirmed_at')->nullable();
+            $table->dateTime('verified_user_at')->nullable();
+            $table->dateTime('verified_guardian_at')->nullable();
+            $table->foreignIdFor(User::class, 'verified_by')->nullable()->constrained('users')->cascadeOnDelete()->nullOnDelete();
+            $table->dateTime('verified_at')->nullable();
             $table->timestamps();
         });
     }

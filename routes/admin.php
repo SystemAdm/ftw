@@ -23,6 +23,8 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified', 'team.co
     Route::resource('relations', RelationController::class)->except(['destroy', 'show', 'edit', 'update']);
 
     Route::post('users/{user}/verify', [UsersController::class, 'verify'])->name('users.verify');
+    Route::post('users/{user}/police-confirm', [UsersController::class, 'policeConfirm'])->name('users.police-confirm');
+    Route::post('users/{user}/police-unconfirm', [UsersController::class, 'policeUnconfirm'])->name('users.police-unconfirm');
     Route::post('users/{user}/reset-password', [UsersController::class, 'resetPassword'])->name('users.reset-password');
     Route::post('users/{user}/ban', [UsersController::class, 'ban'])->name('users.ban');
     Route::post('users/{user}/unban', [UsersController::class, 'unban'])->name('users.unban');

@@ -41,6 +41,8 @@ class Location extends Model
     {
         return [
             'active' => 'boolean',
+            'latitude' => 'float',
+            'longitude' => 'float',
         ];
     }
 

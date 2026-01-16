@@ -7,6 +7,7 @@ use App\Enums\BirthdayVisibility;
 use App\Enums\PostalCodeVisibility;
 use App\Enums\RolesEnum;
 use Database\factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -31,7 +32,11 @@ class User extends Authenticatable implements ReactsInterface
      */
     protected $fillable = [
         'name',
+        'given_name',
+        'middle_name',
+        'family_name',
         'name_public',
+        'police_confirmed_at',
         'email',
         'password',
         'username',
@@ -117,6 +122,7 @@ class User extends Authenticatable implements ReactsInterface
         return [
             'email_verified_at' => 'datetime',
             'verified_at' => 'datetime',
+            'police_confirmed_at' => 'datetime',
             'banned_at' => 'datetime',
             'banned_to' => 'datetime',
             'birthday' => 'date',
@@ -129,6 +135,22 @@ class User extends Authenticatable implements ReactsInterface
             'confirmed_guardian' => 'boolean',
             'confirmed_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Interact with the user's name.
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value, array $attributes): string {
+                if (! empty($value)) {
+                    return $value;
+                }
+
+                return trim(($attributes['given_name'] ?? '').' '.($attributes['middle_name'] ?? '').' '.($attributes['family_name'] ?? ''));
+            },
+        );
     }
 
     /** @return BelongsToMany<PhoneNumber> */

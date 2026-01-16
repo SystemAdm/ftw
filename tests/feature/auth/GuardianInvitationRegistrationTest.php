@@ -19,7 +19,8 @@ test('invited guardian registers and gets guardian role and is linked to minor',
     session(['registration_email' => 'minor@example.com']);
 
     $this->post(route('register.store'), [
-        'name' => 'Minor User',
+        'given_name' => 'Minor',
+        'family_name' => 'User',
         'email' => 'minor@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -50,7 +51,8 @@ test('invited guardian registers and gets guardian role and is linked to minor',
     session(['registration_email' => 'parent@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Guardian User',
+        'given_name' => 'Guardian',
+        'family_name' => 'User',
         'email' => 'parent@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -91,7 +93,8 @@ test('invited guardian registration fails if too young', function () {
     session(['registration_email' => 'minor@example.com']);
 
     $this->post(route('register.store'), [
-        'name' => 'Minor User',
+        'given_name' => 'Minor',
+        'family_name' => 'User',
         'email' => 'minor@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -107,7 +110,8 @@ test('invited guardian registration fails if too young', function () {
     session(['registration_email' => 'young-parent@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Young Guardian',
+        'given_name' => 'Young',
+        'family_name' => 'Guardian',
         'email' => 'young-parent@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -125,7 +129,8 @@ test('invited guardian via phone registers and gets guardian role', function () 
     session(['registration_email' => 'minor2@example.com']);
 
     $this->post(route('register.store'), [
-        'name' => 'Minor User 2',
+        'given_name' => 'Minor',
+        'family_name' => 'User 2',
         'email' => 'minor2@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -151,7 +156,8 @@ test('invited guardian via phone registers and gets guardian role', function () 
     session(['registration_email' => 'parent2@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Guardian User 2',
+        'given_name' => 'Guardian',
+        'family_name' => 'User 2',
         'email' => 'parent2@example.com',
         'phone' => '99887766',
         'password' => 'password',

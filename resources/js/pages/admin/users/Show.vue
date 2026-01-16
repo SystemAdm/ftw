@@ -40,6 +40,7 @@ interface User {
     logs: any[];
     building_logs: any[];
     bans: any[];
+    police_confirmed_at: string | null;
 }
 
 interface PageProps extends AppPageProps {
@@ -115,9 +116,16 @@ function handleForceDelete() {
     router.delete(forceDestroy.url(user.value.id), {
         onFinish: () => {
             forceDeleteDialogOpen.value = false;
-            router.visit('/admin/users');
         },
     });
+}
+
+function handlePoliceConfirm() {
+    router.post(`/admin/users/${user.value.id}/police-confirm`);
+}
+
+function handlePoliceUnconfirm() {
+    router.post(`/admin/users/${user.value.id}/police-unconfirm`);
 }
 </script>
 
@@ -280,6 +288,19 @@ function handleForceDelete() {
                                     <div class="text-xs text-muted-foreground uppercase">Verified By</div>
                                     <div class="text-sm font-medium" v-if="user.verifier">{{ user.verifier.name }}</div>
                                     <div class="text-sm font-medium text-muted-foreground" v-else>-</div>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="text-xs text-muted-foreground uppercase">{{ trans('pages.settings.users.status.police_confirmed') }}</div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="text-sm font-medium" v-if="user.police_confirmed_at">{{ formatDate(user.police_confirmed_at) }}</div>
+                                        <div class="text-sm font-medium text-muted-foreground" v-else>-</div>
+                                        <Button v-if="!user.police_confirmed_at" size="xs" variant="outline" @click="handlePoliceConfirm">
+                                            {{ trans('pages.settings.users.actions.police_confirm') }}
+                                        </Button>
+                                        <Button v-else size="xs" variant="ghost" class="text-destructive hover:text-destructive" @click="handlePoliceUnconfirm">
+                                            {{ trans('pages.settings.users.actions.police_unconfirm') }}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>

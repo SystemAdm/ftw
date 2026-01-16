@@ -80,6 +80,8 @@ test('user can update their profile visibility settings', function () {
     ]);
 
     $response = $this->actingAs($user)->patch('/settings/profile', [
+        'given_name' => $user->given_name,
+        'family_name' => $user->family_name,
         'birthday' => '1990-01-01',
         'birthday_visibility' => BirthdayVisibility::Birthdate->value,
         'postal_code' => 1337,

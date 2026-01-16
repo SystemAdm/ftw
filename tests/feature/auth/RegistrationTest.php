@@ -20,7 +20,8 @@ test('new users can register with email', function () {
         'registration_otp_verified' => true,
         'registration_email' => 'test@example.com',
     ])->post(route('register.store'), [
-        'name' => 'Test User',
+        'given_name' => 'Test',
+        'family_name' => 'User',
         'birthday' => now()->subYears(20)->toDateString(),
         'postal_code' => '12345',
         'email' => 'test@example.com',
@@ -42,7 +43,8 @@ test('new users can register with phone', function () {
         'registration_otp_verified' => true,
         'registration_email' => 'phone@example.com',
     ])->post(route('register.store'), [
-        'name' => 'Phone User',
+        'given_name' => 'Phone',
+        'family_name' => 'User',
         'birthday' => now()->subYears(20)->toDateString(),
         'postal_code' => '12345',
         'phone' => '99999999',
@@ -55,7 +57,7 @@ test('new users can register with phone', function () {
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard'));
 
-    $user = \App\Models\User::where('name', 'Phone User')->first();
+    $user = \App\Models\User::where('email', 'phone@example.com')->first();
     expect($user->phoneNumbers)->toHaveCount(1);
     expect($user->phoneNumbers->first()->e164)->toBe('+4799999999');
     expect($user->email)->toBe('phone@example.com');
@@ -65,10 +67,13 @@ test('new users cannot register if allow_new_users is false', function () {
     config(['custom.allow_new_users' => false]);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Blocked User',
+        'given_name' => 'Blocked',
+        'family_name' => 'User',
         'email' => 'blocked@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
+        'birthday' => now()->subYears(20)->toDateString(),
+        'postal_code' => '12345',
     ]);
 
     $response->assertForbidden();
@@ -80,7 +85,8 @@ test('minor registration requires guardian', function () {
         'registration_otp_verified' => true,
         'registration_email' => 'minor@example.com',
     ])->post(route('register.store'), [
-        'name' => 'Minor User',
+        'given_name' => 'Minor',
+        'family_name' => 'User',
         'birthday' => now()->subYears(10)->toDateString(), // 10 years old
         'postal_code' => '12345',
         'email' => 'minor@example.com',
@@ -92,7 +98,8 @@ test('minor registration requires guardian', function () {
     $response->assertSessionHasErrors(['guardian_contact']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Minor User',
+        'given_name' => 'Minor',
+        'family_name' => 'User',
         'birthday' => now()->subYears(10)->toDateString(),
         'postal_code' => '12345',
         'email' => 'minor@example.com',
@@ -122,7 +129,8 @@ test('minor registration with existing guardian user', function () {
         'registration_otp_verified' => true,
         'registration_email' => 'minor-with-parent@example.com',
     ])->post(route('register.store'), [
-        'name' => 'Minor User 2',
+        'given_name' => 'Minor',
+        'family_name' => 'With Parent',
         'birthday' => now()->subYears(10)->toDateString(),
         'postal_code' => '12345',
         'email' => 'minor-with-parent@example.com',
@@ -142,6 +150,8 @@ test('minor registration with existing guardian user', function () {
 
 test('guardian registration fulfills pending invitation', function () {
     $minor = \App\Models\User::factory()->create([
+        'given_name' => 'Minor',
+        'family_name' => 'child',
         'name' => 'Minor child',
         'birthday' => now()->subYears(10)->toDateString(),
     ]);
@@ -158,7 +168,8 @@ test('guardian registration fulfills pending invitation', function () {
         'registration_otp_verified' => true,
         'registration_email' => 'guardian@example.com',
     ])->post(route('register.store'), [
-        'name' => 'Guardian User',
+        'given_name' => 'Guardian',
+        'family_name' => 'User',
         'birthday' => now()->subYears(30)->toDateString(),
         'postal_code' => '12345',
         'email' => 'guardian@example.com',
@@ -181,7 +192,8 @@ test('new users with spillhuset email get crew role', function () {
     session(['registration_email' => 'crew@spillhuset.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Crew User',
+        'given_name' => 'Crew',
+        'family_name' => 'User',
         'birthday' => now()->subYears(25)->toDateString(),
         'postal_code' => '12345',
         'email' => 'crew@spillhuset.com',

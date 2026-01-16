@@ -14,16 +14,26 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
+            $table->string('given_name')->nullable();
+            $table->string('middle_name')->nullable();
+            $table->string('family_name')->nullable();
+            $table->boolean('name_public')->default(true);
             $table->string('email')->unique()->nullable();
             $table->string('username')->unique()->nullable();
             $table->date('birthday')->nullable();
+            $table->string('birthday_visibility')->default('age');
             $table->string('avatar')->nullable();
+            $table->string('header_image')->nullable();
+            $table->string('appearance')->nullable();
             $table->boolean('phone_public')->default(false);
             $table->boolean('email_public')->default(false);
             $table->string('email_normalized')->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('email_verification_code')->nullable();
             $table->unsignedBigInteger('postal_code')->nullable();
+            $table->string('postal_code_visibility')->default('city');
+            $table->text('about')->nullable();
 
             $table->string('google_id')->nullable();
             $table->string('facebook_id')->nullable();
@@ -38,9 +48,11 @@ return new class extends Migration
             $table->string('password')->nullable();
 
             $table->timestamp('verified_at')->nullable();
+            $table->timestamp('police_confirmed_at')->nullable();
             $table->foreignIdFor(User::class, 'verified_by')->nullable();
 
             $table->timestamp('banned_at')->nullable();
+            $table->timestamp('banned_to')->nullable();
             $table->foreignIdFor(User::class, 'banned_by')->nullable();
             $table->string('ban_reason')->nullable();
 

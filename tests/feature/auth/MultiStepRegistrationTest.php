@@ -44,7 +44,8 @@ test('user can complete multi-step registration', function () {
 
     // Step 3-6: Final Submit (all data collected on frontend)
     $response = $this->post(route('register.store'), [
-        'name' => 'New User',
+        'given_name' => 'New',
+        'family_name' => 'User',
         'email' => 'newuser@example.com',
         'phone' => '99887766',
         'password' => 'password',
@@ -70,7 +71,8 @@ test('minor registration requires guardian', function () {
     session(['registration_email' => 'minor@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Minor User',
+        'given_name' => 'Minor',
+        'family_name' => 'User',
         'email' => 'minor@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -95,7 +97,8 @@ test('minor registration with existing guardian', function () {
     session(['registration_email' => 'minor@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Minor User',
+        'given_name' => 'Minor',
+        'family_name' => 'User',
         'email' => 'minor@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -117,7 +120,8 @@ test('crew email gets crew role', function () {
     session(['registration_email' => 'crew@spillhuset.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'Crew User',
+        'given_name' => 'Crew',
+        'family_name' => 'User',
         'email' => 'crew@spillhuset.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -135,7 +139,8 @@ test('crew email gets crew role', function () {
 
 test('registration fails if OTP is not verified', function () {
     $response = $this->post(route('register.store'), [
-        'name' => 'New User',
+        'given_name' => 'New',
+        'family_name' => 'User',
         'email' => 'newuser@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
@@ -151,7 +156,8 @@ test('registration fails if email mismatches verified OTP', function () {
     session(['registration_email' => 'verified@example.com']);
 
     $response = $this->post(route('register.store'), [
-        'name' => 'New User',
+        'given_name' => 'New',
+        'family_name' => 'User',
         'email' => 'wrong@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',

@@ -20,6 +20,9 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'given_name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['nullable', 'string', 'max:255'],
+            'family_name' => ['required', 'string', 'max:255'],
             'birthday' => ['nullable', 'date'],
             'birthday_visibility' => ['required', new Enum(BirthdayVisibility::class)],
             'postal_code' => ['nullable', 'integer', 'exists:postal_codes,postal_code'],

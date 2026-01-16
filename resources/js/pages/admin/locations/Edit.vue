@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
+import { NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput } from '@/components/ui/number-field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select/index';
 import { router, usePage } from '@inertiajs/vue3';
 import { show as showRoute, update as updateRoute } from '@/routes/admin/locations';
@@ -19,8 +20,8 @@ const form = reactive({
   name: location.name as string,
   active: Boolean(location.active),
   description: (location.description ?? '') as string,
-  latitude: location.latitude == null ? '' : String(location.latitude),
-  longitude: location.longitude == null ? '' : String(location.longitude),
+  latitude: location.latitude == null ? undefined : Number(location.latitude),
+  longitude: location.longitude == null ? undefined : Number(location.longitude),
   google_maps_url: (location.google_maps_url ?? '') as string,
   images: (location.images ?? '') as string,
   street_address: (location.street_address ?? '') as string,
@@ -39,8 +40,6 @@ function submit() {
   const payload: Record<string, any> = {
     ...form,
     postal_code: form.postal_code ? Number(form.postal_code) : undefined,
-    latitude: form.latitude === '' ? undefined : Number(form.latitude),
-    longitude: form.longitude === '' ? undefined : Number(form.longitude),
   };
   router.put(updateRoute.url(location.id), payload, {
     onError: (e) => Object.assign(errors, e as any),
@@ -87,12 +86,24 @@ function cancel() {
         <div class="grid grid-cols-2 gap-4">
           <Field>
             <FieldLabel>{{ trans('pages.settings.locations.fields.latitude') }}</FieldLabel>
-            <Input v-model="form.latitude" type="number" step="0.000001" class="mt-1 w-full" />
+            <NumberField v-model="form.latitude" :step="0.000001" :min="-90" :max="90">
+              <NumberFieldContent>
+                <NumberFieldDecrement />
+                <NumberFieldInput />
+                <NumberFieldIncrement />
+              </NumberFieldContent>
+            </NumberField>
             <FieldError v-if="errors.latitude" class="mt-1 text-sm text-red-600">{{ errors.latitude[0] }}</FieldError>
           </Field>
           <Field>
             <FieldLabel>{{ trans('pages.settings.locations.fields.longitude') }}</FieldLabel>
-            <Input v-model="form.longitude" type="number" step="0.000001" class="mt-1 w-full" />
+            <NumberField v-model="form.longitude" :step="0.000001" :min="-180" :max="180">
+              <NumberFieldContent>
+                <NumberFieldDecrement />
+                <NumberFieldInput />
+                <NumberFieldIncrement />
+              </NumberFieldContent>
+            </NumberField>
             <FieldError v-if="errors.longitude" class="mt-1 text-sm text-red-600">{{ errors.longitude[0] }}</FieldError>
           </Field>
         </div>

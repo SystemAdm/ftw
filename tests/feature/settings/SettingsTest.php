@@ -33,6 +33,8 @@ it('updates profile birthdate and postal code', function (): void {
     $postal = PostalCode::factory()->create();
 
     $payload = [
+        'given_name' => $user->given_name,
+        'family_name' => $user->family_name,
         'birthday' => '2000-01-02',
         'birthday_visibility' => BirthdayVisibility::Birthdate->value,
         'postal_code' => $postal->postal_code,
@@ -51,6 +53,8 @@ it('validates postal code exists', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->patch('/settings/profile', [
+        'given_name' => $user->given_name,
+        'family_name' => $user->family_name,
         'birthday' => '2000-01-02',
         'birthday_visibility' => BirthdayVisibility::Birthdate->value,
         'postal_code' => 999999,

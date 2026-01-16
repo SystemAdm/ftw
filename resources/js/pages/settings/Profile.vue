@@ -23,6 +23,9 @@ import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDial
 
 type UserProps = {
     name: string;
+    given_name: string;
+    middle_name?: string | null;
+    family_name: string;
     name_public: boolean;
     email: string;
     avatar?: string | null;
@@ -95,6 +98,9 @@ function submitAppearance() {
 
 // Profile form (birthdate, postal code, about, visibility)
 const profileForm = useForm({
+    given_name: user.value.given_name ?? '',
+    middle_name: user.value.middle_name ?? '',
+    family_name: user.value.family_name ?? '',
     birthday: user.value.birthday ?? '',
     birthday_visibility: user.value.birthday_visibility ?? 'off',
     postal_code: user.value.postal_code ?? '',
@@ -198,6 +204,17 @@ function submitRemoveGuardian() {
     }
 }
 
+function formatDate(date: string | null) {
+    if (!date) return '-';
+    return new Date(date).toLocaleString(page.props.i18n.locale, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
 function verifyMinor(id: number) {
     useForm({}).post(verifyMinorRoute.url(id));
 }
@@ -293,6 +310,23 @@ function submitRemoveMinor() {
                 <Card class="space-y-4 p-6">
                     <h2 class="text-lg font-semibold">{{ trans('pages.settings.profile.title') }}</h2>
                     <form @submit.prevent="submitProfile" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-2">
+                                <Label for="given_name">{{ trans('pages.auth.login.given_name_label') }}</Label>
+                                <Input id="given_name" v-model="profileForm.given_name" />
+                                <div v-if="profileForm.errors.given_name" class="text-sm text-red-600">{{ profileForm.errors.given_name }}</div>
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="middle_name">{{ trans('pages.auth.login.middle_name_label') }}</Label>
+                                <Input id="middle_name" v-model="profileForm.middle_name" />
+                                <div v-if="profileForm.errors.middle_name" class="text-sm text-red-600">{{ profileForm.errors.middle_name }}</div>
+                            </div>
+                            <div class="space-y-2">
+                                <Label for="family_name">{{ trans('pages.auth.login.family_name_label') }}</Label>
+                                <Input id="family_name" v-model="profileForm.family_name" />
+                                <div v-if="profileForm.errors.family_name" class="text-sm text-red-600">{{ profileForm.errors.family_name }}</div>
+                            </div>
+                        </div>
                         <div class="space-y-2">
                             <Label for="birthday">{{ trans('pages.auth.login.birthday_label') }}</Label>
                             <Input id="birthday" type="date" v-model="profileForm.birthday" />
@@ -389,6 +423,13 @@ function submitRemoveMinor() {
                             </p>
                         </div>
 
+                        <div class="space-y-2" v-if="user.police_confirmed_at">
+                            <Label>{{ trans('pages.settings.users.status.police_confirmed') }}</Label>
+                            <div class="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                                <ShieldCheck class="h-4 w-4" />
+                                <span>{{ formatDate(user.police_confirmed_at) }}</span>
+                            </div>
+                        </div>
                         <Button type="submit" :disabled="profileForm.processing">
                             {{
                                 profileForm.processing ? trans('pages.settings.profile.actions.saving') : trans('pages.settings.profile.actions.save')
