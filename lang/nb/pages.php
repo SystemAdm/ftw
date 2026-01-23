@@ -561,6 +561,15 @@ return [
                 'confirm' => 'Bannlys',
             ],
         ],
+        'phone' => [
+            'title' => 'Telefonnummer',
+            'new' => 'Nytt telefonnummer',
+            'fields' => [
+                'e164' => 'E.164 (System)',
+                'raw' => 'Raw (Bruker)',
+                'users' => 'Brukere',
+            ],
+        ],
         'relations' => [
             'title' => 'Relasjoner',
             'new' => 'Ny relasjon',
@@ -731,7 +740,34 @@ return [
                 'description' => 'Beskrivelse',
                 'exclusions' => 'Ekskluderinger',
                 'date' => 'Dato',
+                'time_from_to' => 'Tid Fra - Til',
                 'time' => 'Tid',
+                'week_type' => 'Forekommende uke',
+                'month_occurrence' => 'Månedlig forekomst',
+            ],
+            'help' => [
+                'weekday' => 'Hvilken ukedag er planlagt? f.eks. mandag',
+                'week_type' => 'Skal hendelse foregå i alle, odde eller partall uker?',
+                'month_occurrence' => 'Hvilken månedlig forekomst f.eks. første mandag i måneden',
+                'team' => 'Hvilket lag skal hendelsen knyttes til?',
+                'location' => 'Hvor skal hendelsen foregå?',
+                'start_time' => 'Fra hvilken tid skal hendelse starte?',
+                'end_time' => 'Til hvilken tid skal hendelse slutte?',
+                'event_start' => 'Fra når vil første hendelse forgå?',
+                'event_end' => 'Til når skal siste hendelse forgå?',
+            ],
+            'week_types' => [
+                'all' => 'Alle uker',
+                'odd' => 'Odde uker',
+                'even' => 'Partall uker',
+            ],
+            'month_occurrences' => [
+                'all' => 'Alle',
+                'first' => 'Første',
+                'second' => 'Andre',
+                'third' => 'Tredje',
+                'fourth' => 'Fjerde',
+                'last' => 'Siste',
             ],
             'days' => [
                 '0' => 'Søndag',
@@ -745,6 +781,9 @@ return [
             'actions' => [
                 'add_exclusion' => 'Legg til ekskludering',
                 'remove_exclusion' => 'Fjern',
+            ],
+            'exclusions' => [
+                'none' => 'Ingen ekskluderinger lagt til.',
             ],
             'messages' => [
                 'created' => 'Ukedag opprettet.',

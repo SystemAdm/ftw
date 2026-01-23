@@ -117,14 +117,19 @@ class TeamController extends Controller
         ];
 
         $isMember = false;
+        $hasActiveSubscription = false;
         if (auth()->check()) {
-            $isMember = auth()->user()->teams()->where('team_id', $team->id)->exists();
+            $user = auth()->user();
+            $isMember = $user->teams()->where('team_id', $team->id)->exists();
+            $hasActiveSubscription = $user->subscribed('default');
         }
 
         return Inertia::render('teams/Show', [
             'team' => $t,
             'upcoming' => $upcoming,
             'isMember' => $isMember,
+            'hasActiveSubscription' => $hasActiveSubscription,
+            'priceId' => (string) (config('services.stripe.price_id') ?? ''),
         ]);
     }
 

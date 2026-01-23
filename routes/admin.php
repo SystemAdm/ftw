@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\EventsController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\OpenController;
 use App\Http\Controllers\Admin\PermissionsController;
+use App\Http\Controllers\Admin\PhoneController;
 use App\Http\Controllers\Admin\PostCodeController;
 use App\Http\Controllers\Admin\RelationController;
 use App\Http\Controllers\Admin\RolesController;
@@ -31,6 +32,13 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'verified', 'team.co
     Route::post('users/{id}/restore', [UsersController::class, 'restore'])->name('users.restore');
     Route::delete('users/{id}/force', [UsersController::class, 'forceDestroy'])->name('users.force-destroy');
     Route::resource('users', UsersController::class);
+
+    // Admin Phone Numbers
+    Route::get('phone/search-users', [PhoneController::class, 'searchUsers'])->name('phone.search-users');
+    Route::post('phone/{phone}/users', [PhoneController::class, 'associate'])->name('phone.users.associate');
+    Route::delete('phone/{phone}/users/{user}', [PhoneController::class, 'disassociate'])->name('phone.users.disassociate');
+    Route::post('phone/{phone}/users/{user}/primary', [PhoneController::class, 'togglePrimary'])->name('phone.users.toggle-primary');
+    Route::resource('phone', PhoneController::class);
 
     // Admin Roles & PermissionsController
     Route::resource('roles', RolesController::class);

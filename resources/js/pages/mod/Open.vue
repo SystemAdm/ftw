@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Paginator from '@/components/custom/Paginator.vue';
 import { trans } from 'laravel-vue-i18n';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted, nextTick } from 'vue';
 import { index as modOpenRoute, store as modOpenStore, destroy as modOpenDestroy } from '@/routes/mod/open/index';
 import { search as modUsersSearch } from '@/routes/mod/users/index';
 import axios from 'axios';
@@ -38,6 +38,11 @@ const searchQuery = ref('');
 const searchResults = ref<any[]>([]);
 const isSearching = ref(false);
 const isSelecting = ref(false);
+const searchInput = ref<InstanceType<typeof Input> | null>(null);
+
+onMounted(() => {
+    searchInput.value?.focus();
+});
 
 const showConfirmCheckOut = ref(false);
 const userToCheckOut = ref<number | null>(null);
@@ -76,6 +81,9 @@ function submitCheckIn() {
         onSuccess: () => {
             searchForm.reset();
             searchQuery.value = '';
+            nextTick(() => {
+                searchInput.value?.focus();
+            });
         },
     });
 }
@@ -123,6 +131,7 @@ function formatDate(date: string) {
                     <div class="relative w-full max-w-sm">
                         <Input
                             v-model="searchQuery"
+                            ref="searchInput"
                             type="text"
                             :placeholder="trans('pages.mod.open.search_user_placeholder')"
                             autocomplete="off"

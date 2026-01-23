@@ -175,7 +175,7 @@ const teamIdValue = computed<string>({
         <div class="space-y-4 rounded-lg border p-4 bg-muted/20">
             <Field>
               <div class="flex items-center gap-2">
-                <Checkbox :model-value="form.signup_needed" @update:model-value="(v) => (form.signup_needed = v)" />
+                <Checkbox :model-value="form.signup_needed" @update:model-value="(v: any) => (form.signup_needed = v)" />
                 <FieldLabel>{{ trans('pages.settings.events.fields.signup_needed') }}</FieldLabel>
               </div>
               <FieldError v-if="form.errors.signup_needed">{{ form.errors.signup_needed }}</FieldError>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Location;
+use App\Models\PhoneNumber;
 use App\Models\PostalCode;
 use App\Models\Team;
 use App\Models\User;
@@ -30,6 +31,7 @@ class DashboardController extends Controller
                 'postcodes' => PostalCode::count(),
                 'locations' => Location::count(),
                 'weekdays' => Weekday::count(),
+                'phone_numbers' => PhoneNumber::count(),
                 'events' => Event::count(),
                 'relations' => DB::table('guardian_user')->count(),
             ],

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreUserRequest;
 use App\Models\User;
 use App\Models\UserBan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Inertia\Inertia;
 
@@ -132,15 +134,29 @@ class UsersController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('admin/users/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $user = User::create([
+            'given_name' => $validated['given_name'],
+            'middle_name' => $validated['middle_name'],
+            'family_name' => $validated['family_name'],
+            'name' => trim($validated['given_name'].' '.($validated['middle_name'] ? $validated['middle_name'].' ' : '').$validated['family_name']),
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'birthday' => $validated['birthday'],
+            'postal_code' => $validated['postal_code'],
+            'email_verified_at' => now(),
+        ]);
+
+        return redirect()->route('admin.users.show', $user)->with('success', 'User created successfully.');
     }
 
     /**

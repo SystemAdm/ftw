@@ -15,7 +15,7 @@ return [
         'no_teams' => 'You are not a member of any teams yet.',
         'no_available_teams' => 'No available teams found.',
         'no_description' => 'No description available.',
-        'apply' => 'Apply for membership',
+        'apply' => 'Apply for crew',
         'apply_to' => 'Apply to',
         'apply_description' => 'Please write a short application explaining why you want to join this team.',
         'leave' => 'Leave Team',

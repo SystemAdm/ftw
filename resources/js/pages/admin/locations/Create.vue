@@ -134,7 +134,7 @@ function cancel() {
 
         <Field>
           <div class="flex items-center gap-2">
-            <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v)" />
+            <Checkbox :model-value="form.active" @update:model-value="(v: any) => (form.active = v)" />
             <FieldLabel>{{ trans('pages.settings.locations.fields.active') }}</FieldLabel>
           </div>
           <FieldError v-if="errors.active" class="mt-1 text-sm text-red-600">{{ errors.active[0] }}</FieldError>

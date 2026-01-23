@@ -30,21 +30,27 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
     <SidebarLayout :breadcrumbs="breadcrumbs">
         <Head :title="trans('pages.dashboard.title')" />
 
-        <div class="grid grid-cols-1 gap-6">
-            <UpcomingWeekdays :days="days" :week="week" :base-url="dashboard.url()" />
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-4 lg:items-start">
+            <div class="lg:col-span-3">
+                <UpcomingWeekdays :days="days" :week="week" :base-url="dashboard.url()" />
+            </div>
 
-            <div class="">
-                <Card class="sticky top-6 flex flex-col items-center justify-center space-y-4 p-6 text-center">
-                    <h2 class="text-lg font-bold">{{ trans('pages.dashboard.personal_qr') }}</h2>
-                    <div v-if="qrCode" class="rounded-lg border bg-white p-2 shadow-sm" v-html="qrCode"></div>
-                    <div v-if="qrCodeValue" class="max-w-full break-all text-[10px] text-muted-foreground opacity-50">
+            <aside class="space-y-6">
+                <Card class="sticky top-6 flex flex-col items-center justify-center space-y-5 p-8 text-center shadow-sm border-primary/10 bg-linear-to-b from-primary/5 to-transparent">
+                    <div class="space-y-1">
+                        <h2 class="text-xl font-bold tracking-tight text-primary">{{ trans('pages.dashboard.personal_qr') }}</h2>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                            {{ trans('pages.dashboard.qr_description') }}
+                        </p>
+                    </div>
+
+                    <div v-if="qrCode" class="rounded-xl border border-border/60 bg-white p-3 shadow-md transition-transform hover:scale-105" v-html="qrCode"></div>
+
+                    <div v-if="qrCodeValue" class="max-w-full break-all font-mono text-[9px] text-muted-foreground/40 uppercase tracking-tighter">
                         {{ qrCodeValue }}
                     </div>
-                    <p class="text-sm text-muted-foreground">
-                        {{ trans('pages.dashboard.qr_description') }}
-                    </p>
                 </Card>
-            </div>
+            </aside>
         </div>
     </SidebarLayout>
 </template>

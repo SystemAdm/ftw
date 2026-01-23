@@ -101,12 +101,12 @@ function toggleUser(userId: number, checked: boolean | 'indeterminate') {
             </div>
 
             <div class="flex items-center gap-2">
-                <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v)" />
+                <Checkbox :model-value="form.active" @update:model-value="(v: any) => (form.active = v)" />
                 <Label>{{ trans('pages.settings.teams.fields.active') }}</Label>
             </div>
 
             <div class="flex items-center gap-2">
-                <Checkbox :model-value="form.applications_enabled" @update:model-value="(v) => (form.applications_enabled = v)" />
+                <Checkbox :model-value="form.applications_enabled" @update:model-value="(v: any) => (form.applications_enabled = v)" />
                 <Label>{{ trans('pages.settings.teams.fields.applications_enabled') || 'Applications Enabled' }}</Label>
             </div>
 

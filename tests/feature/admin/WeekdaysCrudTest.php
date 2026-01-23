@@ -34,6 +34,8 @@ it('creates, updates, and deletes a weekday and manages exclusions', function ()
         'name' => 'Practice Night',
         'description' => 'Weekly practice for the senior team',
         'weekday' => 1,
+        'week_type' => 'odd',
+        'month_occurrence' => 'first',
         'team_id' => $team->id,
         'active' => true,
         'start_time' => '18:00',
@@ -47,6 +49,8 @@ it('creates, updates, and deletes a weekday and manages exclusions', function ()
     expect($weekday->name)->toBe('Practice Night');
     expect($weekday->description)->toBe('Weekly practice for the senior team');
     expect($weekday->weekday)->toBe(1);
+    expect($weekday->week_type)->toBe('odd');
+    expect($weekday->month_occurrence)->toBe('first');
     expect($weekday->team_id)->toBe($team->id);
 
     // Update
@@ -55,6 +59,8 @@ it('creates, updates, and deletes a weekday and manages exclusions', function ()
         'name' => 'Friday Scrimmage',
         'description' => 'Internal scrimmage games',
         'weekday' => 5,
+        'week_type' => 'even',
+        'month_occurrence' => 'last',
         'team_id' => null,
         'active' => false,
         'start_time' => '17:00',
@@ -67,6 +73,8 @@ it('creates, updates, and deletes a weekday and manages exclusions', function ()
     expect($weekday->name)->toBe('Friday Scrimmage');
     expect($weekday->description)->toBe('Internal scrimmage games');
     expect($weekday->weekday)->toBe(5);
+    expect($weekday->week_type)->toBe('even');
+    expect($weekday->month_occurrence)->toBe('last');
     expect($weekday->team_id)->toBeNull();
     expect($weekday->active)->toBeFalse();
 

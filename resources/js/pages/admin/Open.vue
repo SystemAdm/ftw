@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { trans } from 'laravel-vue-i18n';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, nextTick } from 'vue';
 
 import { dashboard as adminDashboardRoute } from '@/routes/admin';
 
@@ -30,10 +30,10 @@ const form = useForm({
     code: '',
 });
 
-const inputRef = ref<HTMLInputElement | null>(null);
+const codeInput = ref<InstanceType<typeof Input> | null>(null);
 
 onMounted(() => {
-    inputRef.value?.focus();
+    codeInput.value?.focus();
 });
 
 const page = usePage();
@@ -53,7 +53,9 @@ function handleSubmit() {
                 }, 5000);
             }
             form.reset('code');
-            inputRef.value?.focus();
+            nextTick(() => {
+                codeInput.value?.focus();
+            });
         },
         onError: (errors) => {
             if (errors.code) {
@@ -63,7 +65,9 @@ function handleSubmit() {
                 }, 5000);
             }
             form.reset('code');
-            inputRef.value?.focus();
+            nextTick(() => {
+                codeInput.value?.focus();
+            });
         }
     });
 }
@@ -99,7 +103,7 @@ function handleSubmit() {
                             <Input
                                 id="code"
                                 v-model="form.code"
-                                ref="inputRef"
+                                ref="codeInput"
                                 type="text"
                                 :placeholder="trans('pages.admin.open.code_placeholder')"
                                 :disabled="form.processing"

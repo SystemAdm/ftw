@@ -15,6 +15,7 @@ import {
     MapPinIcon,
     CalendarDays,
     DoorOpen,
+    Phone,
     Plus,
     List
 } from 'lucide-vue-next';
@@ -27,6 +28,7 @@ import { index as adminPostcodesRoute } from '@/routes/admin/postcodes/index';
 import { index as adminLocationsRoute } from '@/routes/admin/locations/index';
 import { index as adminWeekdaysRoute } from '@/routes/admin/weekdays/index';
 import { index as adminEventsRoute } from '@/routes/admin/events/index';
+import { index as adminPhoneRoute } from '@/routes/admin/phone/index';
 import { index as adminOpenRoute } from '@/routes/admin/open/index';
 import { index as adminRelationsRoute } from '@/routes/admin/relations/index';
 import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
@@ -40,6 +42,7 @@ const props = defineProps<{
         postcodes: number;
         locations: number;
         weekdays: number;
+        phone_numbers: number;
         events: number;
         relations?: number;
     }
@@ -105,6 +108,13 @@ const cards = computed(() => [
         count: props.counts.weekdays,
         url: adminWeekdaysRoute.url(),
         createUrl: '/admin/weekdays/create',
+    },
+    {
+        title: trans('pages.ui.navigation.phone'),
+        icon: Phone,
+        count: props.counts.phone_numbers,
+        url: adminPhoneRoute.url(),
+        createUrl: null,
     },
     {
         title: trans('pages.ui.navigation.events'),

@@ -45,6 +45,39 @@ class OpeningHours
                     return false;
                 }
 
+                // Filter by week type (all, odd, even)
+                if ($w->week_type !== 'all') {
+                    $isOddWeek = $date->weekOfYear % 2 !== 0;
+                    if ($w->week_type === 'odd' && ! $isOddWeek) {
+                        return false;
+                    }
+                    if ($w->week_type === 'even' && $isOddWeek) {
+                        return false;
+                    }
+                }
+
+                // Filter by month occurrence (all, first, second, third, fourth, last)
+                if ($w->month_occurrence !== 'all') {
+                    $occurrence = (int) ceil($date->day / 7);
+                    $isLast = $date->copy()->addWeek()->month !== $date->month;
+
+                    if ($w->month_occurrence === 'first' && $occurrence !== 1) {
+                        return false;
+                    }
+                    if ($w->month_occurrence === 'second' && $occurrence !== 2) {
+                        return false;
+                    }
+                    if ($w->month_occurrence === 'third' && $occurrence !== 3) {
+                        return false;
+                    }
+                    if ($w->month_occurrence === 'fourth' && $occurrence !== 4) {
+                        return false;
+                    }
+                    if ($w->month_occurrence === 'last' && ! $isLast) {
+                        return false;
+                    }
+                }
+
                 return true;
             });
 
@@ -80,6 +113,8 @@ class OpeningHours
                     'description' => $w->description,
                     'start_time' => $w->start_time,
                     'end_time' => $w->end_time,
+                    'week_type' => $w->week_type,
+                    'month_occurrence' => $w->month_occurrence,
                     'is_excluded' => $isThisExcluded,
                     'team' => $w->team ? [
                         'id' => $w->team->id,

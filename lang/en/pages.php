@@ -521,9 +521,13 @@ return [
                 'middle_name' => 'Middle Name',
                 'family_name' => 'Family Name',
                 'email' => 'Email',
+                'phone' => 'Phone',
                 'role' => 'Role',
                 'status' => 'Status',
                 'joined' => 'Joined',
+                'code' => 'Code',
+                'birthday' => 'Birthday',
+                'postal_code' => 'Postal Code',
             ],
             'status' => [
                 'email_verified' => 'Email verified',
@@ -535,6 +539,7 @@ return [
                 'verified_at' => 'Verified at',
                 'verified_by' => 'Verified by',
                 'banned' => 'Banned',
+                'police_confirm' => 'Police report confirmed',
             ],
             'actions' => [
                 'verify' => 'Verify',
@@ -549,6 +554,15 @@ return [
                 'reason' => 'Reason',
                 'banned_to' => 'Ban until (optional)',
                 'confirm' => 'Ban',
+            ],
+        ],
+        'phone' => [
+            'title' => 'Phone Numbers',
+            'new' => 'New Phone Number',
+            'fields' => [
+                'e164' => 'E.164 (System)',
+                'raw' => 'Raw (User)',
+                'users' => 'Users',
             ],
         ],
         'relations' => [
@@ -726,6 +740,33 @@ return [
                 'description' => 'Description',
                 'exclusions' => 'Exclusions',
                 'date' => 'Date',
+                'time_from_to' => 'Time From - To',
+                'week_type' => 'Occurring Week',
+                'month_occurrence' => 'Month Occurrence',
+            ],
+            'help' => [
+                'weekday' => 'Which weekday is planned? e.g. Monday',
+                'week_type' => 'Should the event occur in all, odd, or even weeks?',
+                'month_occurrence' => 'Which monthly occurrence? e.g. first Monday of the month',
+                'team' => 'Which team should the event be linked to?',
+                'location' => 'Where will the event take place?',
+                'start_time' => 'What time should the event start?',
+                'end_time' => 'What time should the event end?',
+                'event_start' => 'When will the first event take place?',
+                'event_end' => 'When will the last event take place?',
+            ],
+            'week_types' => [
+                'all' => 'All weeks',
+                'odd' => 'Odd weeks',
+                'even' => 'Even weeks',
+            ],
+            'month_occurrences' => [
+                'all' => 'All',
+                'first' => 'First',
+                'second' => 'Second',
+                'third' => 'Third',
+                'fourth' => 'Fourth',
+                'last' => 'Last',
             ],
             'days' => [
                 '0' => 'Sunday',
@@ -739,6 +780,9 @@ return [
             'actions' => [
                 'add_exclusion' => 'Add Exclusion',
                 'remove_exclusion' => 'Remove',
+            ],
+            'exclusions' => [
+                'none' => 'No exclusions added.',
             ],
             'delete' => [
                 'title' => 'Delete Weekday?',
@@ -911,6 +955,7 @@ return [
             'postcodes' => 'Postcodes',
             'locations' => 'Locations',
             'weekdays' => 'Weekdays',
+            'phone' => 'Phone Numbers',
             'events' => 'Events',
             'admin_open' => 'Admin Open',
             'mod_open' => 'Mod Open',

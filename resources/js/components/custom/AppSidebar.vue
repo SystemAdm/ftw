@@ -15,6 +15,7 @@ import { index as adminWeekdaysRoute } from '@/routes/admin/weekdays/index';
 import { index as adminPostcodesRoute } from '@/routes/admin/postcodes/index';
 import { index as adminLocationsRoute } from '@/routes/admin/locations/index';
 import { index as adminEventsRoute } from '@/routes/admin/events/index';
+import { index as adminPhoneRoute } from '@/routes/admin/phone/index';
 import { index as adminOpenRoute } from '@/routes/admin/open/index';
 import { dashboard as adminDashboardRoute } from '@/routes/admin/index';
 import { index as modOpenRoute } from '@/routes/mod/open/index';
@@ -38,6 +39,7 @@ import {
     CalendarDays,
     Mail,
     MapPinIcon,
+    Phone,
     LayoutDashboard,
     Cog,
     HeartHandshake,
@@ -85,6 +87,7 @@ const menu = computed(() => (user.value ? [...loggedInMenu.value, ...defaultMenu
                     { title: trans('pages.ui.navigation.teams'), icon: Users, url: adminTeamsRoute.url() },
                     { title: trans('pages.ui.navigation.postcodes'), icon: Mail, url: adminPostcodesRoute.url() },
                     { title: trans('pages.ui.navigation.locations'), icon: MapPinIcon, url: adminLocationsRoute.url() },
+                    { title: trans('pages.ui.navigation.phone'), icon: Phone, url: adminPhoneRoute.url() },
                     { title: trans('pages.ui.navigation.weekdays'), icon: CalendarDays, url: adminWeekdaysRoute.url() },
                     { title: trans('pages.ui.navigation.events'), icon: CalendarDays, url: adminEventsRoute.url() },
                     { title: trans('pages.ui.navigation.admin_open'), icon: DoorOpen, url: adminOpenRoute.url() },

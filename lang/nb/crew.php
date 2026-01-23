@@ -15,7 +15,7 @@ return [
         'no_teams' => 'Du er ikke medlem av noen lag ennå.',
         'no_available_teams' => 'Ingen tilgjengelige lag funnet.',
         'no_description' => 'Ingen beskrivelse tilgjengelig.',
-        'apply' => 'Søk om medlemskap',
+        'apply' => 'Søk om å bli crew',
         'apply_to' => 'Søk til',
         'apply_description' => 'Vennligst skriv en kort søknad som forklarer hvorfor du ønsker å bli med i dette laget.',
         'leave' => 'Forlat lag',

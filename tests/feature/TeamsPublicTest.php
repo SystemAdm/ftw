@@ -70,3 +70,18 @@ it('shows a public team with upcoming weekdays including location', function ():
     $response->assertSee('data-page', false);
     $response->assertSee('teams/Show', false);
 });
+
+it('shows membership section for guests and non-subscribed users', function (): void {
+    $team = Team::factory()->create(['active' => true]);
+
+    // Guest user
+    $response = $this->get(route('teams.show', $team));
+    $response->assertOk();
+    $response->assertSee('Medlemskap'); // Norwegian title used in nb locale
+
+    // Authenticated non-subscribed user
+    $user = \App\Models\User::factory()->create();
+    $response = $this->actingAs($user)->get(route('teams.show', $team));
+    $response->assertOk();
+    $response->assertSee('Medlemskap');
+});

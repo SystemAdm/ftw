@@ -23,6 +23,8 @@ class StoreWeekdayRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'weekday' => ['required', 'integer', 'between:0,6'],
+            'week_type' => ['required', 'string', 'in:all,odd,even'],
+            'month_occurrence' => ['required', 'string', 'in:all,first,second,third,fourth,last'],
             'team_id' => ['required', 'integer', 'exists:teams,id'],
             'location_id' => ['nullable', 'integer', 'exists:locations,id'],
             'active' => ['boolean'],

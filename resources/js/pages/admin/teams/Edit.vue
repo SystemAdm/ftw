@@ -91,12 +91,12 @@ function cancel() {
       </div>
 
       <div class="flex items-center gap-2">
-        <Checkbox :model-value="form.active" @update:model-value="(v) => (form.active = v)" aria-label="Select Active" />
+        <Checkbox :model-value="form.active" @update:model-value="(v: any) => (form.active = v)" aria-label="Select Active" />
         <Label>{{ trans('pages.settings.teams.fields.active') }}</Label>
       </div>
 
       <div class="flex items-center gap-2">
-        <Checkbox :model-value="form.applications_enabled" @update:model-value="(v) => (form.applications_enabled = v)" aria-label="Select Applications Enabled" />
+        <Checkbox :model-value="form.applications_enabled" @update:model-value="(v: any) => (form.applications_enabled = v)" aria-label="Select Applications Enabled" />
         <Label>{{ trans('pages.settings.teams.fields.applications_enabled') || 'Applications Enabled' }}</Label>
       </div>
 

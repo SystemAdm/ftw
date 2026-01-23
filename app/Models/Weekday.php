@@ -16,6 +16,8 @@ class Weekday extends Model
         'name',
         'description',
         'weekday',
+        'week_type',
+        'month_occurrence',
         'team_id',
         'location_id',
         'active',

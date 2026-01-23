@@ -2,7 +2,7 @@
 import SidebarLayout from '@/components/layouts/SidebarLayout.vue';
 import { usePage, router } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { edit as editRoute, index as indexRoute } from '@/routes/crew/weekdays';
+import { edit as editRoute, index as indexRoute, destroy as destroyRoute } from '@/routes/crew/weekdays';
 import { add as addExclusion, remove as removeExclusion } from '@/routes/crew/weekdays/exclusions';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -12,9 +12,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { trans } from 'laravel-vue-i18n';
 import { Trash2 } from 'lucide-vue-next';
+import DeleteConfirmationDialog from '@/components/custom/DeleteConfirmationDialog.vue';
 
 import { AppPageProps } from '@/types';
-
 import { BreadcrumbItemType } from '@/types';
 
 const page = usePage<AppPageProps>();
@@ -42,6 +42,10 @@ const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
 const open = ref(false);
 const exclusionDate = ref('');
 
+const deleteDialogOpen = ref(false);
+const deleteExclusionDialogOpen = ref(false);
+const selectedExclusionId = ref<number | null>(null);
+
 function addExcluded() {
   if (!exclusionDate.value || !weekday.value?.id) return;
   router.post(
@@ -57,11 +61,32 @@ function addExcluded() {
   );
 }
 
-function removeExcluded(id: number) {
-  if (!confirm(trans('ui.are_you_sure'))) return;
-  router.delete(removeExclusion.url(weekday.value.id, id), {
-    preserveScroll: true,
+function del() {
+  router.delete(destroyRoute.url(weekday.value.id), {
+    onBefore: () => {
+      deleteDialogOpen.value = false;
+    },
+    onSuccess: () => {
+      router.visit(indexRoute.url());
+    },
   });
+}
+
+function confirmRemoveExcl(id: number) {
+  selectedExclusionId.value = id;
+  deleteExclusionDialogOpen.value = true;
+}
+
+function removeExcluded() {
+  if (selectedExclusionId.value && weekday.value?.id) {
+    router.delete(removeExclusion.url({ weekday: weekday.value.id, exclusion: selectedExclusionId.value }), {
+      preserveScroll: true,
+      onFinish: () => {
+        deleteExclusionDialogOpen.value = false;
+        selectedExclusionId.value = null;
+      }
+    });
+  }
 }
 </script>
 
@@ -72,6 +97,7 @@ function removeExcluded(id: number) {
       <div class="flex gap-2">
         <Button variant="secondary" @click="router.visit(indexRoute.url())">{{ trans('pages.settings.locations.actions.cancel') }}</Button>
         <Button @click="router.visit(editRoute.url(weekday.id))">{{ trans('pages.settings.locations.actions.edit') }}</Button>
+        <Button variant="destructive" @click="deleteDialogOpen = true">{{ trans('pages.settings.locations.actions.delete') }}</Button>
       </div>
     </div>
 
@@ -101,7 +127,7 @@ function removeExcluded(id: number) {
             </dd>
           </div>
           <div class="sm:col-span-2">
-            <dt class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.locations.fields.postal_code') }} ({{ trans('pages.settings.weekdays.fields.date') }})</dt>
+            <dt class="text-sm font-medium text-muted-foreground">{{ trans('pages.settings.weekdays.fields.time_from_to') }}</dt>
             <dd class="text-lg font-semibold">{{ weekday.start_time }} - {{ weekday.end_time }}</dd>
           </div>
         </dl>
@@ -142,7 +168,7 @@ function removeExcluded(id: number) {
                 <span class="font-medium">{{ ex.excluded_date_formatted ?? ex.excluded_date }}</span>
                 <span class="text-xs text-muted-foreground">ID: {{ ex.id }}</span>
               </div>
-              <Button variant="ghost" size="icon" class="text-destructive hover:bg-destructive/10" @click="removeExcluded(ex.id)">
+              <Button variant="ghost" size="icon" class="text-destructive hover:bg-destructive/10" @click="confirmRemoveExcl(ex.id)">
                 <Trash2 class="h-4 w-4" />
               </Button>
             </li>
@@ -152,5 +178,19 @@ function removeExcluded(id: number) {
     </Card>
 
     <div v-else class="p-4 text-sm text-muted-foreground">Loading...</div>
+
+    <DeleteConfirmationDialog
+      v-model:open="deleteDialogOpen"
+      :title="trans('pages.settings.weekdays.delete.title')"
+      :description="trans('pages.settings.weekdays.delete.description')"
+      @confirm="del"
+    />
+
+    <DeleteConfirmationDialog
+      v-model:open="deleteExclusionDialogOpen"
+      :title="trans('pages.settings.weekdays.messages.exclusion_removed')"
+      :description="trans('ui.are_you_sure')"
+      @confirm="removeExcluded"
+    />
   </SidebarLayout>
 </template>

@@ -45,7 +45,7 @@ const banForm = useForm({
     banned_to: '',
 });
 
-import { index, restore, forceDestroy } from '@/routes/admin/users';
+import { index, restore, forceDestroy, create as createRoute } from '@/routes/admin/users';
 import { dashboard as adminDashboardRoute } from '@/routes/admin';
 
 const breadcrumbs = computed<BreadcrumbItemType[]>(() => [
@@ -141,6 +141,9 @@ function handleForceDelete() {
     <SidebarLayout :breadcrumbs="breadcrumbs">
         <div class="mb-4 flex items-center justify-between">
             <h1 class="text-xl font-semibold">{{ trans('pages.settings.users.title') }}</h1>
+            <Button @click="router.visit(createRoute.url())">
+                {{ trans('pages.settings.users.actions.create') }}
+            </Button>
         </div>
 
         <Table>
