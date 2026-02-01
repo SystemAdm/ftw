@@ -21,19 +21,19 @@ const appName = page.props.name || 'FTW'
                                 <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 md:gap-8 text-center md:text-left">
                     <div class="md:w-1/2">
                         <p
-                            class="mb-2 inline-flex items-center gap-2 rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1 text-xs tracking-wider text-green-300 uppercase"
+                            class="mb-2 inline-flex items-center gap-2 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1 text-xs tracking-wider text-red-300 uppercase"
                         >
-                            JUL & NYTT ÅR
-                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-400"></span>
+                            VALENTINE & MORSDAG
+                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-red-400"></span>
                         </p>
                         <h1 class="text-2xl sm:text-3xl md:text-5xl leading-tight font-black tracking-tight">
-                            Vi ønsker deg og dine en riktig
-                            <span class="bg-linear-to-r from-green-400 to-red-400 bg-clip-text md:text-nowrap text-transparent">God Jul</span> og <span class="bg-linear-to-r from-yellow-200 to-yellow-900 bg-clip-text text-transparent">Godt nytt år</span>
+                            Størst av alt er
+                            <span class="bg-linear-to-r from-red-600 to-red-100 bg-clip-text md:text-nowrap text-transparent">Kjærligheten</span>.
                         </h1>
                         <p class="mt-3 sm:mt-4 text-sm/relaxed text-foreground md:text-base/relaxed">
-                            Vi må dessverre holde stengt i romjulen,<br /> siste åpningsdag: <span class="md:text-nowrap font-bold">19. desember 2025</span><br />
-                            åpner igjen: <span class="md:text-nowrap font-bold">9. januar 2026</span>
+                            Vis dine nærmeste at du er glad i dem! Lørdag 14. februar.
                         </p>
+                        <p>Hedre din Mor, søndag 15. februar.</p>
                     </div>
                     <!-- Mocked game card / screenshot -->
                     <div class="md:w-1/2">
