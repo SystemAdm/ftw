@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Head, usePage } from '@inertiajs/vue3'
-import PublicLayout from '@/components/layouts/PublicLayout.vue'
+import PublicLayout from '@/components/layouts/PublicLayout.vue';
+import { Head, usePage } from '@inertiajs/vue3';
 
-const page = usePage()
-const appName = page.props.name || 'FTW'
+const page = usePage();
+const appName = page.props.name || 'FTW';
 </script>
 
 <template>
@@ -17,23 +17,22 @@ const appName = page.props.name || 'FTW'
     <PublicLayout>
         <!-- Hero -->
         <div class="mx-auto w-full max-w-7xl px-4 sm:px-6">
-            <section class="relative overflow-hidden rounded-2xl border bg-background text-foreground p-5 sm:p-8 md:p-10 lg:p-14">
-                                <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 md:gap-8 text-center md:text-left">
+            <section class="relative overflow-hidden rounded-2xl border bg-background p-5 text-foreground sm:p-8 md:p-10 lg:p-14">
+                <div class="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:items-start md:gap-8 md:text-left">
                     <div class="md:w-1/2">
                         <p
                             class="mb-2 inline-flex items-center gap-2 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1 text-xs tracking-wider text-red-300 uppercase"
                         >
-                            VALENTINE & MORSDAG
+                            VALENTINE
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-red-400"></span>
                         </p>
-                        <h1 class="text-2xl sm:text-3xl md:text-5xl leading-tight font-black tracking-tight">
+                        <h1 class="text-2xl leading-tight font-black tracking-tight sm:text-3xl md:text-5xl">
                             Størst av alt er
-                            <span class="bg-linear-to-r from-red-600 to-red-100 bg-clip-text md:text-nowrap text-transparent">Kjærligheten</span>.
+                            <span class="bg-linear-to-r from-red-600 to-red-100 bg-clip-text text-transparent md:text-nowrap">Kjærligheten</span>.
                         </h1>
-                        <p class="mt-3 sm:mt-4 text-sm/relaxed text-foreground md:text-base/relaxed">
+                        <p class="mt-3 text-sm/relaxed text-foreground sm:mt-4 md:text-base/relaxed">
                             Vis dine nærmeste at du er glad i dem! Lørdag 14. februar.
                         </p>
-                        <p>Hedre din Mor, søndag 15. februar.</p>
                     </div>
                     <!-- Mocked game card / screenshot -->
                     <div class="md:w-1/2">
@@ -43,11 +42,11 @@ const appName = page.props.name || 'FTW'
                             Løkketangen
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-blue-400"></span>
                         </p>
-                        <h2 class="text-2xl sm:text-3xl md:text-5xl leading-tight font-black tracking-tight">
+                        <h2 class="text-2xl leading-tight font-black tracking-tight sm:text-3xl md:text-5xl">
                             Vi forbereder oss på flytting til
                             <span class="bg-linear-to-r from-blue-400 to-blue-950 bg-clip-text text-transparent">Sandvika</span>.
                         </h2>
-                        <p class="mt-3 sm:mt-4 text-sm/relaxed text-foreground md:text-base/relaxed">
+                        <p class="mt-3 text-sm/relaxed text-foreground sm:mt-4 md:text-base/relaxed">
                             Ingen dato er fastsatt, men vi jobber for fullt med å flytte til ett litt mer sentralt strøk, Sandvika.
                         </p>
                         <p class="text-muted-foreground">Vi er fremdeles veldig tidlig i prosessen.</p>
@@ -56,7 +55,7 @@ const appName = page.props.name || 'FTW'
             </section>
             <!-- Features -->
             <section id="features" class="mx-auto grid grid-cols-1 gap-4 py-12 sm:grid-cols-2 lg:grid-cols-2">
-                <div class="rounded-xl border bg-background p-6 text-center bg-red-900">
+                <div class="rounded-xl border bg-red-900 p-6 text-center">
                     <div class="flex flex-col items-center p-0">
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-500/15 text-fuchsia-300">
                             <img src="/images/UFB_logo.png" alt="UFB logo" class="h-6 w-6" />
@@ -64,9 +63,7 @@ const appName = page.props.name || 'FTW'
                         <h3 class="font-semibold text-foreground">Torsdagsåpent!</h3>
                     </div>
                     <div class="p-0">
-                        <p class="mt-1 text-xl text-foreground">
-                            Utgår grunnet flytting til Sandvika
-                        </p>
+                        <p class="mt-1 text-xl text-foreground">Utgår grunnet flytting til Sandvika</p>
                     </div>
                 </div>
                 <div class="rounded-xl border bg-background p-6 text-center">
