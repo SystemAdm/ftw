@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PublicLayout from '@/components/layouts/PublicLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 
 const page = usePage();
 const appName = page.props.name || 'FTW';
@@ -21,17 +21,23 @@ const appName = page.props.name || 'FTW';
                 <div class="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:items-start md:gap-8 md:text-left">
                     <div class="md:w-1/2">
                         <p
-                            class="mb-2 inline-flex items-center gap-2 rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1 text-xs tracking-wider text-red-300 uppercase"
+                            class="mb-2 inline-flex items-center gap-2 rounded-full border border-yellow-400/20 bg-yellow-500/10 px-3 py-1 text-xs tracking-wider text-yellow-300 uppercase"
                         >
-                            VALENTINE
-                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-red-400"></span>
+                            PÅSKE
+                            <span class="inline-block h-1.5 w-1.5 rounded-full bg-yellow-400"></span>
                         </p>
                         <h1 class="text-2xl leading-tight font-black tracking-tight sm:text-3xl md:text-5xl">
-                            Størst av alt er
-                            <span class="bg-linear-to-r from-red-600 to-red-100 bg-clip-text text-transparent md:text-nowrap">Kjærligheten</span>.
+                            <span class="bg-linear-to-r from-yellow-600 to-yellow-100 bg-clip-text text-transparent">
+                                Påsken - håp, kjærlighet og livets seier over døden
+                            </span>
                         </h1>
                         <p class="mt-3 text-sm/relaxed text-foreground sm:mt-4 md:text-base/relaxed">
-                            Vis dine nærmeste at du er glad i dem! Lørdag 14. februar.
+                            Samlet sett er påsken en feiring av håp, kjærlighet og livets seier over døden, med dype røtter i både jødisk historie og
+                            kristen tro.
+                        </p>
+                        <p class="mt-3 text-sm/relaxed text-foreground sm:mt-4 md:text-base/relaxed">
+                            Vi ser oss nødt til å holde <strong>stengt</strong> Langfredag i påsken, <strong>fredag 3. april</strong>, da vi ønsker at
+                            vårt crew skal få en velfortjent ferie.
                         </p>
                     </div>
                     <!-- Mocked game card / screenshot -->
@@ -60,10 +66,13 @@ const appName = page.props.name || 'FTW';
                         <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-500/15 text-fuchsia-300">
                             <img src="/images/UFB_logo.png" alt="UFB logo" class="h-6 w-6" />
                         </div>
-                        <h3 class="font-semibold text-foreground">Torsdagsåpent!</h3>
+                        <h3 class="font-semibold text-foreground">Tirsdag og Torsdagsåpent!</h3>
                     </div>
                     <div class="p-0">
-                        <p class="mt-1 text-xl text-foreground">Utgår grunnet flytting til Sandvika</p>
+                        <p class="mt-1 text-xl text-foreground">
+                            Flyttet til Løkketangen i Sandvika. <br />Informasjon om UFB Løkketangen finner du her:<br />
+                            <Link href="https://www.ufbinfo.no/ufb-lkketangen" class="text-blue-600">UFB Løkketangen</Link>
+                        </p>
                     </div>
                 </div>
                 <div class="rounded-xl border bg-background p-6 text-center">
